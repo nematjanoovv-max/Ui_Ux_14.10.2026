@@ -1,0 +1,102 @@
+================================================================
+  UI/UX LOYIHALAR — TAYYOR SSILKALAR RO'YXATI
+  Yaratilgan sana: 2026-10-14
+  Papka: /sdcard/Agent/Ui_Ux_14.10.2026/
+================================================================
+
+!!! MUHIM: QUYIDAGI SSILKALAR DEPLOYDAN KEYIN ISHLAYDI !!!
+Vercel'ga deploy qilingach, sizga shunday ssilka beriladi:
+    https://<loyiha-nomi>.vercel.app
+Shu yerda <VERCEL-DOMEN> o'rniga o'sha domenni qo'yilsa,
+pastdagi 10 ta ssilka darhol ishlaydi.
+
+
+----------------------------------------------------------------
+1) TO'LIQ ISHLAYDIGAN LOYIHA SSILKALARI (VERCEL)
+----------------------------------------------------------------
+
+1.  Oziq-ovqat yetkazish (TezYetkaz)
+    https://<VERCEL-DOMEN>.vercel.app/loyiha1.html
+
+2.  E-commerce (MarketPro)
+    https://<VERCEL-DOMEN>.vercel.app/loyiha2.html
+
+3.  IT kompaniya (NovaTech)
+    https://<VERCEL-DOMEN>.vercel.app/loyiha3.html
+
+4.  Blog platformasi (BlogNur)
+    https://<VERCEL-DOMEN>.vercel.app/loyiha4.html
+
+5.  Ob-havo ilovasi (ObHavo Live)
+    https://<VERCEL-DOMEN>.vercel.app/loyiha5.html
+
+6.  Kino portali (KinoUz)
+    https://<VERCEL-DOMEN>.vercel.app/loyiha6.html
+
+7.  Ta'lim platformasi (BilimUz)
+    https://<VERCEL-DOMEN>.vercel.app/loyiha7.html
+
+8.  Turizm agentligi (SayohatUz)
+    https://<VERCEL-DOMEN>.vercel.app/loyiha8.html
+
+9.  Ko'chmas mulk (UyBozor)
+    https://<VERCEL-DOMEN>.vercel.app/loyiha9.html
+
+10. Fitnes zal (PowerFit)
+    https://<VERCEL-DOMEN>.vercel.app/loyiha10.html
+
+
+----------------------------------------------------------------
+2) GITHUB REPOZITORIY
+----------------------------------------------------------------
+
+Repozitoriy nomi : Ui_Ux_14.10.2026
+Ko'rinishi       : public
+Ssilka (yaratilгандан keyin):
+    https://github.com/<GITHUB-USERNAME>/Ui_Ux_14.10.2026
+
+Lokal git repozitoriy allaqachon tayyor:
+  - Branch : main
+  - Commit : 8cfd215d03ab6ee2db01702572e20f27565a9ab8
+  - Xabar  : "10 ta zamonaviy loyiha yaratildi (UI/UX: responsive, glassmorphism, dark/light mode)"
+  - Fayllar: 10 ta (loyiha1.html ... loyiha10.html)
+
+
+----------------------------------------------------------------
+3) DEPLOYNI YAKUNLASH UCHUN KERAKLI BUYRUKLAR
+----------------------------------------------------------------
+
+GitHub'ga yuklash:
+    cd /sdcard/Agent/Ui_Ux_14.10.2026
+    gh auth login                                  # brauzer orqali kirish
+    gh repo create Ui_Ux_14.10.2026 --public --source=. --remote=origin --push
+
+Vercel'ga yuklash:
+    cd /sdcard/Agent/Ui_Ux_14.10.2026
+    vercel login                                   # brauzer orqali kirish
+    vercel --prod --yes
+
+Deploy tugagach Vercel sizga haqiqiy domen beradi
+(masalan: https://ui-ux-14-10-2026.vercel.app) —
+uni yuqoridagi <VERCEL-DOMEN> o'rniga qo'yib,
+barcha 10 ta ssilka darhol ishga tushadi.
+
+
+----------------------------------------------------------------
+4) LOYIHA FAYLLARI
+----------------------------------------------------------------
+
+loyiha1.html   — Oziq-ovqat yetkazish (Bento grid, savatcha)
+loyiha2.html   — E-commerce (Swiper karusel, narx filtri)
+loyiha3.html   — IT kompaniya (Glassmorphism xizmatlar)
+loyiha4.html   — Blog platformasi (Dark/Light, o'qish sahifasi)
+loyiha5.html   — Ob-havo ilovasi (gradient fon, prognoz)
+loyiha6.html   — Kino portali (poster hover, treyler, chipta)
+loyiha7.html   — Ta'lim platformasi (videokurs, progress bar)
+loyiha8.html   — Turizm agentligi (3D kartochkalar, qidiruv)
+loyiha9.html   — Ko'chmas mulk (uy slayderi, xarita)
+loyiha10.html  — Fitnes zal (AOS narxlar, jadval, taymer)
+
+Texnologiyalar: HTML5, Tailwind CSS (CDN), Lucide Icons,
+Swiper.js, AOS, ES6+ JavaScript — mobil va desktop uchun
+to'liq moslashuvgan (responsive).
