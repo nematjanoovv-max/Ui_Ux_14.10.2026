@@ -22,7 +22,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 .swiper-slide-active .photo,.group:hover .photo{transform:scale(1.06)}
 ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#10b981;border-radius:99px}
 .chip.active{background:#10b981;border-color:#10b981;color:#fff}
-.bar-fill{width:0;transition:width 1.2s cubic-bezier(.22,1,.36,1)}
 .shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.25) 50%,transparent 62%);transform:translateX(-100%);transition:transform 1s}
 .group:hover .shine{transform:translateX(100%)}
 .map-pin{animation:ping 2s cubic-bezier(0,0,.2,1) infinite}
@@ -34,7 +33,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <div class="blob bg-emerald-400 w-80 h-80 -top-24 -left-24"></div>
 <div class="blob bg-teal-400 w-72 h-72 top-[42%] -right-24" style="animation-delay:3s"></div>
 
-<!-- NAV -->
 <header id="nav" class="sticky top-0 z-50 glass transition-shadow">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
     <a href="#" class="flex items-center gap-2 font-black text-xl"><span class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 grid place-items-center text-white shadow-lg"><i data-lucide="building-2"></i></span>Uy<span class="text-emerald-500">Bozor</span></a>
@@ -48,10 +46,9 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
     <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
     <button id="addBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-bold hover:scale-105 transition shadow-lg">E'lon berish</button>
   </div>
-  
+
 </header>
 
-<!-- HERO + SEARCH -->
 <section class="pt-12 pb-8 px-5">
   <div class="max-w-7xl mx-auto">
     <div class="grid lg:grid-cols-[1fr,420px] gap-8 items-center">
@@ -85,7 +82,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- LISTINGS -->
 <section id="listings" class="py-10 px-5">
   <div class="max-w-7xl mx-auto">
     <div class="flex flex-wrap items-end justify-between gap-4 mb-8" data-aos="fade-up">
@@ -103,7 +99,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- FEATURED (image slider) -->
 <section id="featured" class="py-14 px-5">
   <div class="max-w-7xl mx-auto">
     <h2 class="text-4xl font-black mb-3" data-aos="fade-up">Tavsiya etilgan <span class="text-emerald-500">uy rasmlari slayderi</span></h2>
@@ -115,7 +110,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- MAP + SERVICES -->
 <section id="map" class="py-12 px-5">
   <div class="max-w-7xl mx-auto grid lg:grid-cols-[1.3fr,1fr] gap-6">
     <div class="rounded-3xl overflow-hidden glass relative h-[420px]" data-aos="fade-right">
@@ -150,7 +144,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </footer>
 
-<!-- PROPERTY MODAL -->
 <div id="propModal" class="fixed inset-0 z-[70] hidden">
   <div class="absolute inset-0 bg-black/65 backdrop-blur-sm" data-close></div>
   <div class="absolute inset-0 grid place-items-center p-4 pointer-events-none">
@@ -158,7 +151,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </div>
 
-<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
 <div id="mobileMenu" class="lg:hidden fixed inset-0 z-[60] hidden">
   <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
   <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
@@ -176,7 +168,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </aside>
 </div>
 
-<!-- TOAST (bildirishnoma) -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] hidden">
   <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold shadow-xl"><i data-lucide="check-circle-2" class="text-emerald-500"></i><span id="toastMsg"></span></div>
 </div>
@@ -184,14 +175,13 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-/* ===== THEME ===== */
+
 const root=document.documentElement;
 if(localStorage.getItem('ub-theme')==='dark'||(!localStorage.getItem('ub-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
 const themeIcon=document.getElementById('themeIcon');
 const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'moon':'sun');lucide.createIcons();};
 document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('ub-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
 
-/* ===== DATA (API simulyatsiyasi) ===== */
 const API=()=>new Promise(r=>setTimeout(()=>r([
  {id:1,title:'Yorqin kvartira',dist:'Chilonzor',type:'kvartira',rooms:3,area:86,floor:'7/12',price:118000,deal:'sale',badge:'YANGI',rate:4.8,metro:6,
   grad:['from-amber-300 to-orange-500','from-rose-300 to-pink-500','from-sky-300 to-indigo-500'],feat:['Lift','Parkovka','Bolalar maydoni'],desc:'Yangi ta\'mirlangan, quyoshli, metro yaqinidagi 3 xonali kvartira. Hujjatlar to\'liq.'},
@@ -211,7 +201,6 @@ const $=id=>document.getElementById(id);
 const money=n=>n.toLocaleString('uz-UZ');
 let all=[],state={deal:'all',type:'all',rooms:'all',price:350000,q:''};
 
-/* ===== RENDER ===== */
 function card(p,i){
   const bg=p.grad[0];
   return `<article class="glass rounded-3xl overflow-hidden card-hover group cursor-pointer" data-prop="${p.id}" data-aos="fade-up" data-aos-delay="${i*70}">
@@ -246,7 +235,6 @@ const render=()=>{
   lucide.createIcons();AOS.refresh();
 };
 
-/* ===== FEATURED SLIDER ===== */
 $('featSlides').innerHTML='';
 function renderFeat(){
   $('featSlides').innerHTML=all.map(p=>`
@@ -268,7 +256,6 @@ function renderFeat(){
   featSwiper.update();lucide.createIcons();
 }
 
-/* ===== MAP PINS ===== */
 function renderPins(){
   const positions=[[24,26],[62,18],[40,44],[76,50],[30,66],[58,74]];
   $('pinBox').innerHTML=all.map((p,i)=>`
@@ -280,7 +267,6 @@ function renderPins(){
   $('pinCount').textContent=all.length+' ta e\'lon';
 }
 
-/* ===== MODAL ===== */
 function openProp(id){
   const p=all.find(x=>x.id===Number(id));if(!p)return;
   $('propCard').innerHTML=`
@@ -330,7 +316,6 @@ $('propModal').addEventListener('click',e=>{
   if(e.target.closest('#callBtn')){toast('Agent raqami: +998 90 123 45 67');}
 });
 
-/* ===== EVENTS ===== */
 $('chips').addEventListener('click',e=>{
   const b=e.target.closest('.chip');if(!b)return;
   document.querySelectorAll('#chips .chip').forEach(c=>c.classList.remove('active'));
@@ -351,7 +336,6 @@ $('addBtn').addEventListener('click',()=>toast('E\'lon berish formas — demo re
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('propModal').classList.contains('hidden'))closeProp();});
 let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2500);}
 
-/* ===== MOBILE DRAWER (yon ochiluvchi menyu) ===== */
 const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
 const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
 document.getElementById('menuBtn')?.addEventListener('click',openMM);
@@ -359,7 +343,6 @@ document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.
 document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
 
-/* ===== INIT: async yuklash ===== */
 (async()=>{
   $('grid').innerHTML='<div class="col-span-full grid place-items-center py-20"><span class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></span></div>';
   all=await API();

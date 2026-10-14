@@ -19,7 +19,7 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 .dark .l-glass{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
 .blob{position:absolute;border-radius:50%;filter:blur(110px);opacity:.5;animation:float 12s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(34px,-44px)}}
-/* Poster hover animatsiyalari */
+
 .poster{transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s;transform-style:preserve-3d}
 .poster:hover{transform:translateY(-14px) scale(1.04) rotateX(4deg);box-shadow:0 32px 60px -12px rgba(229,9,20,.55);z-index:5}
 .poster .overlay{opacity:0;transition:opacity .4s}
@@ -41,7 +41,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <div class="blob bg-red-600 w-96 h-96 -top-32 -left-24"></div>
 <div class="blob bg-purple-700 w-80 h-80 top-[45%] -right-32" style="animation-delay:3s"></div>
 
-<!-- NAV -->
 <header id="nav" class="fixed inset-x-0 top-0 z-50 transition-all duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="mt-3 rounded-2xl l-glass px-5 py-3 flex items-center gap-5">
@@ -62,11 +61,10 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
         <button id="loginBtn" class="px-4 py-2 rounded-xl bg-[#e50914] text-white text-sm font-bold hover:scale-105 transition">Kirish</button>
       </div>
     </div>
-    
+
   </div>
 </header>
 
-<!-- HERO SLIDER -->
 <section class="relative pt-28">
   <div class="swiper heroSwiper h-[600px]">
     <div class="swiper-wrapper" id="heroSlides"></div>
@@ -74,9 +72,8 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- MOVIE ROWS -->
 <main class="relative -mt-10 z-10 pb-10">
-  <!-- NOW SHOWING -->
+
   <section id="now" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-14">
     <div class="flex items-end justify-between mb-6" data-aos="fade-up">
       <h2 class="text-2xl md:text-3xl font-black">Kinoteatlarda <span class="text-[#e50914]">ko'rsatilmoqda</span></h2>
@@ -85,7 +82,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
     <div id="nowGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
   </section>
 
-  <!-- TRENDING CAROUSEL -->
   <section id="trending" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-14">
     <h2 class="text-2xl md:text-3xl font-black mb-6" data-aos="fade-up">🔥 Hafta <span class="text-[#e50914]">trendlari</span></h2>
     <div class="swiper trendSwiper pb-4">
@@ -93,7 +89,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
     </div>
   </section>
 
-  <!-- COMING SOON + TABS -->
   <section id="soon" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-14">
     <div class="flex flex-wrap items-end justify-between gap-4 mb-6" data-aos="fade-up">
       <h2 class="text-2xl md:text-3xl font-black">Tez kuna <span class="text-[#e50914]">ekranga</span></h2>
@@ -106,13 +101,11 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
     <div id="soonGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
   </section>
 
-  <!-- TOP RATINGS TABLE -->
   <section id="ratings" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
     <h2 class="text-2xl md:text-3xl font-black mb-6" data-aos="fade-up">IMDb <span class="text-[#e50914]">reyting</span> bo'yicha</h2>
     <div class="glass rounded-3xl divide-y divide-white/10 overflow-hidden" id="ratingTable"></div>
   </section>
 
-  <!-- TICKETS -->
   <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
     <div class="rounded-[2rem] p-8 md:p-12 bg-gradient-to-br from-[#e50914] to-[#7f1d1d] text-white relative overflow-hidden" data-aos="zoom-in">
       <div class="relative z-10 max-w-lg">
@@ -141,7 +134,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </footer>
 
-<!-- MOVIE MODAL (treyler + info + chipta) -->
 <div id="movieModal" class="fixed inset-0 z-[70] hidden">
   <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" data-close></div>
   <div id="movieCard" class="absolute inset-0 grid place-items-center p-4 overflow-y-auto pointer-events-none">
@@ -149,7 +141,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </div>
 
-<!-- SEAT TICKET MODAL -->
 <div id="ticketModal" class="fixed inset-0 z-[75] hidden">
   <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" data-close></div>
   <div class="absolute inset-0 grid place-items-center p-4">
@@ -176,7 +167,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </div>
 
-<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
 <div id="mobileMenu" class="md:hidden fixed inset-0 z-[60] hidden">
   <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
   <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
@@ -194,7 +184,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </aside>
 </div>
 
-<!-- TOAST (bildirishnoma) -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] hidden">
   <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold"><i data-lucide="check-circle-2" class="text-green-400"></i><span id="toastMsg"></span></div>
 </div>
@@ -202,14 +191,13 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-/* ============ THEME ============ */
+
 const root=document.documentElement;
 if(localStorage.getItem('ku-theme')==='dark'||(!localStorage.getItem('ku-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
 const themeIcon=document.getElementById('themeIcon');
 const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'sun':'moon');lucide.createIcons();};
 document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('ku-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
 
-/* ============ DATA ============ */
 const MOVIES=[
   {id:1,title:'Baxt Quyoshi',year:2026,genre:'Drama',imdb:8.7,emoji:'🌅',g:'from-amber-500 to-orange-700',dur:124,age:'12+',desc:'Kichik shaharlik yosh rassomning orzusiga erishish yo\'lidagi kurashi haqida ramziy drama.',cast:['Shoxrux Hamdamov','Dilbar Sobirova'],dir:'Javohir Tursunov',lang:'O\'zbek',sub:'O\'zbek/rus',now:true,month:'january'},
   {id:2,title:'Shamol Qal\'asi',year:2026,genre:'Fantastika',imdb:9.1,emoji:'🏯',g:'from-indigo-600 to-purple-800',dur:148,age:'16+',desc:'Qadimiy afsonalar va zamonaviy dunyo kesishgan nuqtada yosh josuslar jamoasi qutqaruv yo\'lini topadi.',cast:['Laziz Umarov','Kamola Ergasheva'],dir:'Shuhrat Qodirov',lang:'O\'zbek',sub:'O\'zbek/ingliz',now:true,month:'january'},
@@ -228,7 +216,6 @@ const HERO=[1,2,5];
 const $=id=>document.getElementById(id);
 const money=n=>n.toLocaleString('uz-UZ')+" so'm";
 
-/* ============ POSTER CARD ============ */
 function posterHTML(m,i=0){
   return `<article class="poster relative rounded-3xl overflow-hidden cursor-pointer group bg-gradient-to-br ${m.g} aspect-[2/3]" data-movie="${m.id}" data-aos="fade-up" data-aos-delay="${i*70}">
     <span class="shine"></span>
@@ -298,7 +285,6 @@ $('heroSlides').innerHTML=HERO.map(id=>{const m=MOVIES.find(x=>x.id===id);return
     </div>
   </div>`;}).join('');
 
-/* ============ GENRE FILTER ============ */
 const genres=['Barchasi',...new Set(MOVIES.map(m=>m.genre))];
 $('genreChips').innerHTML=genres.map((g,i)=>`<button class="chip ${i===0?'active':''} text-xs font-bold px-4 py-2 rounded-full border border-white/20 transition" data-genre="${g}">${g}</button>`).join('');
 $('genreChips').addEventListener('click',e=>{
@@ -310,7 +296,6 @@ $('genreChips').addEventListener('click',e=>{
   lucide.createIcons();
 });
 
-/* ============ TABS ============ */
 $('soonTabs').addEventListener('click',e=>{
   const b=e.target.closest('.tabBtn');if(!b)return;
   document.querySelectorAll('.tabBtn').forEach(x=>x.classList.remove('active','bg-[#e50914]'));
@@ -318,7 +303,6 @@ $('soonTabs').addEventListener('click',e=>{
   renderSoon(b.dataset.t);
 });
 
-/* ============ MOVIE MODAL (treyler) ============ */
 let trailerTimer=null;
 function openMovie(id){
   const m=MOVIES.find(x=>x.id===Number(id));if(!m)return;
@@ -346,7 +330,6 @@ function openMovie(id){
         <div><div class="text-xs opacity-50 font-bold">AKTYORLAR</div><div class="font-semibold mt-1">${m.cast.join(', ')}</div></div>
         <div><div class="text-xs opacity-50 font-bold">TIL</div><div class="font-semibold mt-1">${m.lang} · ${m.sub}</div></div>
       </div>
-      <!-- treyler player (fake) -->
       <div class="mt-6 rounded-2xl bg-black aspect-video relative overflow-hidden grid place-items-center" id="playerBox">
         <div class="text-center">
           <div class="text-5xl">${m.emoji}</div>
@@ -363,7 +346,7 @@ function openMovie(id){
   $('movieModal').classList.remove('hidden');
   requestAnimationFrame(()=>$('movieInner').classList.remove('scale-90','opacity-0'));
   document.body.style.overflow='hidden';lucide.createIcons();
-  // fake treyler progress
+
   let t=0;
   clearInterval(trailerTimer);
   trailerTimer=setInterval(()=>{
@@ -383,8 +366,11 @@ $('movieModal').addEventListener('click',e=>{
   const buy=e.target.closest('[data-buy]');
   if(buy)openTicket(buy.dataset.buy);
 });
+document.addEventListener('click',e=>{
+  const mv=e.target.closest('[data-movie]');
+  if(mv&&$('movieModal').classList.contains('hidden'))openMovie(mv.dataset.movie);
+});
 
-/* ============ TICKET SEAT PICKER ============ */
 let selectedSeat=null;
 function openTicket(movieId){
   const m=MOVIES.find(x=>x.id===Number(movieId));
@@ -432,7 +418,6 @@ $('payBtn').addEventListener('click',async e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMovie();closeTicket();}});
 
-/* ============ SEARCH ============ */
 $('searchInput').addEventListener('input',e=>{
   const q=e.target.value.toLowerCase();
   const list=MOVIES.filter(m=>m.title.toLowerCase().includes(q)||m.genre.toLowerCase().includes(q));
@@ -440,10 +425,8 @@ $('searchInput').addEventListener('input',e=>{
   lucide.createIcons();
 });
 
-/* ============ TOAST ============ */
 let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2400);}
 
-/* ===== MOBILE DRAWER (yon ochiluvchi menyu) ===== */
 const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
 const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
 document.getElementById('menuBtn')?.addEventListener('click',openMM);
@@ -451,7 +434,6 @@ document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.
 document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
 
-/* ============ INIT ============ */
 $('loginBtn').addEventListener('click',()=>toast('Kirish sahifasi yaqin qo\'shiladi!'));
 window.addEventListener('scroll',()=>$('nav').firstElementChild.firstElementChild.classList.toggle('shadow-2xl',window.scrollY>40));
 

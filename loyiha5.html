@@ -17,7 +17,7 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 .glass{background:rgba(255,255,255,.14);backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);border:1px solid rgba(255,255,255,.25)}
 .light-glass{background:rgba(255,255,255,.55);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.6)}
 .dark .light-glass{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12)}
-/* Zamonaviy gradient fonlar */
+
 .sky-day{background:linear-gradient(160deg,#4facfe 0%,#00f2fe 55%,#a8ff78 100%)}
 .sky-night{background:linear-gradient(160deg,#0f2027 0%,#203a43 50%,#2c5364 100%)}
 .sky-rain{background:linear-gradient(160deg,#373b44 0%,#4286f4 100%)}
@@ -26,28 +26,23 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 .micro:hover{transform:translateY(-4px) scale(1.03)}
 .micro:active{transform:scale(.94)}
 ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.5);border-radius:99px}
-.rain-drops{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .drop{position:absolute;width:2px;height:16px;background:linear-gradient(transparent,rgba(255,255,255,.7));animation:fall linear infinite}
 @keyframes fall{from{transform:translateY(-20px)}to{transform:translateY(105vh)}}
 .sun-ray{position:absolute;border-radius:50%;filter:blur(70px);animation:pulse 7s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.25);opacity:.85}}
 .cloud{position:absolute;background:rgba(255,255,255,.6);border-radius:999px;filter:blur(24px);animation:drift 40s linear infinite}
 @keyframes drift{from{transform:translateX(-25vw)}to{transform:translateX(125vw)}}
-.bar-fill{transition:height 1s cubic-bezier(.22,1,.36,1)}
 .searching input{caret-color:#fff}
 </style>
 </head>
 <body class="text-white dark:text-white transition-all duration-700 overflow-x-hidden" id="sky">
 
-<!-- animated sky background -->
 <div id="skyBg" class="fixed inset-0 -z-10 sky-day transition-all duration-1000">
   <div id="fx" class="absolute inset-0 overflow-hidden"></div>
 </div>
 
-<!-- APP -->
 <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
 
-  <!-- TOP BAR -->
   <header class="flex items-center justify-between py-6 gap-4">
     <div class="flex items-center gap-2.5 font-black text-xl">
       <span class="w-10 h-10 rounded-2xl glass grid place-items-center"><i data-lucide="cloud-sun" class="w-5 h-5"></i></span>ObHavo<span class="opacity-70">Live</span>
@@ -66,7 +61,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
     </div>
   </header>
 
-  <!-- SEARCH -->
   <div class="searching glass rounded-3xl p-2 flex items-center gap-2 mb-8" data-aos="fade-down">
     <i data-lucide="map-pin" class="w-5 h-5 ml-3 opacity-80"></i>
     <input id="cityInput" list="cityList" class="bg-transparent outline-none flex-1 py-3 placeholder-white/70 font-medium" placeholder="Shahar nomini kiriting (masalan: Toshkent)...">
@@ -79,7 +73,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
     <button id="searchBtn" class="bg-white/90 text-slate-800 font-bold px-6 py-3 rounded-2xl micro hover:bg-white">Aniqlash</button>
   </div>
 
-  <!-- MAIN WEATHER CARD -->
   <section id="current" class="grid lg:grid-cols-[1.1fr,1fr] gap-6 mb-8">
     <div class="glass rounded-[2rem] p-8 relative overflow-hidden" data-aos="zoom-in">
       <div class="flex items-start justify-between gap-4">
@@ -110,7 +103,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
       <span class="absolute -right-8 -bottom-10 text-[11rem] opacity-20 select-none pointer-events-none" id="bgIcon">☀️</span>
     </div>
 
-    <!-- HOURLY -->
     <div id="hourly" class="glass rounded-[2rem] p-7 flex flex-col" data-aos="zoom-in" data-aos-delay="120">
       <div class="flex items-center justify-between mb-4">
         <h3 class="font-black text-lg">Bugun soat bo'yicha</h3>
@@ -126,13 +118,11 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
     </div>
   </section>
 
-  <!-- 7 DAYS -->
   <section id="daily" class="glass rounded-[2rem] p-7 mb-8" data-aos="fade-up">
     <h3 class="font-black text-lg mb-5">7 kunlik prognoz</h3>
     <div id="dailyList" class="space-y-2"></div>
   </section>
 
-  <!-- STATS GRID -->
   <section id="stats" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     <div class="glass rounded-3xl p-6 micro" data-aos="fade-up"><div class="flex items-center justify-between"><span class="text-sm opacity-80">Bosim</span><i data-lucide="gauge" class="w-5 h-5"></i></div><div class="text-3xl font-black mt-3" id="pressure">1013</div><div class="text-xs opacity-75">hPa — normal</div></div>
     <div class="glass rounded-3xl p-6 micro" data-aos="fade-up" data-aos-delay="80"><div class="flex items-center justify-between"><span class="text-sm opacity-80">Ko'rinish</span><i data-lucide="visibility" class="w-5 h-5"></i></div><div class="text-3xl font-black mt-3" id="visibility">10</div><div class="text-xs opacity-75">kilometr</div></div>
@@ -140,7 +130,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
     <div class="glass rounded-3xl p-6 micro" data-aos="fade-up" data-aos-delay="240"><div class="flex items-center justify-between"><span class="text-sm opacity-80">Havo sifati</span><i data-lucide="leaf" class="w-5 h-5"></i></div><div class="text-3xl font-black mt-3" id="aqi">32</div><div class="text-xs opacity-75">AQI — yaxshi</div></div>
   </section>
 
-  <!-- POPULAR CITIES -->
   <section id="cities" data-aos="fade-up">
     <div class="flex items-end justify-between mb-4">
       <h3 class="font-black text-lg">Mashhur shaharlar</h3>
@@ -151,8 +140,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 
 </div>
 
-
-<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
 <div id="mobileMenu" class="md:hidden fixed inset-0 z-[60] hidden">
   <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
   <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-white/20">
@@ -171,8 +158,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </aside>
 </div>
 
-
-<!-- TOAST (bildirishnoma) -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] hidden">
   <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold"><i data-lucide="check-circle-2" class="text-green-300"></i><span id="toastMsg"></span></div>
 </div>
@@ -180,7 +165,7 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-/* ============ THEME (tungi/kunduzgi fon ham o'zgaradi) ============ */
+
 const root=document.documentElement;
 if(localStorage.getItem('oh-theme')==='dark')root.classList.add('dark');
 const themeIcon=document.getElementById('themeIcon');
@@ -194,7 +179,6 @@ function syncTheme(){
   lucide.createIcons();renderBackground();
 }
 
-/* ============ FAKE WEATHER API (async/await) ============ */
 const conditions=[
   {key:'sunny',icon:'☀️',text:'Ochiq osmon',sky:'sky-day',night:'sky-night'},
   {key:'cloudy',icon:'⛅',text:'Qismi bulutli',sky:'sky-cloud',night:'sky-night'},
@@ -222,7 +206,6 @@ let unit='C', favs=JSON.parse(localStorage.getItem('oh-favs')||'[]');
 const cities=[{n:"Toshkent",ic:'🏛️'},{n:"Samarqand",ic:'🕌'},{n:"Buxoro",ic:'🏰'},{n:"Xiva",ic:'🧱'},{n:"Andijon",ic:'🌾'},{n:"Farg'ona",ic:'🍑'},{n:"Namangan",ic:'🌳'},{n:"Nukus",ic:'🏜️'},{n:"Termiz",ic:'🔥'},{n:"Jizzax",ic:'⛰️'}];
 const $=id=>document.getElementById(id);
 
-/* ============ RENDER ============ */
 function renderBackground(){
   const w=window.current;
   const cond=w?w.cond:conditions[0];
@@ -263,7 +246,7 @@ function renderWeather(w){
   $('heartIcon').setAttribute('data-lucide',favs.includes(w.city)?'heart':'heart');
   $('heartIcon').classList.toggle('fill-rose-400',favs.includes(w.city));
   $('heartIcon').classList.toggle('text-rose-400',favs.includes(w.city));
-  /* hourly swiper */
+
   $('hourlySlides').innerHTML=w.hours.map(h=>`
     <div class="swiper-slide">
       <div class="rounded-2xl bg-white/15 p-4 text-center micro">
@@ -273,7 +256,7 @@ function renderWeather(w){
       </div>
     </div>`).join('');
   hourlySwiper.update?.();
-  /* daily */
+
   $('dailyList').innerHTML=w.days.map(d=>`
     <div class="flex items-center gap-4 rounded-2xl bg-white/10 px-5 py-3.5 micro">
       <div class="w-10 font-bold text-sm">${d.d}</div>
@@ -293,7 +276,7 @@ async function load(city='Toshkent'){
   const btn=$('refreshBtn');
   $('refreshIcon').classList.add('animate-spin');
   $('refreshTxt').textContent='Aniqlanmoqda...';
-  const data=await fakeWeather(city);  // async/await
+  const data=await fakeWeather(city);
   renderWeather(data);
   $('refreshIcon').classList.remove('animate-spin');
   $('refreshTxt').textContent='Yangilash';
@@ -324,7 +307,6 @@ $('likeBtn').addEventListener('click',()=>{
 });
 let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2300);}
 
-/* ===== MOBILE DRAWER ===== */
 const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
 const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
 document.getElementById('menuBtn')?.addEventListener('click',openMM);
@@ -332,7 +314,6 @@ document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.
 document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
 
-/* INIT */
 AOS.init({duration:850,once:true});
 load('Toshkent').then(()=>{
   hourlySwiper=new Swiper('.hourlySwiper',{slidesPerView:1,spaceBetween:12,grabCursor:true,breakpoints:{380:{slidesPerView:2},640:{slidesPerView:3},1024:{slidesPerView:4}}});

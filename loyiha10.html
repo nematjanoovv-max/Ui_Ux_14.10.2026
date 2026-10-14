@@ -17,19 +17,16 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 .dark .l-glass{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)}
 .blob{position:absolute;border-radius:50%;filter:blur(110px);opacity:.5;animation:float 12s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(34px,-46px)}}
-/* Narx kartalari AOS bilan chiqib keladi, hover'da 3D */
+
 .price-card{transition:transform .45s cubic-bezier(.22,1,.36,1),box-shadow .45s}
 .price-card:hover{transform:translateY(-12px) scale(1.02);box-shadow:0 40px 80px -20px rgba(249,115,22,.5)}
 .price-card.popular{box-shadow:0 0 0 2px #f97316,0 30px 60px -20px rgba(249,115,22,.5)}
-/* Jadval */
+
 .row-hover{transition:background .3s,transform .3s}
 .row-hover:hover{transform:translateX(6px)}
 ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#f97316;border-radius:99px}
 .stat-num{font-variant-numeric:tabular-nums}
-.bar-fill{width:0;transition:width 1.3s cubic-bezier(.22,1,.36,1)}
 .timer{font-variant-numeric:tabular-nums}
-.pulse-ring{position:absolute;inset:0;border-radius:inherit;border:2px solid #f97316;animation:ring 2s ease-out infinite}
-@keyframes ring{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.4);opacity:0}}
 </style>
 </head>
 <body class="bg-stone-100 text-stone-900 dark:bg-ink dark:text-stone-100 transition-colors duration-500 overflow-x-hidden">
@@ -38,7 +35,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <div class="blob bg-rose-600 w-80 h-80 top-[42%] -right-32" style="animation-delay:3s"></div>
 <div class="blob bg-amber-500 w-64 h-64 bottom-0 left-1/3" style="animation-delay:6s"></div>
 
-<!-- NAV -->
 <header id="nav" class="sticky top-0 z-50 l-glass transition-shadow">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
     <a href="#" class="flex items-center gap-2 font-black text-xl"><span class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-rose-600 grid place-items-center text-white shadow-lg"><i data-lucide="dumbbell"></i></span>Power<span class="text-orange-500">Fit</span></a>
@@ -53,10 +49,9 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
     <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
     <button id="joinBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-rose-600 text-white text-sm font-bold hover:scale-105 transition shadow-lg">Bepul kun</button>
   </div>
-  
+
 </header>
 
-<!-- HERO -->
 <section class="pt-14 pb-12 px-5">
   <div class="max-w-7xl mx-auto grid lg:grid-cols-[1.1fr,1fr] gap-12 items-center">
     <div>
@@ -73,7 +68,7 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
         <div class="glass rounded-2xl p-4"><div class="text-3xl font-black text-orange-500 stat-num" data-count="95">0</div><div class="text-xs opacity-60 mt-1">Jihozlar</div></div>
       </div>
     </div>
-    <!-- BMI kalkulyator kartasi -->
+
     <div class="glass rounded-[2rem] p-7 relative" data-aos="fade-left" data-aos-delay="200">
       <h3 class="font-black text-xl flex items-center gap-2"><i data-lucide="calculator" class="text-orange-500"></i>Tezkor BMI hisoblash</h3>
       <p class="text-sm opacity-70 mt-1">O'zingizning natijangizni bilib oling</p>
@@ -101,7 +96,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- PROGRAMS -->
 <section id="programs" class="py-14 px-5">
   <div class="max-w-7xl mx-auto">
     <h2 class="text-4xl font-black mb-3 uppercase" data-aos="fade-up">Dasturlar</h2>
@@ -110,7 +104,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- SCHEDULE -->
 <section id="schedule" class="py-14 px-5">
   <div class="max-w-6xl mx-auto">
     <h2 class="text-4xl font-black mb-8 uppercase" data-aos="fade-up">Haftalik <span class="text-orange-500">jadval</span></h2>
@@ -124,7 +117,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- PRICING (AOS orqali chiqib keluvchi narxlar) -->
 <section id="pricing" class="py-16 px-5">
   <div class="max-w-7xl mx-auto">
     <div class="text-center mb-12" data-aos="fade-up">
@@ -140,7 +132,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- COACHES -->
 <section id="coaches" class="py-14 px-5">
   <div class="max-w-7xl mx-auto">
     <h2 class="text-4xl font-black mb-9 uppercase" data-aos="fade-up">Murabbiylar</h2>
@@ -151,7 +142,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- CTA / TIMER -->
 <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
   <div class="rounded-[2rem] p-10 md:p-14 bg-gradient-to-br from-orange-500 to-rose-600 text-white text-center relative overflow-hidden" data-aos="zoom-in">
     <span class="text-xs font-black tracking-[3px] bg-white/20 px-3 py-1.5 rounded-full">BUGUNGI TAKLIF</span>
@@ -179,7 +169,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </footer>
 
-<!-- JOIN MODAL -->
 <div id="joinModal" class="fixed inset-0 z-[70] hidden">
   <div class="absolute inset-0 bg-black/65 backdrop-blur-sm" data-close></div>
   <div class="absolute inset-0 grid place-items-center p-4">
@@ -202,7 +191,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </div>
 
-<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
 <div id="mobileMenu" class="lg:hidden fixed inset-0 z-[60] hidden">
   <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
   <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
@@ -220,7 +208,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </aside>
 </div>
 
-<!-- TOAST (bildirishnoma) -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] hidden">
   <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold shadow-xl"><i data-lucide="check-circle-2" class="text-orange-500"></i><span id="toastMsg"></span></div>
 </div>
@@ -228,7 +215,7 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-/* ===== THEME ===== */
+
 const root=document.documentElement;
 if(localStorage.getItem('pf-theme')==='dark'||(!localStorage.getItem('pf-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
 const themeIcon=document.getElementById('themeIcon');
@@ -238,7 +225,6 @@ document.getElementById('themeBtn').addEventListener('click',()=>{root.classList
 const $=id=>document.getElementById(id);
 const money=n=>n.toLocaleString('uz-UZ');
 
-/* ===== DATA ===== */
 const PROGRAMS=[
  {n:'Kuch mashqlari',i:'dumbbell',c:'from-orange-500 to-red-600',d:'Og\'irliklar, mashq bilan kuch va massa',t:'60 daq'},
  {n:'Kardio HIIT',i:'heart-pulse',c:'from-rose-500 to-pink-600',d:'Yonminchi yog\' uchun yuqori intensivlik',t:'45 daq'},
@@ -266,7 +252,6 @@ const COACHES=[
 ];
 const $2=null;
 
-/* ===== RENDER PROGRAMS ===== */
 $('progGrid').innerHTML=PROGRAMS.map((p,i)=>`
   <div class="glass rounded-3xl p-6 card-hover relative overflow-hidden group" data-aos="fade-up" data-aos-delay="${i*80}" style="transition:transform .4s,box-shadow .4s" onmouseover="this.style.transform='translateY(-8px)'" onmouseout="this.style.transform=''">
     <span class="absolute -right-6 -bottom-6 text-[6rem] opacity-10 group-hover:opacity-20 transition">${['🏋️','🔥','🧘','🥊'][i]}</span>
@@ -279,7 +264,6 @@ $('progGrid').innerHTML=PROGRAMS.map((p,i)=>`
     </div>
   </div>`).join('');
 
-/* ===== RENDER SCHEDULE ===== */
 const cellColor={'Kuch':'bg-orange-500/20 text-orange-600 dark:text-orange-400','Kardio':'bg-rose-500/20 text-rose-600 dark:text-rose-400','Yoga':'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400','HIIT':'bg-pink-500/20 text-pink-600 dark:text-pink-400','Boks':'bg-amber-500/20 text-amber-600 dark:text-amber-400','Stretching':'bg-teal-500/20 text-teal-600 dark:text-teal-400','Zumba':'bg-violet-500/20 text-violet-600 dark:text-violet-400'};
 $('schedRows').innerHTML=SCHEDULE.map(r=>`
   <div class="grid grid-cols-[80px_repeat(6,1fr)] border-b border-white/10 last:border-0 row-hover">
@@ -289,7 +273,6 @@ $('schedRows').innerHTML=SCHEDULE.map(r=>`
     </div>`).join('')}
   </div>`).join('');
 
-/* ===== PRICING (oylik/yillik almashish, AOS bilan) ===== */
 let yearly=false;
 const renderPrices=()=>{
   $('priceGrid').innerHTML=PLANS.map((p,i)=>{
@@ -315,7 +298,6 @@ const renderPrices=()=>{
 $('monthlyBtn').addEventListener('click',()=>{yearly=false;$('monthlyBtn').classList.add('bg-orange-500','text-white');$('yearlyBtn').classList.remove('bg-orange-500','text-white');renderPrices();});
 $('yearlyBtn').addEventListener('click',()=>{yearly=true;$('yearlyBtn').classList.add('bg-orange-500','text-white');$('monthlyBtn').classList.remove('bg-orange-500','text-white');renderPrices();});
 
-/* ===== COACHES ===== */
 $('coachSlides').innerHTML=COACHES.map(c=>`
   <div class="swiper-slide h-auto">
     <div class="glass rounded-3xl p-7 h-full text-center card-hover" style="transition:transform .4s" onmouseover="this.style.transform='translateY(-8px)'" onmouseout="this.style.transform=''">
@@ -328,7 +310,6 @@ $('coachSlides').innerHTML=COACHES.map(c=>`
     </div>
   </div>`).join('');
 
-/* ===== BMI ===== */
 function updateBMI(){
   const h=+$('bmiH').value/100,w=+$('bmiW').value;
   if(!h||!w)return;
@@ -347,14 +328,12 @@ function updateBMI(){
 }
 ['bmiH','bmiW'].forEach(id=>$(id).addEventListener('input',updateBMI));
 
-/* ===== COUNTERS ===== */
 const runCounters=()=>document.querySelectorAll('[data-count]').forEach(el=>{
   const t=+el.dataset.count;let c=0;const step=Math.max(1,Math.ceil(t/50));
   const i=setInterval(()=>{c+=step;if(c>=t){c=t;clearInterval(i);}el.textContent=c+(t===95?'+':'');},25);
 });
 window.addEventListener('load',runCounters);
 
-/* ===== TIMER ===== */
 let sec=14*60+59;
 setInterval(()=>{
   sec=sec>0?sec-1:14*60+59;
@@ -363,7 +342,6 @@ setInterval(()=>{
   $('tS').textContent=String(sec%60).padStart(2,'0');
 },1000);
 
-/* ===== MODAL ===== */
 const openJoin=()=>{$('joinModal').classList.remove('hidden');requestAnimationFrame(()=>$('joinCard').classList.remove('scale-90','opacity-0'));document.body.style.overflow='hidden';};
 const closeJoin=()=>{$('joinCard').classList.add('scale-90','opacity-0');setTimeout(()=>{$('joinModal').classList.add('hidden');document.body.style.overflow='';},280);};
 $('joinBtn').addEventListener('click',openJoin);
@@ -382,7 +360,6 @@ $('joinForm').addEventListener('submit',async e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('joinModal').classList.contains('hidden'))closeJoin();});
 
-/* ===== EVENTS ===== */
 document.addEventListener('click',e=>{
   const p=e.target.closest('[data-plan]');
   if(p){toast(`"${p.dataset.plan}" tarifi tanlandi — to'lovga o'tamiz`);return;}
@@ -393,7 +370,6 @@ document.addEventListener('click',e=>{
 });
 let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2500);}
 
-/* ===== MOBILE DRAWER (yon ochiluvchi menyu) ===== */
 const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
 const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
 document.getElementById('menuBtn')?.addEventListener('click',openMM);
@@ -401,7 +377,6 @@ document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.
 document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
 
-/* ===== INIT ===== */
 renderPrices();updateBMI();syncTheme();
 AOS.init({duration:900,once:true,easing:'ease-out-cubic'});
 new Swiper('.coachSwiper',{slidesPerView:1,spaceBetween:24,loop:true,grabCursor:true,pagination:{el:'.coachSwiper .swiper-pagination',clickable:true},autoplay:{delay:4500},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:4}}});

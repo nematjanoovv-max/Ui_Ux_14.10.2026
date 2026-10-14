@@ -20,7 +20,7 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-42px)}}
 .card-hover{transition:transform .4s cubic-bezier(.22,1,.36,1),box-shadow .4s,border-color .4s}
 .card-hover:hover{transform:translateY(-10px);box-shadow:0 30px 60px -18px rgba(16,185,129,.4);border-color:rgba(16,185,129,.5)}
-/* Progress bar animatsiyasi */
+
 .bar-track{background:rgba(16,185,129,.15)}
 .bar-fill{width:0;transition:width 1.4s cubic-bezier(.22,1,.36,1)}
 .dark .bar-track{background:rgba(255,255,255,.08)}
@@ -39,7 +39,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <div class="blob bg-emerald-400 w-80 h-80 -top-24 -left-24"></div>
 <div class="blob bg-teal-400 w-72 h-72 top-[45%] -right-24" style="animation-delay:3s"></div>
 
-<!-- HEADER -->
 <header id="nav" class="sticky top-0 z-50 glass transition-shadow">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
     <a href="#" class="flex items-center gap-2 font-black text-xl"><span class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 grid place-items-center text-white shadow-lg"><i data-lucide="graduation-cap"></i></span>Bilim<span class="text-emerald-500">Uz</span></a>
@@ -57,10 +56,9 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
     <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
     <button id="loginBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-bold hover:scale-105 transition shadow-lg">Kirish</button>
   </div>
-  
+
 </header>
 
-<!-- HERO -->
 <section class="pt-14 pb-10 px-5">
   <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
     <div>
@@ -120,7 +118,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- COURSES -->
 <section id="courses" class="py-16 px-5">
   <div class="max-w-7xl mx-auto">
     <div class="flex flex-wrap items-end justify-between gap-5 mb-9" data-aos="fade-up">
@@ -139,7 +136,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- LEARNING PAGE (video dars modal) -->
 <section id="learning" class="py-10 px-5">
   <div class="max-w-7xl mx-auto">
     <h2 class="text-4xl font-black mb-2" data-aos="fade-up">Darsliklar <span class="text-emerald-500">kutubxonasi</span></h2>
@@ -148,7 +144,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- MY PROGRESS (progress bars + jadval) -->
 <section id="progress" class="py-16 px-5">
   <div class="max-w-7xl mx-auto grid lg:grid-cols-[1.2fr,1fr] gap-8">
     <div class="glass rounded-3xl p-8" data-aos="fade-right">
@@ -170,7 +165,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- MENTORS -->
 <section id="mentors" class="py-14 px-5">
   <div class="max-w-7xl mx-auto">
     <h2 class="text-4xl font-black mb-9" data-aos="fade-up">Sizning <span class="text-emerald-500">mentorlar</span></h2>
@@ -181,7 +175,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- CTA -->
 <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
   <div class="rounded-[2rem] p-10 md:p-14 bg-gradient-to-br from-emerald-600 to-teal-700 text-white text-center relative overflow-hidden" data-aos="zoom-in">
     <h3 class="text-3xl md:text-4xl font-black">O'rganishni bugun boshlang</h3>
@@ -208,12 +201,11 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </footer>
 
-<!-- VIDEO LESSON MODAL -->
 <div id="videoModal" class="fixed inset-0 z-[70] hidden">
   <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" data-close></div>
   <div class="absolute inset-0 grid place-items-center p-4">
     <div id="videoCard" class="w-full max-w-3xl bg-slate-900 text-white rounded-3xl overflow-hidden scale-90 opacity-0 transition-all duration-300">
-      <!-- player -->
+
       <div class="relative aspect-video bg-gradient-to-br from-slate-800 to-slate-900 grid place-items-center overflow-hidden">
         <button class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-black/50 grid place-items-center hover:scale-110 transition z-10" data-close><i data-lucide="x"></i></button>
         <div class="text-center pointer-events-none">
@@ -229,7 +221,7 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
           </div>
         </div>
       </div>
-      <!-- lesson list -->
+
       <div class="p-6 max-h-64 overflow-y-auto">
         <h4 class="font-bold mb-4">Darslar ro'yxati</h4>
         <div id="vLessons" class="space-y-2"></div>
@@ -238,7 +230,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </div>
 
-<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
 <div id="mobileMenu" class="lg:hidden fixed inset-0 z-[60] hidden">
   <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
   <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
@@ -256,7 +247,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </aside>
 </div>
 
-<!-- TOAST (bildirishnoma) -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] hidden">
   <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold shadow-xl"><i data-lucide="check-circle-2" class="text-emerald-500"></i><span id="toastMsg"></span></div>
 </div>
@@ -264,14 +254,13 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-/* ============ THEME ============ */
+
 const root=document.documentElement;
 if(localStorage.getItem('bu-theme')==='dark'||(!localStorage.getItem('bu-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
 const themeIcon=document.getElementById('themeIcon');
 const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'moon':'sun');lucide.createIcons();};
 document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('bu-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
 
-/* ============ DATA ============ */
 const $=id=>document.getElementById(id);
 const COURSES=[
   {id:1,title:'JavaScript to\'liq kurs',cat:'Dasturlash',level:'beginner',price:0,old:349000,emoji:'⚡',g:'from-amber-400 to-orange-600',lessons:96,hours:24,students:5420,rate:4.9,mentor:'Bobur Rashidov',progress:62,
@@ -310,7 +299,6 @@ const MENTORS=[
 ];
 const money=n=>n?n.toLocaleString('uz-UZ')+" so'm":'Bepul';
 
-/* ============ RENDER ============ */
 function courseCard(c,i){
   return `<article class="glass rounded-3xl overflow-hidden card-hover group" data-aos="fade-up" data-aos-delay="${i*70}">
     <div class="h-44 bg-gradient-to-br ${c.g} relative overflow-hidden grid place-items-center text-6xl">
@@ -327,7 +315,6 @@ function courseCard(c,i){
       </div>
       <h3 class="font-black text-lg mt-3 leading-snug">${c.title}</h3>
       <p class="text-sm opacity-70 mt-1.5">Mentor: ${c.mentor}</p>
-      <!-- progress bar -->
       <div class="mt-4">
         <div class="flex justify-between text-xs font-bold mb-1.5"><span class="opacity-60">O'zlashtirish</span><span class="text-emerald-500">${c.progress}%</span></div>
         <div class="h-2 rounded-full bar-track overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 bar-fill" data-p="${c.progress}"></div></div>
@@ -388,7 +375,6 @@ const renderMentors=()=>$('mentorSlides').innerHTML=MENTORS.map(m=>`
     </div>
   </div>`).join('');
 
-/* ============ VIDEO MODAL ============ */
 let vTimer=null,vSec=0;
 function openVideo(id){
   const c=COURSES.find(x=>x.id===Number(id));if(!c)return;
@@ -433,7 +419,6 @@ $('playToggle').addEventListener('click',()=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('videoModal').classList.contains('hidden'))closeVideo();});
 
-/* ============ EVENTS ============ */
 $('levelChips').addEventListener('click',e=>{
   const b=e.target.closest('.chip');if(!b)return;
   document.querySelectorAll('#levelChips .chip').forEach(c=>c.classList.remove('active'));
@@ -456,7 +441,6 @@ $('loginBtn').addEventListener('click',()=>toast('Kirish oynasi — demo rejimid
 $('joinForm').addEventListener('submit',e=>{e.preventDefault();e.target.reset();toast('Ajoyib! 14 kunlik bepul kirish faollashdi 🎉');});
 let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2400);}
 
-/* ===== MOBILE DRAWER (yon ochiluvchi menyu) ===== */
 const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
 const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
 document.getElementById('menuBtn')?.addEventListener('click',openMM);
@@ -464,11 +448,10 @@ document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.
 document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
 
-/* ============ INIT ============ */
 renderCourses('all');renderLessons();renderSkills();renderSchedule();renderMentors();syncTheme();
 AOS.init({duration:850,once:true});
 new Swiper('.mentorSwiper',{slidesPerView:1,spaceBetween:24,loop:true,grabCursor:true,pagination:{el:'.mentorSwiper .swiper-pagination',clickable:true},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:4}}});
-/* progress barlarni AOS bilan sinxronlashtirish */
+
 const io=new IntersectionObserver(es=>es.forEach(en=>{
   if(en.isIntersecting){en.target.style.width=en.target.dataset.p+'%';io.unobserve(en.target);}
 }),{threshold:.4});

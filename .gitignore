@@ -1,2 +1,25 @@
-.vercel
+# ===== Maxfiy / mahalliy =====
 .env*
+.vercel
+*.local
+
+# ===== Dependencies =====
+node_modules/
+.pnp
+.pnp.js
+
+# ===== Build natijalari =====
+dist/
+build/
+apps/*/dist/
+packages/*/dist/
+*.tsbuildinfo
+
+# ===== Tizim / IDE =====
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+npm-debug.log*
+yarn-error.log*

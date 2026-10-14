@@ -1,17 +1,17 @@
 ================================================================
-  UI/UX LOYIHALAR — TAYYOR VA ISHLAYDIҚAN SSILKALAR
-  Yaratilgan sana: 2026-10-14
+  UI/UX LOYIHALAR — TAYYOR VA ISHLAYDIGAN SSILKALAR
+  Yangilangan sana: 2026-10-14
   Papka: /sdcard/Agent/Ui_Ux_14.10.2026/
 ================================================================
 
-ASOSIY DOMEN (VERCEL — LIVE):
+ASOSIY DOMEN:
     https://ui-ux-14-10-2026.vercel.app
 
-Barcha 10 ta ssilka tekshirilgan: HTTP 200 (ochiq ishlaydi).
+Holat: 10/10 ssilka HTTP 200 bilan tekshirilgan.
 
 
 ----------------------------------------------------------------
-1) TO'LIQ ISHLAYDIGAN LOYIHA SSILKALARI (VERCEL — LIVE)
+1) TO'LIQ ISHLAYDIGAN LOYIHA SSILKALARI
 ----------------------------------------------------------------
 
 1.  Oziq-ovqat yetkazib berish (TezYetkaz)
@@ -46,17 +46,13 @@ Barcha 10 ta ssilka tekshirilgan: HTTP 200 (ochiq ishlaydi).
 
 
 ----------------------------------------------------------------
-2) VERCEL DEPLOY MA'LUMOTLARI
+2) GITHUB REPOZITORIY
 ----------------------------------------------------------------
 
-Vercel loyihasi   : barkamol2/ui-ux-14-10-2026
-Production URL    : https://ui-ux-14-10-2026.vercel.app
-Deployment ID     : ui-ux-14-10-2026-a9slsnfzd-barkamol2.vercel.app
-Status            : Ready (Production)
-Environment       : Production
-
-Deploy buyrug'i   : vercel --prod --yes
-Joylashuv         : /sdcard/Agent/Ui_Ux_14.10.2026/
+Nomi  : Ui_Ux_14.10.2026
+Ssilya: https://github.com/nematjanoovv-max/Ui_Ux_14.10.2026
+Klon  : https://github.com/nematjanoovv-max/Ui_Ux_14.10.2026.git
+Holat : public
 
 
 ----------------------------------------------------------------
@@ -74,26 +70,6 @@ loyiha8.html   — Turizm agentligi (3D kartochkalar, qidiruv tizimi)
 loyiha9.html   — Ko'chmas mulk (uy rasmlari slayderi, xarita)
 loyiha10.html  — Fitnes zal (AOS narxlar, dars jadvali, taymer)
 
-Texnologiyalar: HTML5, Tailwind CSS (CDN), Lucide Icons,
-Swiper.js, AOS (Animate On Scroll), ES6+ JavaScript.
-Mobil va desktop uchun to'liq moslashuvgan (responsive).
-
-
-----------------------------------------------------------------
-4) GITHUB REPOZITORIY (LOYIHALИОN)
-----------------------------------------------------------------
-
-Repozitoriy nomi : Ui_Ux_14.10.2026
-Ko'rinishi       : public
-Ssilka (yaratilгандан keyin):
-    https://github.com/<GITHUB-USERNAME>/Ui_Ux_14.10.2026
-
-Lokal git repozitoriy tayyor:
-  - Branch : main
-  - Commit1: 8cfd215d03 — "10 ta zamonaviy loyiha yaratildi..."
-  - Commit2: 8c0fa7f001 — "tayyor_ssilkalar.txt qo'shildi"
-
-GitHub'ga yuklash uchun:
-    cd /sdcard/Agent/Ui_Ux_14.10.2026
-    gh auth login
-    gh repo create Ui_Ux_14.10.2026 --public --source=. --remote=origin --push
+Texnologiyalar: HTML5, Tailwind CSS, Lucide Icons, Swiper.js,
+AOS, ES6+ JavaScript.
+Mobil, planshet va desktop uchun to'liq moslashuvgan.

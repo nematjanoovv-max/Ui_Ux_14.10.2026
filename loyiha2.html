@@ -18,7 +18,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 .dark .glass{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09)}
 .blob{position:absolute;border-radius:9999px;filter:blur(90px);opacity:.5;z-index:-1;animation:float 10s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-40px)}}
-.grid-bg{background-image:linear-gradient(rgba(99,102,241,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.07) 1px,transparent 1px);background-size:44px 44px}
 .card-hover{transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
 .card-hover:hover{transform:translateY(-8px);box-shadow:0 24px 50px -12px rgba(99,102,241,.35)}
 ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#6366f1;border-radius:99px}
@@ -35,10 +34,8 @@ input[type=range]{accent-color:#6366f1}
 <div class="blob bg-indigo-400 w-72 h-72 -top-20 left-1/4"></div>
 <div class="blob bg-fuchsia-400 w-80 h-80 top-[45%] -right-24" style="animation-delay:2s"></div>
 
-<!-- TOP BAR -->
 <div class="bg-indigo-600 text-white text-xs text-center py-2 font-medium tracking-wide">🚚 200 000 so'mdan yuqori buyurtmalarga bepul yetkazib berish</div>
 
-<!-- HEADER -->
 <header class="sticky top-0 z-50 glass shadow-lg">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-4">
     <a href="#" class="flex items-center gap-2 font-black text-xl shrink-0"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 grid place-items-center text-white"><i data-lucide="shopping-cart"></i></span>Market<span class="text-indigo-500">Pro</span></a>
@@ -60,10 +57,9 @@ input[type=range]{accent-color:#6366f1}
       <span id="cartCount" class="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 text-[11px] font-bold grid place-items-center bg-amber-400 text-slate-900 rounded-full">0</span>
     </button>
   </div>
-  
+
 </header>
 
-<!-- HERO / CAROUSEL -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-6">
   <div class="swiper heroSwiper rounded-3xl overflow-hidden">
     <div class="swiper-wrapper">
@@ -99,7 +95,6 @@ input[type=range]{accent-color:#6366f1}
   </div>
 </section>
 
-<!-- ADVANTAGES BENTO -->
 <section id="features" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
   <div class="grid md:grid-cols-4 gap-4">
     <div class="md:col-span-2 rounded-3xl p-7 bg-gradient-to-br from-indigo-600 to-violet-700 text-white relative overflow-hidden card-hover" data-aos="zoom-in">
@@ -121,7 +116,6 @@ input[type=range]{accent-color:#6366f1}
   </div>
 </section>
 
-<!-- PRODUCTS + FILTER -->
 <section id="products" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="flex flex-wrap items-end justify-between gap-6 mb-8" data-aos="fade-up">
     <div>
@@ -147,7 +141,6 @@ input[type=range]{accent-color:#6366f1}
   <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
 </section>
 
-<!-- DEALS (featured products carousel) -->
 <section id="deals" class="py-14 px-5">
   <div class="max-w-7xl mx-auto">
     <h2 class="text-4xl font-black mb-8" data-aos="fade-up">Hafta <span class="text-indigo-500">aksiyalari</span></h2>
@@ -158,7 +151,6 @@ input[type=range]{accent-color:#6366f1}
   </div>
 </section>
 
-<!-- NEWSLETTER -->
 <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
   <div class="rounded-3xl p-10 bg-gradient-to-br from-indigo-600 to-fuchsia-600 text-white text-center relative overflow-hidden" data-aos="zoom-in">
     <h3 class="text-3xl font-black">Chegirmalardan xabardor bo'ling</h3>
@@ -189,7 +181,6 @@ input[type=range]{accent-color:#6366f1}
   <div class="max-w-7xl mx-auto border-t border-black/5 dark:border-white/10 mt-10 pt-6 text-center text-sm opacity-60">© 2026 MarketPro. Barcha huquqlar himoyalangan.</div>
 </footer>
 
-<!-- PRODUCT MODAL -->
 <div id="prodModal" class="fixed inset-0 z-[60] hidden">
   <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-close></div>
   <div class="absolute inset-0 grid place-items-center p-4 pointer-events-none">
@@ -197,7 +188,6 @@ input[type=range]{accent-color:#6366f1}
   </div>
 </div>
 
-<!-- CART MODAL -->
 <div id="cartModal" class="fixed inset-0 z-[65] hidden">
   <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-close></div>
   <aside id="cartPanel" class="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl flex flex-col translate-x-full transition-transform duration-300">
@@ -214,7 +204,6 @@ input[type=range]{accent-color:#6366f1}
   </aside>
 </div>
 
-<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
 <div id="mobileMenu" class="lg:hidden fixed inset-0 z-[60] hidden">
   <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
   <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
@@ -232,7 +221,6 @@ input[type=range]{accent-color:#6366f1}
   </aside>
 </div>
 
-<!-- TOAST (bildirishnoma) -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] hidden">
   <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 shadow-xl font-semibold"><i data-lucide="check-circle-2" class="text-green-500"></i><span id="toastMsg"></span></div>
 </div>
@@ -240,14 +228,13 @@ input[type=range]{accent-color:#6366f1}
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-/* ============ DARK MODE ============ */
+
 const root=document.documentElement;
 if(localStorage.getItem('mp-theme')==='dark'||(!localStorage.getItem('mp-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
 const themeIcon=document.getElementById('themeIcon');
 const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'moon':'sun');lucide.createIcons();};
 document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('mp-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
 
-/* ============ DATA (simulyatsiya qilinggan API) ============ */
 const API_PRODUCTS=[
   {id:1,name:'AirPods Pro 2',cat:'audio',price:1850000,old:2290000,emoji:'🎧',badge:'TOP',rate:4.9,desc:'Shovqinni bekor qilish, adaptiv audio',g:'from-slate-300 to-slate-500'},
   {id:2,name:'Galaxy Watch 6',cat:'watch',price:499000,old:999000,emoji:'⌚',badge:'-50%',rate:4.7,desc:'Yurak urishi va Spo2 monitoringi',g:'from-emerald-300 to-teal-500'},
@@ -264,11 +251,9 @@ const API_PRODUCTS=[
 ];
 const money=n=>n.toLocaleString('uz-UZ')+" so'm";
 
-/* ============ STATE ============ */
 let cart=JSON.parse(localStorage.getItem('mp-cart')||'[]');
 let state={cat:'all',maxPrice:15000000,query:''};
 
-/* ============ FILTER + RENDER ============ */
 const grid=document.getElementById('grid');
 const filtered=()=>API_PRODUCTS.filter(p=>(state.cat==='all'||p.cat===state.cat)&&p.price<=state.maxPrice&&p.name.toLowerCase().includes(state.query.toLowerCase()));
 
@@ -298,7 +283,6 @@ const render=()=>{
   lucide.createIcons();
 };
 
-/* ============ CART ============ */
 const $=id=>document.getElementById(id);
 const saveCart=()=>localStorage.setItem('mp-cart',JSON.stringify(cart));
 const renderCart=()=>{
@@ -334,7 +318,6 @@ const fly=(emoji,from)=>{
   setTimeout(()=>el.remove(),820);
 };
 
-/* ============ MODALS ============ */
 const openCart=()=>{$('cartModal').classList.remove('hidden');requestAnimationFrame(()=>$('cartPanel').classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
 const closeCart=()=>{$('cartPanel').classList.add('translate-x-full');setTimeout(()=>{$('cartModal').classList.add('hidden');document.body.style.overflow='';},300);};
 const openProduct=id=>{
@@ -365,7 +348,6 @@ const openProduct=id=>{
 };
 const closeProduct=()=>{$('prodCard').classList.add('scale-90','opacity-0');setTimeout(()=>{$('prodModal').classList.add('hidden');document.body.style.overflow='';},280);};
 
-/* ============ EVENTS ============ */
 grid.addEventListener('click',e=>{
   const add=e.target.closest('[data-add]'),view=e.target.closest('[data-view]');
   if(add){const p=API_PRODUCTS.find(x=>x.id===Number(add.dataset.add));fly(p.emoji,add.getBoundingClientRect());addToCart(add.dataset.add);}
@@ -404,10 +386,8 @@ $('catFilter').addEventListener('click',e=>{
 });
 $('subForm').addEventListener('submit',e=>{e.preventDefault();e.target.reset();toast('Obuna bo\'ldingiz! 🎉');});
 
-/* ============ TOAST ============ */
 let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2200);}
 
-/* ============ DEALS CAROUSEL ============ */
 $('dealSlides').innerHTML=API_PRODUCTS.filter(p=>p.badge&&p.badge!=='TOP').map(p=>`
   <div class="swiper-slide pb-2 h-auto">
     <div class="glass rounded-3xl p-6 h-full flex flex-col card-hover">
@@ -421,7 +401,6 @@ $('dealSlides').innerHTML=API_PRODUCTS.filter(p=>p.badge&&p.badge!=='TOP').map(p
     </div>
   </div>`).join('');
 
-/* ===== MOBILE DRAWER (yon ochiluvchi menyu) ===== */
 const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
 const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
 document.getElementById('menuBtn')?.addEventListener('click',openMM);
@@ -429,7 +408,6 @@ document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.
 document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
 
-/* ============ INIT ============ */
 render();renderCart();syncTheme();
 AOS.init({duration:800,once:true});
 new Swiper('.heroSwiper',{loop:true,effect:'fade',autoplay:{delay:6000},pagination:{el:'.heroSwiper .swiper-pagination',clickable:true}});

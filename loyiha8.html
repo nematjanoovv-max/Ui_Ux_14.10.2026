@@ -18,19 +18,17 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 .dark .glass{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)}
 .blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.45;animation:float 12s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(34px,-46px)}}
-/* 3D EFFEKTLI KARTOCHKALAR */
+
 .scene{perspective:1200px}
 .tilt{transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s;transform-style:preserve-3d;will-change:transform}
 .tilt-inner{transform-style:preserve-3d}
 .tilt .layer{transform:translateZ(50px)}
 .tilt .layer-deep{transform:translateZ(90px)}
-.tilt .layer-back{transform:translateZ(30px)}
+.tilt 
 .tilt:hover{box-shadow:0 40px 80px -20px rgba(2,132,199,.5)}
 .tilt .glare{position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.35),transparent 55%);opacity:0;transition:opacity .4s;pointer-events:none}
 .tilt:hover .glare{opacity:1}
 ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#0ea5e9;border-radius:99px}
-.bar-fill{width:0;transition:width 1.3s cubic-bezier(.22,1,.36,1)}
-.pill{transition:all .3s}
 .chip.active{background:#0ea5e9;border-color:#0ea5e9;color:#fff}
 .star-pop{animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
 @keyframes pop{0%{transform:scale(0) rotate(-60deg)}100%{transform:scale(1) rotate(0)}}
@@ -42,7 +40,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <div class="blob bg-cyan-300 w-72 h-72 top-[40%] -right-24" style="animation-delay:3s"></div>
 <div class="blob bg-amber-300 w-64 h-64 bottom-10 left-1/4" style="animation-delay:6s"></div>
 
-<!-- NAV -->
 <header id="nav" class="sticky top-0 z-50 glass transition-shadow">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
     <a href="#" class="flex items-center gap-2 font-black text-xl"><span class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-600 grid place-items-center text-white shadow-lg"><i data-lucide="palmtree"></i></span>Sayohat<span class="text-sky-500">Uz</span></a>
@@ -56,10 +53,9 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
     <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
     <button id="callBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-600 text-white text-sm font-bold hover:scale-105 transition shadow-lg">Qo'ng'iroq</button>
   </div>
-  
+
 </header>
 
-<!-- HERO + SEARCH ENGINE -->
 <section class="relative pt-14 pb-8 px-5">
   <div class="max-w-7xl mx-auto">
     <div class="text-center max-w-3xl mx-auto mb-10">
@@ -68,7 +64,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
       <p class="mt-5 text-lg text-slate-600 dark:text-slate-400" data-aos="fade-up" data-aos-delay="100">Tayyor turlar, chiptalar, viza va sug'urta — bitta joyda. Biz bilan sayohat qilish oson va qulay.</p>
     </div>
 
-    <!-- Search engine -->
     <div class="glass rounded-3xl p-3 shadow-2xl max-w-4xl mx-auto" data-aos="zoom-in">
       <div class="grid md:grid-cols-[1.2fr,1fr,1fr,auto] gap-2">
         <label class="rounded-2xl bg-white/60 dark:bg-white/5 px-4 py-3.5 flex items-center gap-3 focus-within:ring-2 ring-sky-500 transition">
@@ -98,7 +93,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- POPULAR DESTINATIONS (3D kartaDashboardlar) -->
 <section id="destinations" class="py-14 px-5">
   <div class="max-w-7xl mx-auto">
     <div class="flex flex-wrap items-end justify-between gap-4 mb-9" data-aos="fade-up">
@@ -117,7 +111,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- TOURS -->
 <section id="tours" class="py-12 px-5">
   <div class="max-w-7xl mx-auto">
     <h2 class="text-4xl font-black mb-3" data-aos="fade-up">Tayyor <span class="text-sky-500">turlar</span></h2>
@@ -129,7 +122,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- BOOKING FORM -->
 <section id="booking" class="py-14 px-5">
   <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
     <div class="glass rounded-3xl p-8" data-aos="fade-right">
@@ -176,7 +168,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- REVIEWS -->
 <section id="reviews" class="py-14 px-5">
   <div class="max-w-6xl mx-auto">
     <h2 class="text-4xl font-black mb-10 text-center" data-aos="fade-up">Sayohatchilar <span class="text-sky-500">sharhlari</span></h2>
@@ -199,7 +190,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </footer>
 
-<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
 <div id="mobileMenu" class="lg:hidden fixed inset-0 z-[60] hidden">
   <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
   <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
@@ -217,7 +207,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </aside>
 </div>
 
-<!-- TOAST (bildirishnoma) -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] hidden">
   <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold shadow-xl"><i data-lucide="check-circle-2" class="text-sky-500"></i><span id="toastMsg"></span></div>
 </div>
@@ -225,14 +214,13 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-/* ============ THEME ============ */
+
 const root=document.documentElement;
 if(localStorage.getItem('su-theme')==='dark'||(!localStorage.getItem('su-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
 const themeIcon=document.getElementById('themeIcon');
 const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'moon':'sun');lucide.createIcons();};
 document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('su-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
 
-/* ============ DATA ============ */
 const $=id=>document.getElementById(id);
 const DESTINATIONS=[
   {id:1,city:'Istanbul',country:'Turkiya',type:'city',emoji:'🕌',g:'from-sky-500 via-indigo-500 to-purple-600',price:6490000,days:'3 kun / 2 kecha',rate:4.9,reviews:214,hot:true,tag:'Shahar ta\'tili'},
@@ -257,7 +245,6 @@ const REVIEWS=[
 ];
 const money=n=>n.toLocaleString('uz-UZ');
 
-/* ============ 3D TILT KARTALAR ============ */
 function destCard(d,i){
   return `<article class="tilt relative rounded-[2rem] overflow-hidden h-[430px] bg-gradient-to-br ${d.g} text-white cursor-pointer card-hover" data-dest="${d.id}" data-aos="fade-up" data-aos-delay="${i*90}">
     <div class="tilt-inner relative h-full p-7 flex flex-col">
@@ -288,7 +275,6 @@ const renderDests=(f='all')=>{
   lucide.createIcons();attachTilt();
 };
 
-/* 3D tilt logikasi — sichqoncha harakatiga qarama-qarshi burilish */
 function attachTilt(){
   document.querySelectorAll('.tilt').forEach(card=>{
     const onMove=e=>{
@@ -307,7 +293,6 @@ function attachTilt(){
   });
 }
 
-/* ============ BOSHQA RENDERLAR ============ */
 $('tourSlides').innerHTML=TOURS.map(t=>`
   <div class="swiper-slide h-auto">
     <div class="glass rounded-3xl p-5 h-full flex flex-col">
@@ -333,7 +318,6 @@ $('revSlides').innerHTML=REVIEWS.map(r=>`
     </div>
   </div>`).join('');
 
-/* ============ EVENTS ============ */
 $('filterChips').addEventListener('click',e=>{
   const b=e.target.closest('.chip');if(!b)return;
   document.querySelectorAll('#filterChips .chip').forEach(c=>c.classList.remove('active'));
@@ -348,7 +332,7 @@ $('searchBtn').addEventListener('click',async()=>{
   if(!where){toast('Qayerga borishingizni kiriting');return;}
   const btn=$('searchBtn');btn.disabled=true;
   btn.innerHTML='<span class="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>';
-  await new Promise(r=>setTimeout(r,1300)); // API simulyatsiyasi
+  await new Promise(r=>setTimeout(r,1300));
   btn.disabled=false;btn.innerHTML='<i data-lucide="search" class="w-5 h-5"></i>Qidirish';
   const people=$('peopleSelect').value, date=$('dateInput').value;
   $('searchEcho').textContent=where?`"${where}" uchun ${date||'istalgan sanada'} · ${people} · 8 variant topildi ✅`:'';
@@ -380,7 +364,6 @@ document.querySelectorAll('[data-quick]').forEach(b=>b.addEventListener('click',
 }));
 let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2500);}
 
-/* ===== MOBILE DRAWER (yon ochiluvchi menyu) ===== */
 const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
 const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
 document.getElementById('menuBtn')?.addEventListener('click',openMM);
@@ -388,7 +371,6 @@ document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.
 document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
 
-/* ============ INIT ============ */
 renderDests();
 AOS.init({duration:900,once:true});
 new Swiper('.tourSwiper',{slidesPerView:1,spaceBetween:24,loop:true,grabCursor:true,pagination:{el:'.tourSwiper .swiper-pagination',clickable:true},autoplay:{delay:5000},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:3}}});

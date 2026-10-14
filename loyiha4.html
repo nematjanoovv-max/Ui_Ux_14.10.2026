@@ -35,7 +35,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <div class="blob bg-rose-300 w-72 h-72 top-[50%] -right-24" style="animation-delay:2.5s"></div>
 <div id="readProgress" class="progress-read"></div>
 
-<!-- HEADER -->
 <header id="nav" class="fixed inset-x-0 top-0 z-50 glass transition-shadow">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
     <a href="#" class="flex items-center gap-2 font-black text-xl"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 grid place-items-center text-white"><i data-lucide="feather"></i></span>Blog<span class="text-amber-500">Nur</span></a>
@@ -53,10 +52,9 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
     <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
     <button id="subscribeBtn" class="hidden sm:block px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-bold hover:scale-105 transition">Obuna</button>
   </div>
-  
+
 </header>
 
-<!-- HERO -->
 <section class="pt-32 pb-16 px-5">
   <div class="max-w-7xl mx-auto">
     <div class="swiper heroSwiper rounded-[2rem] overflow-hidden">
@@ -66,7 +64,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- CATEGORIES -->
 <section id="categories" class="px-5 pb-10">
   <div class="max-w-7xl mx-auto">
     <h2 class="text-3xl font-black mb-7" data-aos="fade-up">Kategoriyalar</h2>
@@ -74,7 +71,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- POSTS -->
 <section id="latest" class="px-5 py-10">
   <div class="max-w-7xl mx-auto grid lg:grid-cols-[1fr,340px] gap-10">
     <div>
@@ -84,7 +80,7 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
       </div>
       <div id="postGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7"></div>
     </div>
-    <!-- SIDEBAR -->
+
     <aside class="space-y-6">
       <div class="glass rounded-3xl p-6" data-aos="fade-left">
         <h3 class="font-black text-lg flex items-center gap-2"><i data-lucide="flame" class="text-orange-500"></i> Eng ko'p o'qilgan</h3>
@@ -104,7 +100,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- AUTHORS -->
 <section id="authors" class="px-5 py-14">
   <div class="max-w-7xl mx-auto">
     <h2 class="text-3xl font-black mb-10" data-aos="fade-up">Mualliflar</h2>
@@ -115,7 +110,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </section>
 
-<!-- NEWSLETTER -->
 <section id="newsletter" class="px-5 py-14">
   <div class="max-w-4xl mx-auto glass rounded-[2rem] p-10 md:p-14 text-center relative overflow-hidden" data-aos="zoom-in">
     <span class="text-xs font-bold tracking-[3px] text-amber-500">YANGILIKLAR</span>
@@ -141,7 +135,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </footer>
 
-<!-- ======= ARTICLE READING PAGE MODAL ======= -->
 <div id="articleModal" class="fixed inset-0 z-[70] hidden">
   <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-close></div>
   <div id="articleScroll" class="absolute inset-0 overflow-y-auto bg-amber-50 dark:bg-ink">
@@ -149,7 +142,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </div>
 </div>
 
-<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
 <div id="mobileMenu" class="md:hidden fixed inset-0 z-[60] hidden">
   <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
   <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
@@ -167,7 +159,6 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
   </aside>
 </div>
 
-<!-- TOAST (bildirishnoma) -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] hidden">
   <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 shadow-xl font-semibold"><i data-lucide="check-circle-2" class="text-green-500"></i><span id="toastMsg"></span></div>
 </div>
@@ -175,14 +166,13 @@ html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-/* ============ THEME ============ */
+
 const root=document.documentElement;
 if(localStorage.getItem('bn-theme')==='dark'||(!localStorage.getItem('bn-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
 const themeIcon=document.getElementById('themeIcon');
 const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'sun':'moon');lucide.createIcons();};
 document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('bn-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
 
-/* ============ DATA (fake API) ============ */
 const API=(()=>{
   const posts=[
     {id:1,title:"Sun'iy intellekt sahifalarini qanday o'zgartiryapti?",cat:'Texnologiya',emoji:'🤖',grad:'from-indigo-500 to-blue-600',read:8,date:'12 Oktyabr 2026',author:'Bobur Rashidov',views:'24.5k',tags:['AI','Kelajak','Texnologiya'],
@@ -211,13 +201,12 @@ const API=(()=>{
 })();
 const $=id=>document.getElementById(id);
 
-/* ============ STATE / RENDER ============ */
 let posts=[],activeCat='Barchasi';
 const money=n=>n;
 
 async function boot(){
   $('postGrid').innerHTML='<div class="col-span-2 grid place-items-center py-24"><span class="w-12 h-12 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></span></div>';
-  posts=await API.getPosts(); // async/await bilan yuklab olish
+  posts=await API.getPosts();
   renderCats();renderPosts();renderHero();renderSidebar();renderAuthors();
 }
 const catColors={'Texnologiya':'from-indigo-500 to-blue-500','Dizayn':'from-rose-500 to-pink-500','Biznes':'from-emerald-500 to-teal-500','Salomatlik':'from-violet-500 to-purple-500','Sayohat':'from-sky-500 to-cyan-500'};
@@ -301,7 +290,6 @@ function renderAuthors(){
     </div>`).join('');
 }
 
-/* ============ ARTICLE READING PAGE ============ */
 let readingPost=null;
 async function openArticle(id){
   readingPost=posts.find(p=>p.id===id);
@@ -359,7 +347,6 @@ $('articleScroll').addEventListener('scroll',()=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('articleModal').classList.contains('hidden'))closeArticle();});
 
-/* ============ EVENTS ============ */
 document.addEventListener('click',async e=>{
   const cat=e.target.closest('.catBtn');
   if(cat){activeCat=cat.dataset.cat;renderCats();renderPosts();}
@@ -391,10 +378,8 @@ window.addEventListener('scroll',()=>{
   $('readProgress').style.width=Math.min(p,100)+'%';
 });
 
-/* ============ TOAST ============ */
 let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2400);}
 
-/* ===== MOBILE DRAWER (yon ochiluvchi menyu) ===== */
 const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
 const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
 document.getElementById('menuBtn')?.addEventListener('click',openMM);
@@ -402,7 +387,6 @@ document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.
 document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
 
-/* ============ INIT ============ */
 boot();
 AOS.init({duration:850,once:true});
 new Swiper('.heroSwiper',{loop:true,effect:'fade',autoplay:{delay:6500},pagination:{el:'.heroSwiper .swiper-pagination',clickable:true}});
