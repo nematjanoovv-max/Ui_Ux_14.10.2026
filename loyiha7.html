@@ -1,461 +1,615 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" class="">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#07100e">
 <title>BilimUz — Onlayn ta'lim platformasi</title>
+<meta name="description" content="Videokurslar, progress barlar, dars jadvali va mentorlar.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{ink:'#0b1120'}}}}
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{display:['"Space Grotesk"','system-ui','sans-serif'],sans:['Inter','system-ui','sans-serif'],mono:['"JetBrains Mono"','monospace']},colors:{c1:'#00e5a0',c2:'#22d3ee',c3:'#7c5cff',ink:'#07100e'}}}}
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
-html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
-.glass{background:rgba(255,255,255,.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.5)}
-.dark .glass{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
-.blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.42;animation:float 12s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-42px)}}
-.card-hover{transition:transform .4s cubic-bezier(.22,1,.36,1),box-shadow .4s,border-color .4s}
-.card-hover:hover{transform:translateY(-10px);box-shadow:0 30px 60px -18px rgba(16,185,129,.4);border-color:rgba(16,185,129,.5)}
+:root{
+  --c1:#00e5a0;--c2:#22d3ee;--c3:#7c5cff;--ink:#07100e;
+  --line:color-mix(in srgb,var(--fg) 12%,transparent);
+  --panel:color-mix(in srgb,var(--fg) 5%,transparent);
+  --radius:20px;--ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:dark;
+}
+html.light{--panel:color-mix(in srgb,var(--fg) 7%,transparent);--line:color-mix(in srgb,var(--fg) 15%,transparent);color-scheme:light}
+*{-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,system-ui,sans-serif;background:var(--ink);color:var(--fg);
+  overflow-x:hidden;
+}
+.font-display{font-family:'Space Grotesk',system-ui,sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.display{font-weight:700;letter-spacing:-.03em;line-height:.95}
+.grad{background:linear-gradient(100deg,var(--c1),var(--c2) 55%,var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.outline-txt{color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 45%,transparent)}
 
-.bar-track{background:rgba(16,185,129,.15)}
-.bar-fill{width:0;transition:width 1.4s cubic-bezier(.22,1,.36,1)}
-.dark .bar-track{background:rgba(255,255,255,.08)}
-::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#10b981;border-radius:99px}
-.chip.active{background:#10b981;border-color:#10b981;color:#fff}
-.lesson-row:hover .play-btn{transform:scale(1);opacity:1}
-.play-btn{transform:scale(.7);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
-.shine-line{position:absolute;inset:0;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.22) 50%,transparent 65%);transform:translateX(-100%);transition:transform .9s}
-.group:hover .shine-line{transform:translateX(100%)}
-.tick{animation:tick .5s cubic-bezier(.34,1.56,.64,1)}
-@keyframes tick{from{transform:scale(0)}to{transform:scale(1)}}
+/* atmosfera qatlamlari */
+.noise,.scan,.gridbg{position:fixed;inset:0;pointer-events:none;z-index:1}
+.noise{opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:overlay}
+.gridbg{background-image:linear-gradient(color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(circle at 50% 30%,#000,transparent 78%)}
+.scan{background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.14) 3px 4px);opacity:.35}
+#three-bg{position:fixed;inset:0;z-index:0;opacity:.9}
+
+/* kursor */
+#cursor{position:fixed;left:0;top:0;z-index:9998;pointer-events:none;mix-blend-mode:difference}
+#cursor .ring{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border:1.5px solid #fff;border-radius:50%;transition:width .3s var(--ease),height .3s var(--ease),margin .3s var(--ease),opacity .3s}
+#cursor .dot{position:absolute;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:#fff;border-radius:50%}
+#cursor.hovering .ring{width:64px;height:64px;margin:-32px 0 0 -32px;opacity:.55}
+@media (hover:none),(pointer:coarse){#cursor{display:none}}
+
+/* preloader */
+#pre{position:fixed;inset:0;z-index:9999;background:var(--ink);display:grid;place-items:center;text-align:center}
+#pre .bar{width:min(320px,70vw);height:2px;background:color-mix(in srgb,var(--fg) 14%,transparent);margin:22px auto 0;overflow:hidden}
+#pre .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c1),var(--c2))}
+#pre .num{font-family:'JetBrains Mono',monospace;font-size:12px;opacity:.6;margin-top:12px;letter-spacing:.2em}
+#pre .name{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,64px);letter-spacing:-.03em}
+
+/* nav */
+.nav-blur{background:color-mix(in srgb,var(--ink) 62%,transparent);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.nav-link{position:relative}
+.nav-link::after{content:'';position:absolute;left:0;bottom:-4px;height:1.5px;width:0;background:linear-gradient(90deg,var(--c1),var(--c2));transition:width .35s var(--ease)}
+.nav-link:hover::after,.nav-link.active::after{width:100%}
+
+/* fullscreen menyu */
+#menu{position:fixed;inset:0;z-index:9990;background:color-mix(in srgb,var(--ink) 94%,transparent);backdrop-filter:blur(24px);
+  clip-path:circle(0% at calc(100% - 44px) 44px);transition:clip-path .8s var(--ease);display:flex;flex-direction:column;justify-content:center;padding:8vw}
+#menu.open{clip-path:circle(150% at calc(100% - 44px) 44px)}
+#menu a{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,72px);letter-spacing:-.03em;line-height:1.05;
+  color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 55%,transparent);transition:.4s var(--ease);display:block}
+#menu a:hover,#menu a:focus-visible{-webkit-text-stroke:1.4px var(--c2);color:var(--c2);transform:translateX(14px)}
+.burger{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.burger i{display:block;width:18px;height:1.6px;background:var(--fg);transition:.35s var(--ease)}
+.burger i+i{margin-top:5px}
+.burger.x i:first-child{transform:translateY(3.3px) rotate(45deg)}
+.burger.x i:last-child{transform:translateY(-3.3px) rotate(-45deg)}
+
+/* panellar */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(14px)}
+.glow{position:relative}
+.glow::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;
+  background:conic-gradient(from var(--a,0deg),transparent 0 55%,var(--c1) 70%,var(--c2) 85%,transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .4s;animation:spin 4s linear infinite}
+.glow:hover::before{opacity:1}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes spin{to{--a:360deg}}
+.tilt{transition:transform .5s var(--ease),box-shadow .5s;transform-style:preserve-3d;will-change:transform}
+.magnet{transition:transform .35s var(--ease)}
+.marquee{display:flex;width:max-content;animation:marq 26s linear infinite}
+@keyframes marq{to{transform:translateX(-50%)}}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:floaty 14s ease-in-out infinite;pointer-events:none}
+@keyframes floaty{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.12)}}
+.reveal{opacity:0;transform:translateY(34px)}
+.reveal-l{opacity:0;transform:translateX(-40px)}
+::-webkit-scrollbar{width:9px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--c1),var(--c2));border-radius:9px}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--c2);outline-offset:3px;border-radius:8px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.55rem;font-weight:700;
+  border-radius:999px;padding:.85rem 1.6rem;font-size:.92rem;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s;isolation:isolate}
+.btn::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,var(--c1),var(--c2));transition:filter .3s}
+.btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 14px 40px -12px var(--c1)}
+.btn-solid{color:#06070c}
+.btn-ghost{border:1px solid var(--line);background:var(--panel)}
+.btn-ghost::after{display:none}
+.btn-ghost:hover{border-color:var(--c2);color:var(--c2)}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:.5rem 1rem;font-size:.8rem;font-weight:600;transition:.3s}
+.chip:hover{border-color:var(--c2);color:var(--c2)}
+.chip.on{background:linear-gradient(100deg,var(--c1),var(--c2));color:#06070c;border-color:transparent}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;opacity:.62}
+.hairline{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+.toast-box{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:9997;opacity:0;transition:.4s var(--ease);pointer-events:none}
+.toast-box.on{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;z-index:9995;display:none}
+.modal.on{display:grid;place-items:center;padding:16px}
+.modal .veil{position:absolute;inset:0;background:rgba(2,3,8,.72);backdrop-filter:blur(8px)}
+.modal .card{position:relative;transform:scale(.94) translateY(14px);opacity:0;transition:.4s var(--ease)}
+.modal.on .card{transform:none;opacity:1}
+.badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;padding:.28rem .55rem;border-radius:6px;border:1px solid var(--line);background:var(--panel)}
+.glitch{position:relative}
+.glitch:hover::before,.glitch:hover::after{content:attr(data-t);position:absolute;inset:0;background:var(--ink)}
+.glitch:hover::before{color:var(--c1);transform:translate(-2px,-1px);clip-path:inset(0 0 62% 0)}
+.glitch:hover::after{color:var(--c2);transform:translate(2px,1px);clip-path:inset(58% 0 0 0)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}#three-bg{display:none}}
+
 </style>
 </head>
-<body class="bg-emerald-50/60 text-slate-800 dark:bg-ink dark:text-slate-200 transition-colors duration-500 overflow-x-hidden">
+<body class="min-h-[100svh]">
+<div id="scrollProgress" class="fixed top-0 left-0 h-[3px] z-[70] pointer-events-none" style="background:linear-gradient(90deg,var(--c1),var(--c2));width:0" aria-hidden="true"></div>
+<div id="three-bg" aria-hidden="true"></div>
+<div class="gridbg" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true"></div>
+<div class="noise" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"><div class="ring"></div><div class="dot"></div></div>
+<div id="pre"><div><div class="name">BilimUz</div><div class="bar"><i id="preBar"></i></div><div class="num" id="preNum">0%</div></div></div>
 
-<div class="blob bg-emerald-400 w-80 h-80 -top-24 -left-24"></div>
-<div class="blob bg-teal-400 w-72 h-72 top-[45%] -right-24" style="animation-delay:3s"></div>
-
-<header id="nav" class="sticky top-0 z-50 glass transition-shadow">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
-    <a href="#" class="flex items-center gap-2 font-black text-xl"><span class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 grid place-items-center text-white shadow-lg"><i data-lucide="graduation-cap"></i></span>Bilim<span class="text-emerald-500">Uz</span></a>
-    <nav class="hidden lg:flex items-center gap-6 text-sm font-medium flex-1">
-      <a class="hover:text-emerald-500 transition" href="#courses">Kurslar</a>
-      <a class="hover:text-emerald-500 transition" href="#learning">Darsliklar</a>
-      <a class="hover:text-emerald-500 transition" href="#progress">Mening natijalarim</a>
-      <a class="hover:text-emerald-500 transition" href="#mentors">Mentorlar</a>
-    </nav>
-    <div class="hidden sm:flex items-center glass rounded-xl px-3 py-2 gap-2 w-52">
-      <i data-lucide="search" class="w-4 h-4 opacity-60"></i>
-      <input id="searchInput" class="bg-transparent outline-none text-sm w-full" placeholder="Kurs qidirish...">
+<header id="nav" class="fixed inset-x-0 top-0 z-[60] transition-all duration-500">
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 h-[68px] flex items-center gap-5">
+    <a href="#top" class="font-display font-bold text-lg tracking-tight flex items-center gap-2.5 shrink-0">
+      <span class="w-9 h-9 rounded-xl grid place-items-center" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c"><i data-lucide="graduation-cap" class="w-[18px] h-[18px]"></i></span>
+      BilimUz
+    </a>
+    <nav class="hidden lg:flex items-center gap-7 text-[13px] font-semibold ml-4"><a class="nav-link hover:opacity-70 transition" href="#courses">Kurslar</a><a class="nav-link hover:opacity-70 transition" href="#learning">Darsliklar</a><a class="nav-link hover:opacity-70 transition" href="#progress">Natijalar</a><a class="nav-link hover:opacity-70 transition" href="#mentors">Mentorlar</a></nav>
+    <div class="ml-auto flex items-center gap-2">
+      <button id="themeBtn" class="burger" aria-label="Kun/tun rejimi"><i data-lucide="sun" id="themeIcon" class="w-[18px] h-[18px]"></i></button>
+      <button id="loginBtn" class="btn btn-solid magnet hidden sm:inline-flex">Kirish</button>
+      <button id="menuBtn" class="burger lg:hidden" aria-label="Menyu"><span class="block"><i></i><i></i></span></button>
     </div>
-    <button id="menuBtn" class="lg:hidden w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
-    <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
-    <button id="loginBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-bold hover:scale-105 transition shadow-lg">Kirish</button>
   </div>
-
 </header>
 
-<section class="pt-14 pb-10 px-5">
-  <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+<div id="menu">
+  <div class="tag mb-6">Menyu</div>
+  <a href="#top">Bosh sahifa</a><a href="#courses">Kurslar</a><a href="#learning">Darsliklar</a><a href="#progress">Natijalar</a><a href="#mentors">Mentorlar</a><a href="#cta">Boshlash</a>
+  <div class="mono text-xs opacity-45 mt-9">BilimUz · 2026</div>
+  <button id="menuClose" class="absolute top-5 right-5 burger" aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button>
+</div>
+
+<main id="top" class="relative z-10">
+
+
+<section class="relative flex min-h-[100svh] items-center px-4 sm:px-6 lg:px-10 pt-28 pb-14">
+  <div class="blob w-[400px] h-[400px] -left-20 top-0" style="background:var(--c1)"></div>
+  <div class="blob w-[340px] h-[340px] right-10 bottom-0" style="background:var(--c2);animation-delay:2.5s"></div>
+  <div class="max-w-[1400px] mx-auto w-full grid lg:grid-cols-[1.1fr_.9fr] gap-10 items-center">
     <div>
-      <span class="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full glass mb-5" data-aos="fade-down"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-500"></i> 2026-yil o'quv dasturi ochiq</span>
-      <h1 class="text-5xl lg:text-6xl font-black leading-[1.08]" data-aos="fade-up">Kelajak <span class="text-emerald-500">kasblarini</span> uydan o'rganing</h1>
-      <p class="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-lg" data-aos="fade-up" data-aos-delay="100">240+ video dars, amaliy loyihalar va sertifikat. O'z tezligingizda o'rganing — biz yo'l bo'yicha yonib boramiz.</p>
-      <div class="mt-8 flex flex-wrap gap-3" data-aos="fade-up" data-aos-delay="200">
-        <a href="#courses" class="px-7 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold shadow-lg hover:scale-105 transition">Kurslarni ko'rish</a>
-        <button id="freeBtn" class="px-7 py-3.5 rounded-2xl glass font-bold hover:scale-105 transition">Bepul sinov darsi</button>
+      <div class="tag reveal mb-5">2026-yil o'quv dasturi ochiq</div>
+      <h1 class="display text-[clamp(40px,7.5vw,92px)] reveal" data-split>Kelajak kasblarini uydan o'rganing</h1>
+      <p class="mt-5 max-w-xl text-base sm:text-lg opacity-70 reveal">240+ video dars, amaliy loyihalar va sertifikat. O'z tezligingizda o'rganing.</p>
+      <div class="mt-8 flex flex-wrap gap-3 reveal">
+        <a href="#courses" class="btn btn-solid magnet"><i data-lucide="play-circle" class="w-[18px] h-[18px]"></i>Kurslarni ko'rish</a>
+        <button id="freeBtn" class="btn btn-ghost magnet">Bepul sinov darsi</button>
       </div>
-      <div class="mt-10 flex items-center gap-8" data-aos="fade-up" data-aos-delay="300">
+      <div class="mt-10 flex items-center gap-5 reveal">
         <div class="flex -space-x-3">
-          <span class="w-11 h-11 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 border-2 border-white dark:border-ink grid place-items-center text-white font-bold text-sm">A</span>
-          <span class="w-11 h-11 rounded-full bg-gradient-to-br from-sky-400 to-indigo-600 border-2 border-white dark:border-ink grid place-items-center text-white font-bold text-sm">B</span>
-          <span class="w-11 h-11 rounded-full bg-gradient-to-br from-rose-400 to-pink-600 border-2 border-white dark:border-ink grid place-items-center text-white font-bold text-sm">V</span>
-          <span class="w-11 h-11 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 border-2 border-white dark:border-ink grid place-items-center text-white font-bold text-xs">+14k</span>
+          <span class="w-11 h-11 rounded-full border-2 grid place-items-center font-bold text-sm" style="border-color:var(--ink);background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c">A</span>
+          <span class="w-11 h-11 rounded-full border-2 grid place-items-center font-bold text-sm" style="border-color:var(--ink);background:linear-gradient(135deg,#38bdf8,#4f46e5);color:#06070c">B</span>
+          <span class="w-11 h-11 rounded-full border-2 grid place-items-center font-bold text-sm" style="border-color:var(--ink);background:linear-gradient(135deg,#fb7185,#be123c);color:#06070c">V</span>
+          <span class="w-11 h-11 rounded-full border-2 grid place-items-center text-[10px] font-bold" style="border-color:var(--ink);background:var(--panel)">+14k</span>
         </div>
-        <div><div class="flex gap-0.5 text-amber-400">${'★'.repeat(5)}</div><div class="text-sm opacity-70 mt-1">14 200+ o'quvchi bahosi</div></div>
+        <div><div class="text-lg" style="color:var(--c2)">★★★★★</div><div class="tag mt-1">14 200+ o'quvchi bahosi</div></div>
       </div>
     </div>
-    <div class="relative" data-aos="fade-left" data-aos-delay="200">
-      <div class="glass rounded-[2rem] p-6 shadow-2xl">
+    <div class="reveal" data-tilt>
+      <div class="panel glow p-6">
         <div class="flex items-center gap-3 mb-5">
-          <span class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 grid place-items-center text-white"><i data-lucide="play-circle" class="w-6 h-6"></i></span>
-          <div><div class="font-bold">JavaScript asoslari</div><div class="text-xs opacity-60">3-dars · 12 daqiqa</div></div>
-          <span class="ml-auto text-xs font-bold text-emerald-500">62%</span>
+          <span class="w-11 h-11 rounded-2xl grid place-items-center" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c"><i data-lucide="play-circle" class="w-6 h-6"></i></span>
+          <div><div class="font-bold">JavaScript asoslari</div><div class="tag">3-dars · 12 daqiqa</div></div>
+          <span class="ml-auto font-display font-bold" style="color:var(--c1)">62%</span>
         </div>
-        <div class="h-2.5 rounded-full bar-track mb-6"><div class="h-full w-[62%] rounded-full bg-gradient-to-r from-emerald-400 to-teal-500"></div></div>
-        <div class="space-y-3">
-          <div class="flex items-center gap-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-3.5">
-            <span class="w-9 h-9 rounded-xl bg-emerald-500 text-white grid place-items-center text-sm font-bold">✓</span>
-            <div class="flex-1"><div class="text-sm font-bold">1. JavaScript nima?</div><div class="text-xs opacity-60">08:24</div></div>
-            <i data-lucide="check-circle-2" class="text-emerald-500 w-5 h-5"></i>
-          </div>
-          <div class="flex items-center gap-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-3.5">
-            <span class="w-9 h-9 rounded-xl bg-emerald-500 text-white grid place-items-center text-sm font-bold">✓</span>
-            <div class="flex-1"><div class="text-sm font-bold">2. O'zgaruvchilar va turlar</div><div class="text-xs opacity-60">14:05</div></div>
-            <i data-lucide="check-circle-2" class="text-emerald-500 w-5 h-5"></i>
-          </div>
-          <div class="flex items-center gap-3 rounded-2xl bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5">
-            <span class="w-9 h-9 rounded-xl bg-emerald-500 text-white grid place-items-center"><i data-lucide="play" class="w-4 h-4 fill-white"></i></span>
-            <div class="flex-1"><div class="text-sm font-bold">3. Operator va shartlar</div><div class="text-xs opacity-60">12:18 · davom etyapti</div></div>
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          </div>
-          <div class="flex items-center gap-3 rounded-2xl bg-white/50 dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 opacity-60">
-            <span class="w-9 h-9 rounded-xl bg-black/10 dark:bg-white/10 grid place-items-center text-sm font-bold">4</span>
-            <div class="flex-1"><div class="text-sm font-bold">4. Funksiyalar</div><div class="text-xs opacity-60">16:40</div></div>
-            <i data-lucide="lock" class="w-4 h-4"></i>
-          </div>
+        <div class="h-2.5 rounded-full" style="background:var(--line)"><div class="h-full rounded-full" style="width:62%;background:linear-gradient(90deg,var(--c1),var(--c2))"></div></div>
+        <div class="mt-5 space-y-3">
+          <div class="flex items-center gap-3 rounded-2xl p-3.5" style="background:color-mix(in srgb,var(--c1) 12%,transparent)">
+            <span class="w-9 h-9 rounded-xl grid place-items-center text-sm font-bold" style="background:var(--c1);color:#06070c">✓</span>
+            <div class="flex-1"><div class="text-sm font-bold">1. JavaScript nima?</div><div class="tag">08:24</div></div>
+            <i data-lucide="check-circle-2" class="w-5 h-5" style="color:var(--c1)"></i></div>
+          <div class="flex items-center gap-3 rounded-2xl p-3.5" style="background:color-mix(in srgb,var(--c1) 12%,transparent)">
+            <span class="w-9 h-9 rounded-xl grid place-items-center text-sm font-bold" style="background:var(--c1);color:#06070c">✓</span>
+            <div class="flex-1"><div class="text-sm font-bold">2. O'zgaruvchilar va turlar</div><div class="tag">14:05</div></div>
+            <i data-lucide="check-circle-2" class="w-5 h-5" style="color:var(--c1)"></i></div>
+          <div class="flex items-center gap-3 rounded-2xl p-3.5" style="background:var(--panel)">
+            <span class="w-9 h-9 rounded-xl grid place-items-center" style="background:var(--c1);color:#06070c"><i data-lucide="play" class="w-4 h-4" style="fill:#06070c"></i></span>
+            <div class="flex-1"><div class="text-sm font-bold">3. Operator va shartlar</div><div class="tag">12:18 · davom etyapti</div></div>
+            <span class="w-2 h-2 rounded-full animate-pulse" style="background:var(--c1)"></span></div>
+          <div class="flex items-center gap-3 rounded-2xl p-3.5 opacity-60" style="background:var(--panel)">
+            <span class="w-9 h-9 rounded-xl grid place-items-center text-sm font-bold" style="background:var(--line)">4</span>
+            <div class="flex-1"><div class="text-sm font-bold">4. Funksiyalar</div><div class="tag">16:40</div></div>
+            <i data-lucide="lock" class="w-4 h-4"></i></div>
         </div>
-      </div>
-      <div class="absolute -bottom-5 -left-5 glass rounded-2xl px-4 py-3 flex items-center gap-3 shadow-xl" data-aos="zoom-in" data-aos-delay="500">
-        <span class="w-9 h-9 rounded-xl bg-amber-400/20 text-amber-500 grid place-items-center"><i data-lucide="award"></i></span>
-        <div><div class="text-sm font-bold">Sertifikat</div><div class="text-xs opacity-60">Kursni tugatgach</div></div>
       </div>
     </div>
   </div>
 </section>
 
-<section id="courses" class="py-16 px-5">
-  <div class="max-w-7xl mx-auto">
-    <div class="flex flex-wrap items-end justify-between gap-5 mb-9" data-aos="fade-up">
+<section id="courses" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="flex flex-wrap items-end justify-between gap-5 mb-8">
       <div>
-        <h2 class="text-4xl font-black">Video<span class="text-emerald-500">kurslar</span></h2>
-        <p class="mt-2 text-slate-600 dark:text-slate-400" id="courseCount"></p>
+        <h2 class="display text-[clamp(28px,4.5vw,52px)] reveal" data-split>Videokurslar</h2>
+        <p id="courseCount" class="tag mt-2 reveal"></p>
       </div>
-      <div id="levelChips" class="flex flex-wrap gap-2">
-        <button class="chip active px-4 py-2 rounded-full border text-sm font-semibold transition" data-l="all">Barchasi</button>
-        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-l="beginner">Boshlang'ich</button>
-        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-l="middle">O'rta</button>
-        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-l="pro">Professional</button>
+      <div id="levelChips" class="flex flex-wrap gap-2 reveal">
+        <button class="chip on" data-l="all">Barchasi</button>
+        <button class="chip" data-l="beginner">Boshlang'ich</button>
+        <button class="chip" data-l="middle">O'rta</button>
+        <button class="chip" data-l="pro">Professional</button>
       </div>
+    </div>
+    <div class="panel flex items-center gap-2 rounded-full px-4 py-2.5 max-w-sm mb-7 reveal">
+      <i data-lucide="search" class="w-4 h-4 opacity-60"></i>
+      <input id="searchInput" class="bg-transparent outline-none text-sm w-full" placeholder="Kurs qidirish...">
     </div>
     <div id="courseGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 </section>
 
-<section id="learning" class="py-10 px-5">
-  <div class="max-w-7xl mx-auto">
-    <h2 class="text-4xl font-black mb-2" data-aos="fade-up">Darsliklar <span class="text-emerald-500">kutubxonasi</span></h2>
-    <p class="text-slate-600 dark:text-slate-400 mb-8" data-aos="fade-up">Har kursning birinchi darsi bepul — hoziroq tomosha qiling</p>
-    <div id="lessonGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+<section id="learning" class="relative px-4 sm:px-6 lg:px-10 py-10">
+  <div class="max-w-[1400px] mx-auto">
+    <h2 class="display text-[clamp(28px,4.5vw,52px)] mb-2 reveal" data-split>Darsliklar kutubxonasi</h2>
+    <p class="opacity-70 mb-8 reveal">Har kursning birinchi darsi bepul — hoziroq tomosha qiling</p>
+    <div id="lessonGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 </section>
 
-<section id="progress" class="py-16 px-5">
-  <div class="max-w-7xl mx-auto grid lg:grid-cols-[1.2fr,1fr] gap-8">
-    <div class="glass rounded-3xl p-8" data-aos="fade-right">
+<section id="progress" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1400px] mx-auto grid lg:grid-cols-[1.2fr_1fr] gap-6">
+    <div class="panel p-7 sm:p-9 reveal glow">
       <div class="flex items-end justify-between mb-7">
-        <div><h2 class="text-3xl font-black">Mening <span class="text-emerald-500">natijalarim</span></h2><p class="text-sm opacity-70 mt-1">Bu haftadagi faollik</p></div>
-        <span class="text-xs font-bold glass px-3 py-1.5 rounded-full">Hafta 42</span>
+        <div><h2 class="display text-[clamp(24px,3.5vw,40px)]">Mening natijalarim</h2><p class="tag mt-1">Bu haftadagi faollik</p></div>
+        <span class="badge">Hafta 42</span>
       </div>
       <div id="skillBars" class="space-y-6"></div>
-      <div class="mt-9 pt-7 border-t border-black/5 dark:border-white/10 grid grid-cols-3 gap-4 text-center">
-        <div><div class="text-3xl font-black text-emerald-500">36</div><div class="text-xs opacity-60 mt-1">Tugatilgan dars</div></div>
-        <div><div class="text-3xl font-black text-emerald-500">28</div><div class="text-xs opacity-60 mt-1">Soat vaqt</div></div>
-        <div><div class="text-3xl font-black text-emerald-500">5</div><div class="text-xs opacity-60 mt-1">Sertifikat</div></div>
+      <div class="mt-9 pt-7 grid grid-cols-3 gap-4 text-center" style="border-top:1px solid var(--line)">
+        <div><div class="display text-3xl font-bold grad" data-count="36">0</div><div class="tag mt-1">Tugatilgan dars</div></div>
+        <div><div class="display text-3xl font-bold grad" data-count="28">0</div><div class="tag mt-1">Soat vaqt</div></div>
+        <div><div class="display text-3xl font-bold grad" data-count="5">0</div><div class="tag mt-1">Sertifikat</div></div>
       </div>
     </div>
-    <div class="glass rounded-3xl p-8" data-aos="fade-left">
-      <h3 class="text-xl font-black mb-5 flex items-center gap-2"><i data-lucide="calendar-days" class="text-emerald-500"></i> Dars jadvali</h3>
-      <div id="scheduleTable" class="divide-y divide-black/5 dark:divide-white/10"></div>
+    <div class="panel p-7 reveal glow">
+      <h3 class="font-display font-bold text-xl mb-5 flex items-center gap-2"><i data-lucide="calendar-days" style="color:var(--c1)"></i>Dars jadvali</h3>
+      <div id="scheduleTable" class="divide-y" style="divide-color:var(--line)"></div>
     </div>
   </div>
 </section>
 
-<section id="mentors" class="py-14 px-5">
-  <div class="max-w-7xl mx-auto">
-    <h2 class="text-4xl font-black mb-9" data-aos="fade-up">Sizning <span class="text-emerald-500">mentorlar</span></h2>
-    <div class="swiper mentorSwiper pb-14">
-      <div class="swiper-wrapper" id="mentorSlides"></div>
-      <div class="swiper-pagination"></div>
-    </div>
+<section id="mentors" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1400px] mx-auto">
+    <h2 class="display text-[clamp(28px,4.5vw,52px)] mb-9 reveal" data-split>Sizning mentorlar</h2>
+    <div class="swiper mentorSwiper pb-12"><div class="swiper-wrapper" id="mentorSlides"></div><div class="swiper-pagination"></div></div>
   </div>
 </section>
 
-<section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-  <div class="rounded-[2rem] p-10 md:p-14 bg-gradient-to-br from-emerald-600 to-teal-700 text-white text-center relative overflow-hidden" data-aos="zoom-in">
-    <h3 class="text-3xl md:text-4xl font-black">O'rganishni bugun boshlang</h3>
-    <p class="text-white/85 mt-3 max-w-xl mx-auto">14 kun bepul kirish — karta talab qilinmaydi. Istalgan vaqtda bekor qiling.</p>
-    <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-      <form id="joinForm" class="flex flex-col sm:flex-row gap-3 justify-center w-full max-w-md mx-auto">
-        <input required type="email" placeholder="E-pochta manzilingiz" class="flex-1 px-5 py-3.5 rounded-xl text-slate-800 outline-none">
-        <button class="px-7 py-3.5 rounded-xl bg-white text-emerald-700 font-bold hover:scale-105 transition whitespace-nowrap">Boshlash</button>
-      </form>
-    </div>
-    <span class="absolute -left-8 -bottom-10 text-[10rem] opacity-15">🎓</span>
+<section id="cta" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1200px] mx-auto rounded-3xl p-9 sm:p-14 text-center reveal glow relative overflow-hidden" style="background:linear-gradient(130deg,var(--c1),var(--c2))">
+    <h3 class="display text-[clamp(26px,4.5vw,48px)] text-[#06070c]">O'rganishni bugun boshlang</h3>
+    <p class="text-[#06070c]/80 mt-3 max-w-xl mx-auto">14 kun bepul kirish — karta talab qilinmaydi. Istalgan vaqtda bekor qiling.</p>
+    <form id="joinForm" class="mt-8 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+      <input required type="email" placeholder="E-pochta manzilingiz" class="flex-1 px-5 py-3.5 rounded-full text-[#06070c] outline-none">
+      <button class="btn btn-solid magnet whitespace-nowrap">Boshlash</button>
+    </form>
+    <span class="absolute -left-8 -bottom-10 text-[10rem] opacity-15 select-none">🎓</span>
   </div>
 </section>
 
-<footer class="border-t border-black/5 dark:border-white/10 py-10 px-5">
-  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-    <div class="flex items-center gap-2 font-black"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 grid place-items-center text-white"><i data-lucide="graduation-cap" class="w-5 h-5"></i></span>BilimUz</div>
-    <p class="text-sm opacity-60">© 2026 BilimUz — bilim cheksiz.</p>
-    <div class="flex gap-2">
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-emerald-500 transition"><i data-lucide="youtube"></i></a>
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-emerald-500 transition"><i data-lucide="telegram"></i></a>
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-emerald-500 transition"><i data-lucide="instagram"></i></a>
+<div id="videoModal" class="modal"><div class="veil" data-close></div>
+  <div class="card panel w-full max-w-3xl overflow-hidden" id="videoCard">
+    <div class="relative aspect-video grid place-items-center" style="background:linear-gradient(140deg,#0f172a,#1e293b)">
+      <button class="absolute top-4 right-4 burger" data-close aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button>
+      <div class="text-center pointer-events-none"><div class="text-6xl" id="vEmoji">▶️</div>
+      <div class="mt-4 font-display font-bold text-xl" id="vTitle">Dars nomi</div>
+      <div class="tag mt-1" id="vMeta">Mentor · 12 daqiqa</div></div>
+      <div class="absolute bottom-0 inset-x-0 p-4">
+        <div class="flex items-center gap-3">
+          <button id="playToggle" class="burger" aria-label="Play"><i data-lucide="play" class="w-[18px] h-[18px]" id="playIcon" style="fill:currentColor"></i></button>
+          <div class="flex-1 h-1.5 rounded-full" style="background:var(--line)"><div id="vBarFill" class="h-full rounded-full w-0 transition-all duration-1000" style="background:var(--c1)"></div></div>
+          <span class="tag" id="vTime">00:00 / 12:00</span>
+        </div>
+      </div>
     </div>
+    <div class="p-6 max-h-64 overflow-y-auto">
+      <h4 class="font-bold mb-4">Darslar ro'yxati</h4>
+      <div id="vLessons" class="space-y-2"></div>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer class="relative z-10 mt-10">
+  <div class="overflow-hidden border-y" style="border-color:var(--line)">
+    <div class="marquee py-5 font-display font-bold text-[clamp(28px,5vw,58px)] tracking-tight opacity-25 whitespace-nowrap">
+      <span>BILIM CHEKSIZ · BILIMUZ · </span><span>BILIM CHEKSIZ · BILIMUZ · </span>
+    </div>
+  </div>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-9 flex flex-col md:flex-row items-center justify-between gap-5 text-xs opacity-60">
+    <div class="font-display font-bold text-sm opacity-100">BilimUz</div>
+    <div>© 2026 · BilimUz — barcha huquqlar himoyalangan</div>
+    <div class="flex gap-2"><a href="#" class="burger" aria-label="YouTube"><i data-lucide="youtube" class="w-[18px] h-[18px]"></i></a><a href="#" class="burger" aria-label="Telegram"><i data-lucide="telegram" class="w-[18px] h-[18px]"></i></a></div>
   </div>
 </footer>
 
-<div id="videoModal" class="fixed inset-0 z-[70] hidden">
-  <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" data-close></div>
-  <div class="absolute inset-0 grid place-items-center p-4">
-    <div id="videoCard" class="w-full max-w-3xl bg-slate-900 text-white rounded-3xl overflow-hidden scale-90 opacity-0 transition-all duration-300">
+<div id="toast" class="toast-box panel px-5 py-3 flex items-center gap-3 text-sm font-bold"><i data-lucide="check-circle-2" class="w-5 h-5" style="color:var(--c2)"></i><span id="toastMsg"></span></div>
 
-      <div class="relative aspect-video bg-gradient-to-br from-slate-800 to-slate-900 grid place-items-center overflow-hidden">
-        <button class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-black/50 grid place-items-center hover:scale-110 transition z-10" data-close><i data-lucide="x"></i></button>
-        <div class="text-center pointer-events-none">
-          <div class="text-6xl" id="vEmoji">▶️</div>
-          <div class="mt-4 font-black text-xl" id="vTitle">Dars nomi</div>
-          <div class="text-sm opacity-60 mt-1" id="vMeta">Mentor · 12 daqiqa</div>
-        </div>
-        <div class="absolute bottom-0 inset-x-0 p-4">
-          <div class="flex items-center gap-3 text-xs font-bold">
-            <button id="playToggle" class="w-10 h-10 rounded-full bg-emerald-500 grid place-items-center hover:scale-110 transition"><i data-lucide="play" class="w-5 h-5 fill-white" id="playIcon"></i></button>
-            <div class="flex-1 h-1.5 rounded-full bg-white/20 cursor-pointer" id="vBar"><div class="h-full bg-emerald-500 rounded-full w-0" id="vBarFill"></div></div>
-            <span id="vTime">00:00 / 12:00</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="p-6 max-h-64 overflow-y-auto">
-        <h4 class="font-bold mb-4">Darslar ro'yxati</h4>
-        <div id="vLessons" class="space-y-2"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="mobileMenu" class="lg:hidden fixed inset-0 z-[60] hidden">
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
-  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
-      <span class="font-black text-lg">Menyu</span>
-      <button class="w-9 h-9 grid place-items-center rounded-xl bg-black/5 dark:bg-white/10" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
-    </div>
-    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#courses"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Kurslar</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#learning"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Darsliklar</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#progress"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Mening natijalarim</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#mentors"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Mentorlar</a>
-    </nav>
-    <div class="px-5 py-4 border-t border-black/10 dark:border-white/10 text-xs opacity-60">© 2026 — barcha huquqlar himoyalangan</div>
-  </aside>
-</div>
-
-<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] hidden">
-  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold shadow-xl"><i data-lucide="check-circle-2" class="text-emerald-500"></i><span id="toastMsg"></span></div>
-</div>
-
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
-
-const root=document.documentElement;
-if(localStorage.getItem('bu-theme')==='dark'||(!localStorage.getItem('bu-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
-const themeIcon=document.getElementById('themeIcon');
-const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'moon':'sun');lucide.createIcons();};
-document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('bu-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
-
+const APP={
+  brand:'BilimUz',
+  theme:()=>document.documentElement.classList.contains('light')?'light':'dark',
+  toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('on');clearTimeout(this._t);this._t=setTimeout(()=>t.classList.remove('on'),2400);},
+  money(n,cur){return n.toLocaleString('ru-RU').replace(/,/g,' ')+(cur!==undefined?' '+cur:'');},
+  rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;},
+  sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+};
 const $=id=>document.getElementById(id);
+const $$=s=>[...document.querySelectorAll(s)];
+
+/* Kun / tun rejimi */
+(function(){
+  const saved=localStorage.getItem('loyiha7-theme');
+  const sys=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  const mode=saved||sys;
+  document.documentElement.classList.toggle('light',mode==='light');
+  const sync=()=>{const l=document.documentElement.classList.contains('light');
+    $('themeIcon').setAttribute('data-lucide',l?'moon':'sun');document.documentElement.style.setProperty('--fg',l?'#0d1220':'#e9edf7');lucide.createIcons();};
+  setTimeout(sync,0);
+  $('themeBtn').addEventListener('click',()=>{
+    document.documentElement.classList.toggle('light');
+    localStorage.setItem('loyiha7-theme',document.documentElement.classList.contains('light')?'light':'dark');
+    sync();
+  });
+})();
+
+/* Fullscreen menyu */
+(function(){
+  const menu=$('menu'),btn=$('menuBtn');
+  const open=()=>{menu.classList.add('open');btn.classList.add('x');document.body.style.overflow='hidden';};
+  const close=()=>{menu.classList.remove('open');btn.classList.remove('x');document.body.style.overflow='';};
+  btn.addEventListener('click',()=>menu.classList.contains('open')?close():open());
+  $('menuClose').addEventListener('click',close);
+  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+  addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+})();
+
+/* Kursor */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  const c=$('cursor');
+  let x=innerWidth/2,y=innerHeight/2;
+  addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY;});
+  (function loop(){c.style.transform=`translate(${x}px,${y}px)`;requestAnimationFrame(loop);})();
+  document.addEventListener('mouseover',e=>{
+    if(e.target.closest('a,button,[data-cursor]'))c.classList.add('hovering');else c.classList.remove('hovering');
+  });
+})();
+
+/* Magnit tugmalar */
+(function(){
+  $$('.magnet').forEach(el=>{
+    el.addEventListener('mousemove',e=>{
+      const r=el.getBoundingClientRect();
+      el.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.22}px,${(e.clientY-r.top-r.height/2)*.22}px)`;
+    });
+    el.addEventListener('mouseleave',()=> el.style.transform='');
+  });
+})();
+
+/* 3D tilt kartochkalar */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  $$('[data-tilt]').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+      card.style.transform=`perspective(900px) rotateX(${(py-.5)*-9}deg) rotateY(${(px-.5)*11}deg)`;
+    });
+    card.addEventListener('mouseleave',()=> card.style.transform='');
+  });
+})();
+
+/* Preloader */
+(function(){
+  const bar=$('preBar'),num=$('preNum'),pre=$('pre');
+  let p=0;
+  const t=setInterval(()=>{
+    p=Math.min(100,p+Math.random()*13+4);
+    bar.style.width=p+'%';num.textContent=Math.floor(p)+'%';
+    if(p>=100){clearInterval(t);setTimeout(()=>{
+      pre.style.transition='opacity .6s var(--ease),clip-path .8s var(--ease)';
+      pre.style.clipPath='inset(0 0 100% 0)';pre.style.opacity='0';
+      setTimeout(()=>pre.remove(),700);
+      if(window.gsap)runReveals();
+    },220);}
+  },110);
+})();
+
+/* Scroll animatsiyalari (GSAP ScrollTrigger) */
+function runReveals(){
+  if(!window.gsap||!window.ScrollTrigger)return;
+  gsap.registerPlugin(ScrollTrigger);
+  $$('.reveal:not(.revealed)').forEach(el=>{
+    el.classList.add('revealed');
+    gsap.to(el,{opacity:1,y:0,x:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%'}});
+  });
+  $$('[data-parallax]').forEach(el=>{
+    gsap.to(el,{yPercent:+el.dataset.parallax,ease:'none',scrollTrigger:{trigger:el.closest('section')||el,start:'top bottom',end:'bottom top',scrub:true}});
+  });
+  $$('[data-count]').forEach(el=>{
+    const target=+el.dataset.count,suffix=el.dataset.suffix||'';
+    ScrollTrigger.create({trigger:el,start:'top 90%',once:true,onEnter(){
+      gsap.to({v:0},{v:target,duration:1.6,ease:'power2.out',onUpdate(){el.textContent=Math.floor(this.targets()[0].v)+suffix;}});
+    }});
+  });
+  $$('[data-split]').forEach(el=>{
+    const words=el.textContent.trim().split(/\s+/);
+    el.innerHTML=words.map(w=>`<span class="inline-block overflow-hidden align-bottom"><span class="inline-block" style="transform:translateY(110%)">${w}</span></span>`).join(' ');
+    gsap.to(el.querySelectorAll('span>span'),{y:0,duration:1.05,ease:'power4.out',stagger:.045,scrollTrigger:{trigger:el,start:'top 86%'}});
+  });
+}
+addEventListener('load',()=>{setTimeout(()=>{if(!$('pre'))runReveals();},1600);});
+addEventListener('scroll',()=>{
+  const s=scrollY/(document.body.scrollHeight-innerHeight)*100;
+  const sp=$('scrollProgress'); if(sp) sp.style.width=Math.min(s,100)+'%';
+},{passive:true});
+
+/* Three.js fon — jonli maydon */
+(async()=>{
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  try{
+    const THREE=await import('https://esm.sh/three@0.160.0');
+    const host=$('three-bg');if(!host)return;
+    const scene=new THREE.Scene();
+    const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);cam.position.z=8;
+    const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setSize(innerWidth,innerHeight);
+    host.appendChild(renderer.domElement);
+    const c1=new THREE.Color('#00e5a0'),c2=new THREE.Color('#22d3ee'),c3=new THREE.Color('#7c5cff');
+    const geo=new THREE.BufferGeometry();
+    const N=innerWidth<640?260:520,pos=new Float32Array(N*3),col=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      pos[i*3]=(Math.random()-.5)*26;pos[i*3+1]=(Math.random()-.5)*18;pos[i*3+2]=(Math.random()-.5)*12;
+      const c=[c1,c2,c3][i%3];col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
+    }
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    const mat=new THREE.PointsMaterial({size:.055,vertexColors:true,transparent:true,opacity:.85,depthWrite:false,blending:THREE.AdditiveBlending});
+    const pts=new THREE.Points(geo,mat);scene.add(pts);
+    const wire=new THREE.Mesh(new THREE.IcosahedronGeometry(2.6,1),
+      new THREE.MeshBasicMaterial({color:c1,wireframe:true,transparent:true,opacity:.12}));
+    scene.add(wire);
+    const wire2=new THREE.Mesh(new THREE.TorusGeometry(3.4,.008,3,90),
+      new THREE.MeshBasicMaterial({color:c2,transparent:true,opacity:.22}));
+    wire2.rotation.x=1.2;scene.add(wire2);
+    let mx=0,my=0;
+    addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-.5);my=(e.clientY/innerHeight-.5);});
+    addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+    (function tick(){
+      requestAnimationFrame(tick);
+      pts.rotation.y+=.0007;pts.rotation.x=my*.2;
+      wire.rotation.y+=.0016;wire.rotation.x+=.0007;
+      wire2.rotation.z+=.0012;
+      cam.position.x+=(mx*1.6-cam.position.x)*.05;
+      cam.position.y+=(-my*1.2-cam.position.y)*.05;
+      cam.lookAt(0,0,0);
+      renderer.render(scene,cam);
+    })();
+  }catch(e){/* fon animatsiyasi ishlamasa ham sayt ishlaydi */}
+})();
+
+
 const COURSES=[
-  {id:1,title:'JavaScript to\'liq kurs',cat:'Dasturlash',level:'beginner',price:0,old:349000,emoji:'⚡',g:'from-amber-400 to-orange-600',lessons:96,hours:24,students:5420,rate:4.9,mentor:'Bobur Rashidov',progress:62,
-   topics:['ES6+ sintaksis','DOM va hodisalar','Async/await','Loyiha portfel']},
-  {id:2,title:'React va Next.js masterklass',cat:'Dasturlash',level:'middle',price:599000,old:890000,emoji:'⚛️',g:'from-sky-400 to-cyan-600',lessons:120,hours:34,students:3210,rate:4.8,mentor:'Jahongir Karimov',progress:35,
-   topics:['Komponentlar','Hooks va state','App Router','SSR/SSG']},
-  {id:3,title:'Python va Data Science',cat:'Ma\'lumotlar',level:'beginner',price:0,old:459000,emoji:'🐍',g:'from-emerald-400 to-teal-600',lessons:84,hours:22,students:6780,rate:4.9,mentor:'Sardor Ergashev',progress:15,
-   topics:['NumPy va Pandas','Vizualizatsiya','ML asoslari']},
-  {id:4,title:'UI/UX dizayn (Figma)',cat:'Dizayn',level:'beginner',price:449000,old:0,emoji:'🎨',g:'from-pink-400 to-rose-600',lessons:64,hours:18,students:4120,rate:4.7,mentor:'Nilufar Saidova',progress:0,
-   topics:['Dizayn tamoyillari','Komponentlar','Prototiplar']},
-  {id:5,title:'DevOps: Docker va Kubernetes',cat:'DevOps',level:'pro',price:1290000,old:1690000,emoji:'🐳',g:'from-blue-500 to-indigo-700',lessons:110,hours:40,students:1580,rate:4.8,mentor:'Sardor Ergashev',progress:0,
-   topics:['Konteynerlar','CI/CD','Monitoring']},
-  {id:6,title:'Flutter mobil ilova',cat:'Mobil',level:'middle',price:749000,old:990000,emoji:'📱',g:'from-cyan-400 to-blue-600',lessons:90,hours:28,students:2260,rate:4.6,mentor:'Bobur Rashidov',progress:0,
-   topics:['Widgetlar','Navigatsiya','API integratsiya']},
-  {id:7,title:'Ingliz tili IT uchun',cat:'Til',level:'beginner',price:299000,old:449000,emoji:'🇬🇧',g:'from-rose-400 to-red-600',lessons:70,hours:20,students:8940,rate:4.7,mentor:'Kamola Yusupova',progress:41,
-   topics:['Texnik lug\'at','Intervyu','Yozishmalar']},
-  {id:8,title:'Ma\'lumotlar bazasi: SQL',cat:'Ma\'lumotlar',level:'middle',price:399000,old:0,emoji:'🐘',g:'from-slate-400 to-slate-600',lessons:56,hours:16,students:3450,rate:4.5,mentor:'Jahongir Karimov',progress:0,
-   topics:['So\'rovlar','Optimallashtirish','Dizayn']},
-  {id:9,title:'Kiberxafsizlik asoslari',cat:'Xavfsizlik',level:'pro',price:1490000,old:1890000,emoji:'🛡️',g:'from-red-500 to-rose-800',lessons:130,hours:45,students:890,rate:4.9,mentor:'Sardor Ergashev',progress:0,
-   topics:['Tarmoq xavfsizligi','Etik hacking','SIEM']},
+  {id:1,t:"JavaScript to\'liq kurs",cat:'Dasturlash',l:'beginner',price:0,old:349000,e:'⚡',g:'linear-gradient(140deg,#f59e0b,#ea580c)',lessons:96,hours:24,students:5420,rate:4.9,mentor:'Bobur Rashidov',progress:62,topics:['ES6+ sintaksis','DOM va hodisalar','Async/await']},
+  {id:2,t:'React va Next.js masterklass',cat:'Dasturlash',l:'middle',price:599000,old:890000,e:'⚛️',g:'linear-gradient(140deg,#0ea5e9,#0891b2)',lessons:120,hours:34,students:3210,rate:4.8,mentor:'Jahongir Karimov',progress:35,topics:['Komponentlar','Hooks va state','App Router']},
+  {id:3,t:'Python va Data Science',cat:"Ma\'lumotlar",l:'beginner',price:0,old:459000,e:'🐍',g:'linear-gradient(140deg,#10b981,#0d9488)',lessons:84,hours:22,students:6780,rate:4.9,mentor:'Sardor Ergashev',progress:15,topics:['NumPy va Pandas','Vizualizatsiya','ML asoslari']},
+  {id:4,t:'UI/UX dizayn (Figma)',cat:'Dizayn',l:'beginner',price:449000,old:0,e:'🎨',g:'linear-gradient(140deg,#ec4899,#be185d)',lessons:64,hours:18,students:4120,rate:4.7,mentor:'Nilufar Saidova',progress:0,topics:['Dizayn tamoyillari','Komponentlar']},
+  {id:5,t:'DevOps: Docker va Kubernetes',cat:'DevOps',l:'pro',price:1290000,old:1690000,e:'🐳',g:'linear-gradient(140deg,#3b82f6,#4338ca)',lessons:110,hours:40,students:1580,rate:4.8,mentor:'Sardor Ergashev',progress:0,topics:['Konteynerlar','CI/CD']},
+  {id:6,t:'Flutter mobil ilova',cat:'Mobil',l:'middle',price:749000,old:990000,e:'📱',g:'linear-gradient(140deg,#06b6d4,#0369a1)',lessons:90,hours:28,students:2260,rate:4.6,mentor:'Bobur Rashidov',progress:0,topics:['Widgetlar','Navigatsiya']},
+  {id:7,t:'Ingliz tili IT uchun',cat:'Til',l:'beginner',price:299000,old:449000,e:'🇬🇧',g:'linear-gradient(140deg,#f43f5e,#be123c)',lessons:70,hours:20,students:8940,rate:4.7,mentor:'Kamola Yusupova',progress:41,topics:["Texnik lug\'at",'Intervyu']},
+  {id:8,t:"Ma\'lumotlar bazasi: SQL",cat:"Ma\'lumotlar",l:'middle',price:399000,old:0,e:'🐘',g:'linear-gradient(140deg,#64748b,#334155)',lessons:56,hours:16,students:3450,rate:4.5,mentor:'Jahongir Karimov',progress:0,topics:["So\'rovlar",'Optimallashtirish']},
+  {id:9,t:'Kiberxavfsizlik asoslari',cat:'Xavfsizlik',l:'pro',price:1490000,old:1890000,e:'🛡️',g:'linear-gradient(140deg,#ef4444,#b91c1c)',lessons:130,hours:45,students:890,rate:4.9,mentor:'Sardor Ergashev',progress:0,topics:['Tarmoq xavfsizligi','Etik hacking']}
 ];
-const SKILLS=[{n:'Frontend dasturlash',p:78,c:'from-amber-400 to-orange-500'},{n:'Algoritmlar',p:64,c:'from-sky-400 to-cyan-500'},{n:'Ma\'lumotlar bazasi',p:52,c:'from-emerald-400 to-teal-500'},{n:'DevOps asoslari',p:37,c:'from-violet-400 to-purple-500'}];
-const SCHEDULE=[
-  {t:'09:00',d:'Dushanba',n:'JavaScript hooks',m:'Jonli efir',c:'emerald'},
-  {t:'14:00',d:'Seshanba',n:'Algoritm amaliyoti',m:'Video dars',c:'sky'},
-  {t:'18:30',d:'Payshanba',n:'UI/UX masterklass',m:'Jonli efir',c:'pink'},
-  {t:'11:00',d:'Juma',n:'Loyiha tekshiruvi',m:'Amaliyot',c:'amber'},
-  {t:'16:00',d:'Shanba',n:'Ingliz tili klubi',m:'Guruh darsi',c:'rose'},
-];
+const SKILLS=[{n:'Frontend dasturlash',p:78,g:'linear-gradient(90deg,var(--c1),var(--c2))'},{n:'Algoritmlar',p:64,g:'linear-gradient(90deg,#38bdf8,#0ea5e9)'},{n:"Ma\'lumotlar bazasi",p:52,g:'linear-gradient(90deg,#10b981,#14b8a6)'},{n:'DevOps asoslari',p:37,g:'linear-gradient(90deg,#7c5cff,#a78bfa)'}];
+const SCHED=[{t:'07:00',d:'Dush',n:'Kuch',k:'Kardio'},{t:'09:00',d:'Sesh',n:'Kardio',k:'Kuch'},{t:'12:00',d:'Chor',n:'Yoga',k:'HIIT'},{t:'18:00',d:'Pay',n:'HIIT',k:'Boks'},{t:'20:00',d:'Jum',n:'Yoga',k:'Kuch'}];
 const MENTORS=[
-  {n:'Bobur Rashidov',r:'Frontend mentor',i:'BR',s:'React, JS',t:'8 yil tajriba · 12 000+ o\'quvchi'},
-  {n:'Nilufar Saidova',r:'Dizayn mentor',i:'NS',s:'Figma, UI/UX',t:'6 yil tajriba · 9 400+ o\'quvchi'},
-  {n:'Jahongir Karimov',r:'Backend mentor',i:'JK',s:'Node, Python',t:'7 yil tajriba · 7 800+ o\'quvchi'},
-  {n:'Sardor Ergashev',r:'DevOps mentor',i:'SE',s:'Docker, K8s',t:'9 yil tajriba · 4 200+ o\'quvchi'},
-  {n:'Kamola Yusupova',r:'Til mentori',i:'KY',s:'Ingliz tili',t:'10 yil tajriba · 15 000+ o\'quvchi'},
+  {n:'Bobur Rashidov',r:'Frontend mentor',i:'BR',s:'React, JS',t:'8 yil · 12 000+ o\'quvchi'},
+  {n:'Nilufar Saidova',r:'Dizayn mentor',i:'NS',s:'Figma, UI/UX',t:'6 yil · 9 400+ o\'quvchi'},
+  {n:'Jahongir Karimov',r:'Backend mentor',i:'JK',s:'Node, Python',t:'7 yil · 7 800+ o\'quvchi'},
+  {n:'Sardor Ergashev',r:'DevOps mentor',i:'SE',s:'Docker, K8s',t:'9 yil · 4 200+ o\'quvchi'},
+  {n:'Kamola Yusupova',r:'Til mentori',i:'KY',s:'Ingliz tili',t:'10 yil · 15 000+ o\'quvchi'}
 ];
-const money=n=>n?n.toLocaleString('uz-UZ')+" so'm":'Bepul';
+const enrolled=JSON.parse(localStorage.getItem('loyiha7-enrolled')||'{}');
+const money=n=>n?n.toLocaleString('ru-RU').replace(/,/g,' ')+" so\'m":'Bepul';
 
 function courseCard(c,i){
-  return `<article class="glass rounded-3xl overflow-hidden card-hover group" data-aos="fade-up" data-aos-delay="${i*70}">
-    <div class="h-44 bg-gradient-to-br ${c.g} relative overflow-hidden grid place-items-center text-6xl">
-      <span class="shine-line"></span>
-      ${c.emoji}
-      <span class="absolute top-3 left-3 text-[11px] font-black bg-black/40 backdrop-blur px-2.5 py-1 rounded-lg">${c.cat}</span>
-      ${c.price===0?'<span class="absolute top-3 right-3 text-[11px] font-black bg-emerald-500 text-white px-2.5 py-1 rounded-lg">BEPUL</span>':(c.old?`<span class="absolute top-3 right-3 text-[11px] font-black bg-rose-500 text-white px-2.5 py-1 rounded-lg">-${Math.round((1-c.price/c.old)*100)}%</span>`:'')}
-    </div>
-    <div class="p-6">
-      <div class="flex items-center gap-3 text-xs opacity-70">
-        <span class="flex items-center gap-1"><i data-lucide="play-circle" class="w-3.5 h-3.5"></i>${c.lessons} dars</span>
-        <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5"></i>${c.hours} soat</span>
-        <span class="flex items-center gap-1 font-bold text-amber-500"><i data-lucide="star" class="w-3.5 h-3.5 fill-amber-500"></i>${c.rate}</span>
-      </div>
-      <h3 class="font-black text-lg mt-3 leading-snug">${c.title}</h3>
-      <p class="text-sm opacity-70 mt-1.5">Mentor: ${c.mentor}</p>
-      <div class="mt-4">
-        <div class="flex justify-between text-xs font-bold mb-1.5"><span class="opacity-60">O'zlashtirish</span><span class="text-emerald-500">${c.progress}%</span></div>
-        <div class="h-2 rounded-full bar-track overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 bar-fill" data-p="${c.progress}"></div></div>
-      </div>
-      <div class="flex items-end justify-between mt-5">
-        <div><div class="font-black text-emerald-500 text-lg">${money(c.price)}</div>${c.old?`<div class="text-xs opacity-50 line-through">${money(c.old)}</div>`:''}</div>
-        <button data-open="${c.id}" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-bold hover:scale-105 transition">${c.progress>0?'Davom etish':'Boshlash'}</button>
-      </div>
-    </div>
-  </article>`;
+  return '<article class="panel overflow-hidden glow group reveal">'
+    +'<div class="h-44 grid place-items-center text-6xl relative overflow-hidden" style="background:'+c.g+'">'+c.e
+    +(c.price===0?'<span class="absolute top-3 right-3 badge" style="background:var(--c1);color:#06070c">BEPUL</span>':'')
+    +(c.old?'<span class="absolute top-3 right-3 badge" style="background:#e11d48;color:#fff">-'+Math.round((1-c.price/c.old)*100)+'%</span>':'')+'</div>'
+    +'<div class="p-6"><div class="flex flex-wrap gap-3 tag"><span>'+c.lessons+' dars</span><span>'+c.hours+' soat</span><span style="color:var(--c2)">'+c.rate+' ★</span></div>'
+    +'<h3 class="font-display font-bold text-lg mt-2 leading-snug">'+c.t+'</h3>'
+    +'<p class="tag mt-1">Mentor: '+c.mentor+'</p>'
+    +'<div class="mt-4"><div class="flex justify-between tag mb-1.5"><span>O\'zlashtirish</span><span style="color:var(--c1)">'+(enrolled[c.id]!==undefined?enrolled[c.id]:c.progress)+'%</span></div>'
+    +'<div class="h-2 rounded-full" style="background:var(--line)"><div class="h-full rounded-full transition-all duration-1000" style="width:'+(enrolled[c.id]!==undefined?enrolled[c.id]:c.progress)+'%;background:linear-gradient(90deg,var(--c1),var(--c2))"></div></div></div>'
+    +'<div class="flex items-end justify-between mt-5"><div><div class="font-display font-bold text-lg grad">'+money(c.price)+'</div>'
+    +(c.old?'<div class="text-xs opacity-40 line-through">'+money(c.old)+'</div>':'')+'</div>'
+    +'<button class="btn btn-solid magnet text-xs" data-open="'+c.id+'">'+(c.progress>0?'Davom etish':'Boshlash')+'</button></div></div></article>';
 }
-const renderCourses=level=>{
-  const list=level==='all'?COURSES:COURSES.filter(c=>c.level===level);
-  $('courseCount').textContent=`${list.length} ta kurs · har hafta yangi darslar qo'shiladi`;
+function renderCourses(l){
+  const list=l==='all'?COURSES:COURSES.filter(c=>c.l===l);
+  $('courseCount').textContent=list.length+' ta kurs · har hafta yangi darslar';
   $('courseGrid').innerHTML=list.map(courseCard).join('');
+  lucide.createIcons();runReveals();
+}
+$('skillBars').innerHTML=SKILLS.map(s=>'<div><div class="flex justify-between text-sm font-bold mb-2"><span>'+s.n+'</span><span style="color:var(--c1)">'+s.p+'%</span></div>'
+  +'<div class="h-3 rounded-full" style="background:var(--line)"><div class="h-full rounded-full transition-all duration-1000" data-skill="'+s.p+'" style="width:0;background:'+s.g+'"></div></div></div>').join('');
+$('scheduleTable').innerHTML=SCHED.map(s=>'<div class="flex items-center gap-4 py-4">'
+  +'<div class="text-center w-12 shrink-0"><div class="tag">'+s.d+'</div><div class="font-display font-bold text-sm">'+s.t+'</div></div>'
+  +'<div class="flex-1 min-w-0"><div class="font-bold text-sm truncate">'+s.n+'</div></div>'
+  +'<button class="btn btn-ghost text-xs shrink-0">Qo\'shilish</button></div>').join('');
+$('mentorSlides').innerHTML=MENTORS.map(m=>'<div class="swiper-slide h-auto"><div class="panel p-7 h-full text-center glow" data-tilt>'
+  +'<div class="w-20 h-20 mx-auto rounded-full grid place-items-center font-display text-2xl font-bold" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c">'+m.i+'</div>'
+  +'<h4 class="font-display font-bold text-lg mt-4">'+m.n+'</h4><div class="tag mt-1" style="color:var(--c1)">'+m.r+'</div>'
+  +'<p class="tag mt-3">'+m.t+'</p>'
+  +'<div class="flex justify-center gap-2 mt-4">'+m.s.split(', ').map(x=>'<span class="badge">'+x+'</span>').join('')+'</div>'
+  +'<button class="btn btn-solid mt-5 w-full text-sm">Dars olish</button></div></div>').join('');
+$('lessonGrid').innerHTML=COURSES.filter(c=>c.progress>0).concat(COURSES.slice(0,3)).map((c,i)=>'<div class="panel overflow-hidden glow group cursor-pointer reveal" data-open="'+c.id+'">'
+  +'<div class="h-40 grid place-items-center text-5xl relative" style="background:'+c.g+'">'+c.e
+  +'<span class="absolute inset-0 opacity-0 group-hover:opacity-100 transition grid place-items-center" style="background:rgba(3,4,10,.4)">'
+  +'<span class="w-16 h-16 rounded-full grid place-items-center" style="background:rgba(255,255,255,.95);color:#06070c"><i data-lucide="play" class="w-7 h-7" style="fill:#06070c"></i></span></span>'
+  +'<span class="absolute bottom-3 right-3 badge">'+Math.round(c.hours*60/c.lessons)+' daq</span></div>'
+  +'<div class="p-5"><span class="tag" style="color:var(--c1)">'+c.cat+'</span>'
+  +'<h3 class="font-display font-bold mt-1 leading-snug">'+c.t+' — 1-dars bepul</h3>'
+  +'<div class="flex items-center gap-2 mt-3 tag"><span class="w-6 h-6 rounded-full grid place-items-center text-[10px] font-bold" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c">'+c.mentor.split(' ').map(w=>w[0]).join('')+'</span>'+c.mentor+'</div></div></div>').join('');
+$('levelChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;
+  $$('#levelChips .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');renderCourses(c.dataset.l);});
+$('searchInput').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase();
+  const list=COURSES.filter(c=>c.t.toLowerCase().includes(q)||c.cat.toLowerCase().includes(q));
+  $('courseCount').textContent=list.length+' ta kurs topildi';
+  $('courseGrid').innerHTML=list.length?list.map(courseCard).join(''):'<div class="col-span-full panel rounded-3xl grid place-items-center py-16 text-center"><span class="text-6xl">🔎</span><p class="font-bold mt-3">Kurs topilmadi</p></div>';
   lucide.createIcons();
-};
-const renderLessons=()=>{
-  const pool=COURSES.filter(c=>c.progress>0).concat(COURSES.slice(0,3));
-  $('lessonGrid').innerHTML=pool.map((c,i)=>`
-    <div class="glass rounded-3xl overflow-hidden card-hover cursor-pointer group" data-open="${c.id}" data-aos="fade-up" data-aos-delay="${i*70}">
-      <div class="h-40 bg-gradient-to-br ${c.g} relative grid place-items-center text-5xl">
-        ${c.emoji}
-        <span class="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition grid place-items-center">
-          <span class="w-16 h-16 rounded-full bg-white/95 text-slate-900 grid place-items-center shadow-2xl"><i data-lucide="play" class="w-7 h-7 fill-slate-900"></i></span>
-        </span>
-        <span class="absolute bottom-3 right-3 text-[11px] font-bold bg-black/60 px-2 py-1 rounded-lg">${c.hours*60/c.lessons|0} daq</span>
-      </div>
-      <div class="p-5">
-        <span class="text-[11px] font-bold text-emerald-500">${c.cat}</span>
-        <h3 class="font-bold mt-1 leading-snug">${c.title} — 1-dars bepul</h3>
-        <div class="flex items-center gap-2 mt-3 text-xs opacity-60"><span class="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 grid place-items-center text-white font-bold text-[10px]">${c.mentor.split(' ').map(w=>w[0]).join('')}</span>${c.mentor}</div>
-      </div>
-    </div>`).join('');
-  lucide.createIcons();
-};
-const renderSkills=()=>$('skillBars').innerHTML=SKILLS.map((s,i)=>`
-  <div>
-    <div class="flex justify-between text-sm font-bold mb-2"><span>${s.n}</span><span class="text-emerald-500">${s.p}%</span></div>
-    <div class="h-3 rounded-full bar-track overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r ${s.c} bar-fill" data-p="${s.p}"></div></div>
-  </div>`).join('');
-const renderSchedule=()=>$('scheduleTable').innerHTML=SCHEDULE.map(s=>`
-  <div class="flex items-center gap-4 py-4">
-    <div class="text-center w-14 shrink-0"><div class="text-xs opacity-60">${s.d.slice(0,3)}</div><div class="font-black text-sm">${s.t}</div></div>
-    <div class="w-1.5 h-10 rounded-full bg-${s.c}-500"></div>
-    <div class="flex-1 min-w-0"><div class="font-bold text-sm truncate">${s.n}</div><div class="text-xs opacity-60">${s.m}</div></div>
-    <button class="text-xs font-bold text-emerald-500 hover:underline shrink-0">Qo'shilish</button>
-  </div>`).join('');
-const renderMentors=()=>$('mentorSlides').innerHTML=MENTORS.map(m=>`
-  <div class="swiper-slide h-auto">
-    <div class="glass rounded-3xl p-7 h-full text-center card-hover">
-      <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 grid place-items-center text-white text-2xl font-black">${m.i}</div>
-      <h4 class="font-black text-lg mt-4">${m.n}</h4>
-      <div class="text-xs font-bold text-emerald-500 mt-1">${m.r}</div>
-      <p class="text-sm opacity-70 mt-3">${m.t}</p>
-      <div class="flex justify-center gap-2 mt-4">${m.s.split(', ').map(t=>`<span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">${t}</span>`).join('')}</div>
-      <button class="mt-5 w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-sm hover:scale-105 transition">Dars olish</button>
-    </div>
-  </div>`).join('');
-
+});
 let vTimer=null,vSec=0;
 function openVideo(id){
-  const c=COURSES.find(x=>x.id===Number(id));if(!c)return;
-  $('vEmoji').textContent=c.emoji;
-  $('vTitle').textContent=c.title;
-  $('vMeta').textContent=`${c.mentor} · ${c.hours*60/c.lessons|0} daqiqa · bepul kirish`;
-  const total=c.hours*60/c.lessons|0;
+  const c=COURSES.find(x=>x.id===+id);if(!c)return;
+  const dur=Math.round(c.hours*60/c.lessons);
+  $('vEmoji').textContent=c.e;
+  $('vTitle').textContent=c.t;
+  $('vMeta').textContent=c.mentor+' · '+dur+' daqiqa · bepul kirish';
   $('vLessons').innerHTML=[
-    {n:'Kursga kirish va nima o\'rganamiz',d:'Bepul',dur:6},
-    {n:c.topics[0],d:'Bepul',dur:total},
-    {n:c.topics[1]||'Amaliyot',d:'Bepul',dur:total+4},
-    {n:c.topics[2]||'Loyiha',d:'To\'liq kursda',dur:15},
-  ].map((l,i)=>`
-    <div class="lesson-row flex items-center gap-3 rounded-2xl p-3 hover:bg-white/5 transition">
-      <span class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-500 grid place-items-center text-xs font-bold">${i+1}</span>
-      <div class="flex-1"><div class="text-sm font-bold">${l.n}</div><div class="text-xs opacity-60">${l.d} · ${l.dur} daq</div></div>
-      <span class="play-btn w-9 h-9 rounded-xl bg-emerald-500 grid place-items-center"><i data-lucide="play" class="w-4 h-4 fill-white"></i></span>
-    </div>`).join('');
-  vSec=0;
-  $('videoModal').classList.remove('hidden');
-  requestAnimationFrame(()=>$('videoCard').classList.remove('scale-90','opacity-0'));
-  document.body.style.overflow='hidden';lucide.createIcons();
-  updateVTime();
+    {n:"Kursga kirish va nima o\'rganamiz",d:'Bepul',dur:6},
+    {n:c.topics[0],d:'Bepul',dur:dur},
+    {n:c.topics[1]||'Amaliyot',d:'Bepul',dur:dur+4},
+    {n:c.topics[2]||'Loyiha',d:"To\'liq kursda",dur:15}
+  ].map((l,i)=>'<div class="flex items-center gap-3 rounded-2xl p-3" style="background:var(--panel)">'
+    +'<span class="w-8 h-8 rounded-xl grid place-items-center text-xs font-bold" style="background:color-mix(in srgb,var(--c1) 18%,transparent);color:var(--c1)">'+(i+1)+'</span>'
+    +'<div class="flex-1"><div class="text-sm font-bold">'+l.n+'</div><div class="tag">'+l.d+' · '+l.dur+' daq</div></div>'
+    +'<span class="w-9 h-9 rounded-xl grid place-items-center" style="background:var(--c1);color:#06070c"><i data-lucide="play" class="w-4 h-4" style="fill:#06070c"></i></span></div>').join('');
+  vSec=0;$('vTime').textContent='00:00 / '+dur+':00';$('vBarFill').style.width='0';
+  $('videoModal').classList.add('on');document.body.style.overflow='hidden';lucide.createIcons();
 }
-const closeVideo=()=>{$('videoCard').classList.add('scale-90','opacity-0');clearInterval(vTimer);vTimer=null;setTimeout(()=>{$('videoModal').classList.add('hidden');document.body.style.overflow='';},280);};
-const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
-function updateVTime(){
-  $('vTime').textContent=fmt(vSec)+' / 12:00';
-  $('vBarFill').style.width=Math.min(vSec/720*100,100)+'%';
-}
+function closeVideo(){$('videoModal').classList.remove('on');clearInterval(vTimer);vTimer=null;document.body.style.overflow='';}
 $('videoModal').addEventListener('click',e=>{
   if(e.target.closest('[data-close]')||e.target.hasAttribute('data-close'))closeVideo();
   if(e.target.closest('#playToggle')&&!vTimer){
-    vTimer=setInterval(()=>{vSec++;updateVTime();},1000);
-    $('playIcon').setAttribute('data-lucide','pause');lucide.createIcons();
+    vTimer=setInterval(()=>{vSec++;
+      const m=Math.floor(vSec/60),s=vSec%60;
+      $('vTime').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+' / '+Math.round(COURSES[0].hours*60/COURSES[0].lessons)+':00';
+      $('vBarFill').style.width=Math.min(vSec/720*100,100)+'%';
+    },1000);
   }
-});
-function stopPlayer(){$('playIcon').setAttribute('data-lucide','play');lucide.createIcons();}
-$('vTime')&&null;
-$('playToggle').addEventListener('click',()=>{
-  if(vTimer){clearInterval(vTimer);vTimer=null;stopPlayer();}
-});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('videoModal').classList.contains('hidden'))closeVideo();});
-
-$('levelChips').addEventListener('click',e=>{
-  const b=e.target.closest('.chip');if(!b)return;
-  document.querySelectorAll('#levelChips .chip').forEach(c=>c.classList.remove('active'));
-  b.classList.add('active');
-  renderCourses(b.dataset.l);
 });
 document.addEventListener('click',e=>{
   const o=e.target.closest('[data-open]');
-  if(o)openVideo(o.dataset.open);
+  if(o&&$('videoModal').classList.contains('hidden')){
+    const id=o.dataset.open;
+    const c=COURSES.find(x=>x.id===+id);
+    if(c&&enrolled[c.id]===undefined){enrolled[c.id]=5;localStorage.setItem('loyiha7-enrolled',JSON.stringify(enrolled));}
+    openVideo(id);
+  }
 });
-$('searchInput').addEventListener('input',e=>{
-  const q=e.target.value.toLowerCase();
-  const list=COURSES.filter(c=>c.title.toLowerCase().includes(q)||c.cat.toLowerCase().includes(q));
-  $('courseCount').textContent=list.length+' ta kurs topildi';
-  $('courseGrid').innerHTML=list.length?list.map(courseCard).join(''):'<div class="col-span-full text-center py-16 glass rounded-3xl"><span class="text-5xl">🔎</span><p class="font-bold mt-3">Kurs topilmadi</p></div>';
-  lucide.createIcons();
-});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeVideo();});
 $('freeBtn').addEventListener('click',()=>openVideo(1));
-$('loginBtn').addEventListener('click',()=>toast('Kirish oynasi — demo rejimida barcha kurslar ochiq'));
-$('joinForm').addEventListener('submit',e=>{e.preventDefault();e.target.reset();toast('Ajoyib! 14 kunlik bepul kirish faollashdi 🎉');});
-let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2400);}
+$('loginBtn').addEventListener('click',()=>APP.toast('Barcha kurslar demo rejimida ochiq'));
+$('joinForm').addEventListener('submit',e=>{e.preventDefault();e.target.reset();APP.toast('14 kunlik bepul kirish faollashdi!');});
+renderCourses('all');
+new Swiper('.mentorSwiper',{slidesPerView:1,spaceBetween:20,loop:true,grabCursor:true,pagination:{el:'.mentorSwiper .swiper-pagination',clickable:true},autoplay:{delay:4500},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:4}}});
+setTimeout(()=>$$('[data-skill]').forEach(el=>el.style.width=el.dataset.skill+'%'),600);
+lucide.createIcons();
 
-const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
-const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
-document.getElementById('menuBtn')?.addEventListener('click',openMM);
-document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
-document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
-
-renderCourses('all');renderLessons();renderSkills();renderSchedule();renderMentors();syncTheme();
-AOS.init({duration:850,once:true});
-new Swiper('.mentorSwiper',{slidesPerView:1,spaceBetween:24,loop:true,grabCursor:true,pagination:{el:'.mentorSwiper .swiper-pagination',clickable:true},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:4}}});
-
-const io=new IntersectionObserver(es=>es.forEach(en=>{
-  if(en.isIntersecting){en.target.style.width=en.target.dataset.p+'%';io.unobserve(en.target);}
-}),{threshold:.4});
-setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>io.observe(b)),400);
 </script>
 </body>
 </html>

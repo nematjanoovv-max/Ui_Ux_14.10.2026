@@ -1,355 +1,547 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" class="">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#060d0a">
 <title>UyBozor — Ko'chmas mulk</title>
+<meta name="description" content="Ko'chmas mulk platformasi: uy rasmlari slayderi, filtrlap va xarita.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{ink:'#0a0f0d'}}}}</script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{display:['"Space Grotesk"','system-ui','sans-serif'],sans:['Inter','system-ui','sans-serif'],mono:['"JetBrains Mono"','monospace']},colors:{c1:'#34d399',c2:'#22d3ee',c3:'#fbbf24',ink:'#060d0a'}}}}
+</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
-html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
-.glass{background:rgba(255,255,255,.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.5)}
-.dark .glass{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
-.blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.4;animation:float 12s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-40px)}}
-.card-hover{transition:transform .4s cubic-bezier(.22,1,.36,1),box-shadow .4s}
-.card-hover:hover{transform:translateY(-8px);box-shadow:0 30px 60px -18px rgba(16,185,129,.35)}
-.photo{transition:transform .7s cubic-bezier(.22,1,.36,1)}
-.swiper-slide-active .photo,.group:hover .photo{transform:scale(1.06)}
-::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#10b981;border-radius:99px}
-.chip.active{background:#10b981;border-color:#10b981;color:#fff}
-.shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.25) 50%,transparent 62%);transform:translateX(-100%);transition:transform 1s}
-.group:hover .shine{transform:translateX(100%)}
-.map-pin{animation:ping 2s cubic-bezier(0,0,.2,1) infinite}
-@keyframes ping{75%,100%{transform:scale(2.4);opacity:0}}
+:root{
+  --c1:#34d399;--c2:#22d3ee;--c3:#fbbf24;--ink:#060d0a;
+  --line:color-mix(in srgb,var(--fg) 12%,transparent);
+  --panel:color-mix(in srgb,var(--fg) 5%,transparent);
+  --radius:20px;--ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:dark;
+}
+html.light{--panel:color-mix(in srgb,var(--fg) 7%,transparent);--line:color-mix(in srgb,var(--fg) 15%,transparent);color-scheme:light}
+*{-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,system-ui,sans-serif;background:var(--ink);color:var(--fg);
+  overflow-x:hidden;
+}
+.font-display{font-family:'Space Grotesk',system-ui,sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.display{font-weight:700;letter-spacing:-.03em;line-height:.95}
+.grad{background:linear-gradient(100deg,var(--c1),var(--c2) 55%,var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.outline-txt{color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 45%,transparent)}
+
+/* atmosfera qatlamlari */
+.noise,.scan,.gridbg{position:fixed;inset:0;pointer-events:none;z-index:1}
+.noise{opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:overlay}
+.gridbg{background-image:linear-gradient(color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(circle at 50% 30%,#000,transparent 78%)}
+.scan{background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.14) 3px 4px);opacity:.35}
+#three-bg{position:fixed;inset:0;z-index:0;opacity:.9}
+
+/* kursor */
+#cursor{position:fixed;left:0;top:0;z-index:9998;pointer-events:none;mix-blend-mode:difference}
+#cursor .ring{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border:1.5px solid #fff;border-radius:50%;transition:width .3s var(--ease),height .3s var(--ease),margin .3s var(--ease),opacity .3s}
+#cursor .dot{position:absolute;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:#fff;border-radius:50%}
+#cursor.hovering .ring{width:64px;height:64px;margin:-32px 0 0 -32px;opacity:.55}
+@media (hover:none),(pointer:coarse){#cursor{display:none}}
+
+/* preloader */
+#pre{position:fixed;inset:0;z-index:9999;background:var(--ink);display:grid;place-items:center;text-align:center}
+#pre .bar{width:min(320px,70vw);height:2px;background:color-mix(in srgb,var(--fg) 14%,transparent);margin:22px auto 0;overflow:hidden}
+#pre .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c1),var(--c2))}
+#pre .num{font-family:'JetBrains Mono',monospace;font-size:12px;opacity:.6;margin-top:12px;letter-spacing:.2em}
+#pre .name{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,64px);letter-spacing:-.03em}
+
+/* nav */
+.nav-blur{background:color-mix(in srgb,var(--ink) 62%,transparent);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.nav-link{position:relative}
+.nav-link::after{content:'';position:absolute;left:0;bottom:-4px;height:1.5px;width:0;background:linear-gradient(90deg,var(--c1),var(--c2));transition:width .35s var(--ease)}
+.nav-link:hover::after,.nav-link.active::after{width:100%}
+
+/* fullscreen menyu */
+#menu{position:fixed;inset:0;z-index:9990;background:color-mix(in srgb,var(--ink) 94%,transparent);backdrop-filter:blur(24px);
+  clip-path:circle(0% at calc(100% - 44px) 44px);transition:clip-path .8s var(--ease);display:flex;flex-direction:column;justify-content:center;padding:8vw}
+#menu.open{clip-path:circle(150% at calc(100% - 44px) 44px)}
+#menu a{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,72px);letter-spacing:-.03em;line-height:1.05;
+  color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 55%,transparent);transition:.4s var(--ease);display:block}
+#menu a:hover,#menu a:focus-visible{-webkit-text-stroke:1.4px var(--c2);color:var(--c2);transform:translateX(14px)}
+.burger{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.burger i{display:block;width:18px;height:1.6px;background:var(--fg);transition:.35s var(--ease)}
+.burger i+i{margin-top:5px}
+.burger.x i:first-child{transform:translateY(3.3px) rotate(45deg)}
+.burger.x i:last-child{transform:translateY(-3.3px) rotate(-45deg)}
+
+/* panellar */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(14px)}
+.glow{position:relative}
+.glow::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;
+  background:conic-gradient(from var(--a,0deg),transparent 0 55%,var(--c1) 70%,var(--c2) 85%,transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .4s;animation:spin 4s linear infinite}
+.glow:hover::before{opacity:1}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes spin{to{--a:360deg}}
+.tilt{transition:transform .5s var(--ease),box-shadow .5s;transform-style:preserve-3d;will-change:transform}
+.magnet{transition:transform .35s var(--ease)}
+.marquee{display:flex;width:max-content;animation:marq 26s linear infinite}
+@keyframes marq{to{transform:translateX(-50%)}}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:floaty 14s ease-in-out infinite;pointer-events:none}
+@keyframes floaty{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.12)}}
+.reveal{opacity:0;transform:translateY(34px)}
+.reveal-l{opacity:0;transform:translateX(-40px)}
+::-webkit-scrollbar{width:9px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--c1),var(--c2));border-radius:9px}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--c2);outline-offset:3px;border-radius:8px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.55rem;font-weight:700;
+  border-radius:999px;padding:.85rem 1.6rem;font-size:.92rem;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s;isolation:isolate}
+.btn::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,var(--c1),var(--c2));transition:filter .3s}
+.btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 14px 40px -12px var(--c1)}
+.btn-solid{color:#06070c}
+.btn-ghost{border:1px solid var(--line);background:var(--panel)}
+.btn-ghost::after{display:none}
+.btn-ghost:hover{border-color:var(--c2);color:var(--c2)}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:.5rem 1rem;font-size:.8rem;font-weight:600;transition:.3s}
+.chip:hover{border-color:var(--c2);color:var(--c2)}
+.chip.on{background:linear-gradient(100deg,var(--c1),var(--c2));color:#06070c;border-color:transparent}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;opacity:.62}
+.hairline{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+.toast-box{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:9997;opacity:0;transition:.4s var(--ease);pointer-events:none}
+.toast-box.on{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;z-index:9995;display:none}
+.modal.on{display:grid;place-items:center;padding:16px}
+.modal .veil{position:absolute;inset:0;background:rgba(2,3,8,.72);backdrop-filter:blur(8px)}
+.modal .card{position:relative;transform:scale(.94) translateY(14px);opacity:0;transition:.4s var(--ease)}
+.modal.on .card{transform:none;opacity:1}
+.badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;padding:.28rem .55rem;border-radius:6px;border:1px solid var(--line);background:var(--panel)}
+.glitch{position:relative}
+.glitch:hover::before,.glitch:hover::after{content:attr(data-t);position:absolute;inset:0;background:var(--ink)}
+.glitch:hover::before{color:var(--c1);transform:translate(-2px,-1px);clip-path:inset(0 0 62% 0)}
+.glitch:hover::after{color:var(--c2);transform:translate(2px,1px);clip-path:inset(58% 0 0 0)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}#three-bg{display:none}}
+
 </style>
 </head>
-<body class="bg-emerald-50/60 text-slate-800 dark:bg-ink dark:text-slate-200 transition-colors duration-500 overflow-x-hidden">
+<body class="min-h-[100svh]">
+<div id="scrollProgress" class="fixed top-0 left-0 h-[3px] z-[70] pointer-events-none" style="background:linear-gradient(90deg,var(--c1),var(--c2));width:0" aria-hidden="true"></div>
+<div id="three-bg" aria-hidden="true"></div>
+<div class="gridbg" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true"></div>
+<div class="noise" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"><div class="ring"></div><div class="dot"></div></div>
+<div id="pre"><div><div class="name">UyBozor</div><div class="bar"><i id="preBar"></i></div><div class="num" id="preNum">0%</div></div></div>
 
-<div class="blob bg-emerald-400 w-80 h-80 -top-24 -left-24"></div>
-<div class="blob bg-teal-400 w-72 h-72 top-[42%] -right-24" style="animation-delay:3s"></div>
-
-<header id="nav" class="sticky top-0 z-50 glass transition-shadow">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
-    <a href="#" class="flex items-center gap-2 font-black text-xl"><span class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 grid place-items-center text-white shadow-lg"><i data-lucide="building-2"></i></span>Uy<span class="text-emerald-500">Bozor</span></a>
-    <nav class="hidden lg:flex items-center gap-6 text-sm font-medium flex-1">
-      <a class="hover:text-emerald-500 transition" href="#listings">E'lonlar</a>
-      <a class="hover:text-emerald-500 transition" href="#featured">Tavsiya etilgan</a>
-      <a class="hover:text-emerald-500 transition" href="#map">Xarita</a>
-      <a class="hover:text-emerald-500 transition" href="#services">Xizmatlar</a>
-    </nav>
-    <button id="menuBtn" class="lg:hidden w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
-    <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
-    <button id="addBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-bold hover:scale-105 transition shadow-lg">E'lon berish</button>
+<header id="nav" class="fixed inset-x-0 top-0 z-[60] transition-all duration-500">
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 h-[68px] flex items-center gap-5">
+    <a href="#top" class="font-display font-bold text-lg tracking-tight flex items-center gap-2.5 shrink-0">
+      <span class="w-9 h-9 rounded-xl grid place-items-center" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c"><i data-lucide="building-2" class="w-[18px] h-[18px]"></i></span>
+      UyBozor
+    </a>
+    <nav class="hidden lg:flex items-center gap-7 text-[13px] font-semibold ml-4"><a class="nav-link hover:opacity-70 transition" href="#listings">E'lonlar</a><a class="nav-link hover:opacity-70 transition" href="#featured">Slayder</a><a class="nav-link hover:opacity-70 transition" href="#map">Xarita</a><a class="nav-link hover:opacity-70 transition" href="#services">Xizmatlar</a></nav>
+    <div class="ml-auto flex items-center gap-2">
+      <button id="themeBtn" class="burger" aria-label="Kun/tun rejimi"><i data-lucide="sun" id="themeIcon" class="w-[18px] h-[18px]"></i></button>
+      <button id="addBtn" class="btn btn-solid magnet hidden sm:inline-flex">E'lon berish</button>
+      <button id="menuBtn" class="burger lg:hidden" aria-label="Menyu"><span class="block"><i></i><i></i></span></button>
+    </div>
   </div>
-
 </header>
 
-<section class="pt-12 pb-8 px-5">
-  <div class="max-w-7xl mx-auto">
-    <div class="grid lg:grid-cols-[1fr,420px] gap-8 items-center">
+<div id="menu">
+  <div class="tag mb-6">Menyu</div>
+  <a href="#top">Bosh sahifa</a><a href="#listings">E'lonlar</a><a href="#featured">Slayder</a><a href="#map">Xarita</a><a href="#services">Xizmatlar</a>
+  <div class="mono text-xs opacity-45 mt-9">UyBozor · 2026</div>
+  <button id="menuClose" class="absolute top-5 right-5 burger" aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button>
+</div>
+
+<main id="top" class="relative z-10">
+
+
+<section class="relative flex min-h-[100svh] items-center px-4 sm:px-6 lg:px-10 pt-28 pb-12">
+  <div class="blob w-[380px] h-[380px] -left-20 top-0" style="background:var(--c1)"></div>
+  <div class="blob w-[320px] h-[320px] right-10 bottom-0" style="background:var(--c2);animation-delay:2.5s"></div>
+  <div class="max-w-[1400px] mx-auto w-full grid lg:grid-cols-[1fr_430px] gap-8 items-center">
+    <div>
+      <div class="tag reveal mb-5">2 415 e'lon bugun yangilandi</div>
+      <h1 class="display text-[clamp(40px,7.5vw,92px)] reveal" data-split>Kelajagingiz uyini toping</h1>
+      <p class="mt-5 max-w-lg text-base sm:text-lg opacity-70 reveal">Sotish, ijaraga berish va kvartira izlash — xarita, filtrlarni tekshirilgan e'lonlar bilan.</p>
+    </div>
+    <div class="panel rounded-3xl p-3 reveal glow" data-tilt>
+      <div class="flex items-center gap-2 rounded-2xl px-4 py-3.5 mb-2.5" style="background:var(--panel)">
+        <i data-lucide="search" class="w-5 h-5" style="color:var(--c1)"></i>
+        <input id="qInput" class="bg-transparent outline-none text-sm font-bold w-full" placeholder="Tuman, metro yoki ko'cha...">
+      </div>
+      <div class="grid grid-cols-2 gap-2.5 mb-2.5">
+        <select id="typeSel" class="rounded-2xl px-4 py-3 text-sm font-bold outline-none" style="background:var(--panel);border:1px solid var(--line)">
+          <option value="all">Barcha turlar</option><option value="kvartira">Kvartira</option><option value="hovli">Hovli</option><option value="dacha">Dacha</option><option value="ofis">Ofis</option>
+        </select>
+        <select id="roomsSel" class="rounded-2xl px-4 py-3 text-sm font-bold outline-none" style="background:var(--panel);border:1px solid var(--line)">
+          <option value="all">Xonalar soni</option><option value="1">1 xona</option><option value="2">2 xona</option><option value="3">3 xona</option><option value="4">4+ xona</option>
+        </select>
+      </div>
+      <div class="rounded-2xl px-4 py-3.5 mb-2.5" style="background:var(--panel)">
+        <div class="flex justify-between tag mb-2"><span>Maksimal narx</span><span id="priceOut" style="color:var(--c1)">350 000 $</span></div>
+        <input type="range" id="priceRange" min="20000" max="350000" step="5000" value="350000" class="w-full" style="accent-color:var(--c1)">
+      </div>
+      <button id="goBtn" class="btn btn-solid w-full magnet"><i data-lucide="search" class="w-[18px] h-[18px]"></i>Uy izlash</button>
+    </div>
+  </div>
+</section>
+
+<section id="listings" class="relative px-4 sm:px-6 lg:px-10 py-10">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
       <div>
-        <span class="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full glass mb-5" data-aos="fade-down"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>2 415 e'lon bugun yangilandi</span>
-        <h1 class="text-5xl lg:text-6xl font-black leading-[1.08]" data-aos="fade-up">Kelajagingiz uyini <span class="text-emerald-500">toping</span></h1>
-        <p class="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-lg" data-aos="fade-up" data-aos-delay="100">Sotish, ijaraga berish va kvartira izlash — xarita, filtrlarni tekshirilgan e'lonlar bilan.</p>
+        <h2 class="display text-[clamp(28px,4.5vw,52px)] reveal" data-split>E'lonlar katalogi</h2>
+        <p id="countOut" class="tag mt-2 reveal"></p>
       </div>
-      <div class="relative" data-aos="fade-left">
-        <div class="glass rounded-[2rem] p-3 shadow-2xl">
-          <div class="flex items-center gap-2 rounded-2xl bg-white/60 dark:bg-white/5 px-4 py-3.5 mb-2.5 focus-within:ring-2 ring-emerald-500 transition">
-            <i data-lucide="search" class="w-5 h-5 text-emerald-500"></i>
-            <input id="qInput" class="bg-transparent outline-none text-sm font-bold w-full" placeholder="Tuman, metro yoki ko'cha...">
-          </div>
-          <div class="grid grid-cols-2 gap-2.5 mb-2.5">
-            <select id="typeSel" class="rounded-2xl bg-white/60 dark:bg-white/5 px-4 py-3 text-sm font-bold outline-none">
-              <option value="all">Barcha turlar</option><option value="kvartira">Kvartira</option><option value="hovli">Hovli</option><option value="dacha">Dacha</option><option value="ofis">Ofis</option>
-            </select>
-            <select id="roomsSel" class="rounded-2xl bg-white/60 dark:bg-white/5 px-4 py-3 text-sm font-bold outline-none">
-              <option value="all">Xonalar soni</option><option value="1">1 xona</option><option value="2">2 xona</option><option value="3">3 xona</option><option value="4">4+ xona</option>
-            </select>
-          </div>
-          <div class="rounded-2xl bg-white/60 dark:bg-white/5 px-4 py-3.5 mb-2.5">
-            <div class="flex justify-between text-xs font-bold mb-2"><span>Maksimal narx</span><span id="priceOut" class="text-emerald-500">350 000 $</span></div>
-            <input type="range" id="priceRange" min="20000" max="350000" step="5000" value="350000" class="w-full accent-emerald-500">
-          </div>
-          <button id="goBtn" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold hover:scale-[1.02] transition flex items-center justify-center gap-2"><i data-lucide="search" class="w-5 h-5"></i>Uy izlash</button>
-        </div>
+      <div id="chips" class="flex flex-wrap gap-2 reveal">
+        <button class="chip on" data-s="all">Barchasi</button>
+        <button class="chip" data-s="sale">Sotiladi</button>
+        <button class="chip" data-s="rent">Ijaraga</button>
       </div>
     </div>
+    <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 </section>
 
-<section id="listings" class="py-10 px-5">
-  <div class="max-w-7xl mx-auto">
-    <div class="flex flex-wrap items-end justify-between gap-4 mb-8" data-aos="fade-up">
-      <div>
-        <h2 class="text-4xl font-black">E'lonlar <span class="text-emerald-500">katalogi</span></h2>
-        <p class="mt-2 text-slate-600 dark:text-slate-400" id="countOut"></p>
-      </div>
-      <div id="chips" class="flex flex-wrap gap-2">
-        <button class="chip active px-4 py-2 rounded-full border text-sm font-semibold transition" data-s="all">Barchasi</button>
-        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-s="sale">Sotiladi</button>
-        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-s="rent">Ijaraga</button>
-      </div>
-    </div>
-    <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7"></div>
+<section id="featured" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1400px] mx-auto">
+    <h2 class="display text-[clamp(28px,4.5vw,52px)] mb-3 reveal" data-split>Tavsiya etilgan uy rasmlari</h2>
+    <p class="opacity-70 mb-8 reveal">Har uyning rasmlarini Swiper orqali tomosha qiling</p>
+    <div class="swiper featSwiper"><div class="swiper-wrapper" id="featSlides"></div><div class="swiper-pagination"></div></div>
   </div>
 </section>
 
-<section id="featured" class="py-14 px-5">
-  <div class="max-w-7xl mx-auto">
-    <h2 class="text-4xl font-black mb-3" data-aos="fade-up">Tavsiya etilgan <span class="text-emerald-500">uy rasmlari slayderi</span></h2>
-    <p class="text-slate-600 dark:text-slate-400 mb-8" data-aos="fade-up">Har uyning rasmlarini Swiper.js orqali tomosha qiling</p>
-    <div class="swiper featSwiper">
-      <div class="swiper-wrapper" id="featSlides"></div>
-      <div class="swiper-pagination"></div>
-    </div>
-  </div>
-</section>
-
-<section id="map" class="py-12 px-5">
-  <div class="max-w-7xl mx-auto grid lg:grid-cols-[1.3fr,1fr] gap-6">
-    <div class="rounded-3xl overflow-hidden glass relative h-[420px]" data-aos="fade-right">
-      <div class="absolute inset-0 bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-slate-800 dark:to-slate-900"></div>
-      <svg class="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 400 300" preserveAspectRatio="none">
-        <path d="M0 60 H400 M0 130 H400 M0 200 H400 M70 0 V300 M170 0 V300 M280 0 V300" stroke="currentColor" class="text-emerald-700 dark:text-emerald-300" stroke-width="1.5"/>
-        <circle cx="170" cy="130" r="70" fill="currentColor" class="text-emerald-300/40 dark:text-emerald-700/30"/>
+<section id="map" class="relative px-4 sm:px-6 lg:px-10 py-10">
+  <div class="max-w-[1400px] mx-auto grid lg:grid-cols-[1.3fr_1fr] gap-5">
+    <div class="rounded-3xl overflow-hidden relative h-[380px] reveal" style="background:linear-gradient(140deg,#ecfdf5,#cffafe)">
+      <svg class="absolute inset-0 w-full h-full opacity-40" viewBox="0 0 400 300" preserveAspectRatio="none">
+        <path d="M0 60 H400 M0 130 H400 M0 200 H400 M70 0 V300 M170 0 V300 M280 0 V300" stroke="var(--c1)" stroke-width="1.5"/>
+        <circle cx="170" cy="130" r="70" fill="var(--c1)" opacity=".15"/>
       </svg>
       <div id="pinBox" class="absolute inset-0"></div>
-      <div class="absolute bottom-4 left-4 right-4 glass rounded-2xl p-4 flex items-center gap-3">
-        <span class="w-10 h-10 rounded-xl bg-emerald-500 text-white grid place-items-center shrink-0"><i data-lucide="info" class="w-5 h-5"></i></span>
+      <div class="absolute bottom-4 left-4 right-4 panel rounded-2xl p-4 flex items-center gap-3">
+        <span class="w-10 h-10 rounded-xl grid place-items-center shrink-0" style="background:var(--c1);color:#06070c"><i data-lucide="info" class="w-5 h-5"></i></span>
         <div class="text-sm"><b id="pinCount">6 ta e'lon</b><span class="opacity-70"> xaritada ko'rsatilgan — bosib batafsil ko'ring</span></div>
       </div>
     </div>
-    <div class="space-y-4" id="services">
-      <div class="glass rounded-3xl p-6" data-aos="fade-left"><span class="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-500 grid place-items-center"><i data-lucide="file-check-2"></i></span><h3 class="font-black text-lg mt-4">Huquqiy tekshiruv</h3><p class="text-sm opacity-70 mt-2">Har bir uy huquqiy jihatdan tekshiriladi va arxiv hujjatlari bilan beriladi.</p></div>
-      <div class="glass rounded-3xl p-6" data-aos="fade-left" data-aos-delay="100"><span class="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-500 grid place-items-center"><i data-lucide="banknote"></i></span><h3 class="font-black text-lg mt-4">Ipoteka yordami</h3><p class="text-sm opacity-70 mt-2">Banklar bilan hamkorlik orqali 12 oygacha foizsiz rasmiylashtirish.</p></div>
-      <div class="glass rounded-3xl p-6" data-aos="fade-left" data-aos-delay="200"><span class="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-500 grid place-items-center"><i data-lucide="truck"></i></span><h3 class="font-black text-lg mt-4">Ko'chish xizmati</h3><p class="text-sm opacity-70 mt-2">Professional ko'chirish va tozalash — buyurtmadan keyin bir kun ichida.</p></div>
+    <div id="services" class="space-y-4">
+      <div class="panel p-6 reveal glow" data-tilt><span class="w-11 h-11 rounded-2xl grid place-items-center" style="background:color-mix(in srgb,var(--c1) 18%,transparent);color:var(--c1)"><i data-lucide="file-check-2"></i></span><h3 class="font-display font-bold text-lg mt-4">Huquqiy tekshiruv</h3><p class="text-sm opacity-70 mt-2">Har bir uy huquqiy jihatdan tekshiriladi va arxiv hujjatlari bilan beriladi.</p></div>
+      <div class="panel p-6 reveal glow" data-tilt><span class="w-11 h-11 rounded-2xl grid place-items-center" style="background:color-mix(in srgb,var(--c2) 18%,transparent);color:var(--c2)"><i data-lucide="banknote"></i></span><h3 class="font-display font-bold text-lg mt-4">Ipoteka yordami</h3><p class="text-sm opacity-70 mt-2">Banklar bilan hamkorlik orqali 12 oygacha foizsiz rasmiylashtirish.</p></div>
+      <div class="panel p-6 reveal glow" data-tilt><span class="w-11 h-11 rounded-2xl grid place-items-center" style="background:color-mix(in srgb,var(--c3) 18%,transparent);color:var(--c3)"><i data-lucide="truck"></i></span><h3 class="font-display font-bold text-lg mt-4">Ko'chish xizmati</h3><p class="text-sm opacity-70 mt-2">Professional ko'chirish va tozalash — buyurtmadan keyin bir kun ichida.</p></div>
     </div>
   </div>
 </section>
 
-<footer class="border-t border-black/5 dark:border-white/10 py-10 px-5 mt-6">
-  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-    <div class="flex items-center gap-2 font-black"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 grid place-items-center text-white"><i data-lucide="building-2" class="w-5 h-5"></i></span>UyBozor</div>
-    <p class="text-sm opacity-60">© 2026 UyBozor. Milliy ko'chmas mulk platformasi.</p>
-    <div class="flex gap-2">
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-emerald-500 transition"><i data-lucide="telegram"></i></a>
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-emerald-500 transition"><i data-lucide="instagram"></i></a>
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-emerald-500 transition"><i data-lucide="phone"></i></a>
+<div id="propModal" class="modal"><div class="veil" data-close></div>
+  <div class="card panel w-full max-w-4xl max-h-[92vh] overflow-y-auto"><div id="propCard"></div></div>
+</div>
+</main>
+
+<footer class="relative z-10 mt-10">
+  <div class="overflow-hidden border-y" style="border-color:var(--line)">
+    <div class="marquee py-5 font-display font-bold text-[clamp(28px,5vw,58px)] tracking-tight opacity-25 whitespace-nowrap">
+      <span>UYBOZOR · MILLIY KO'CHMAS MULK · </span><span>UYBOZOR · MILLIY KO'CHMAS MULK · </span>
     </div>
+  </div>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-9 flex flex-col md:flex-row items-center justify-between gap-5 text-xs opacity-60">
+    <div class="font-display font-bold text-sm opacity-100">UyBozor</div>
+    <div>© 2026 · UyBozor — barcha huquqlar himoyalangan</div>
+    <div class="flex gap-2"><a href="#" class="burger" aria-label="Telegram"><i data-lucide="send" class="w-[18px] h-[18px]"></i></a><a href="#" class="burger" aria-label="Phone"><i data-lucide="phone" class="w-[18px] h-[18px]"></i></a></div>
   </div>
 </footer>
 
-<div id="propModal" class="fixed inset-0 z-[70] hidden">
-  <div class="absolute inset-0 bg-black/65 backdrop-blur-sm" data-close></div>
-  <div class="absolute inset-0 grid place-items-center p-4 pointer-events-none">
-    <div id="propCard" class="pointer-events-auto w-full max-w-4xl bg-white dark:bg-slate-900 rounded-3xl overflow-hidden shadow-2xl scale-90 opacity-0 transition-all duration-300 max-h-[92vh] overflow-y-auto"></div>
-  </div>
-</div>
+<div id="toast" class="toast-box panel px-5 py-3 flex items-center gap-3 text-sm font-bold"><i data-lucide="check-circle-2" class="w-5 h-5" style="color:var(--c2)"></i><span id="toastMsg"></span></div>
 
-<div id="mobileMenu" class="lg:hidden fixed inset-0 z-[60] hidden">
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
-  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
-      <span class="font-black text-lg">Menyu</span>
-      <button class="w-9 h-9 grid place-items-center rounded-xl bg-black/5 dark:bg-white/10" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
-    </div>
-    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#listings"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>E'lonlar</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#featured"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Tavsiya etilgan</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#map"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Xarita</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#services"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Xizmatlar</a>
-    </nav>
-    <div class="px-5 py-4 border-t border-black/10 dark:border-white/10 text-xs opacity-60">© 2026 — barcha huquqlar himoyalangan</div>
-  </aside>
-</div>
-
-<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] hidden">
-  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold shadow-xl"><i data-lucide="check-circle-2" class="text-emerald-500"></i><span id="toastMsg"></span></div>
-</div>
-
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
+const APP={
+  brand:'UyBozor',
+  theme:()=>document.documentElement.classList.contains('light')?'light':'dark',
+  toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('on');clearTimeout(this._t);this._t=setTimeout(()=>t.classList.remove('on'),2400);},
+  money(n,cur){return n.toLocaleString('ru-RU').replace(/,/g,' ')+(cur!==undefined?' '+cur:'');},
+  rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;},
+  sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+};
+const $=id=>document.getElementById(id);
+const $$=s=>[...document.querySelectorAll(s)];
 
-const root=document.documentElement;
-if(localStorage.getItem('ub-theme')==='dark'||(!localStorage.getItem('ub-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
-const themeIcon=document.getElementById('themeIcon');
-const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'moon':'sun');lucide.createIcons();};
-document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('ub-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
+/* Kun / tun rejimi */
+(function(){
+  const saved=localStorage.getItem('loyiha9-theme');
+  const sys=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  const mode=saved||sys;
+  document.documentElement.classList.toggle('light',mode==='light');
+  const sync=()=>{const l=document.documentElement.classList.contains('light');
+    $('themeIcon').setAttribute('data-lucide',l?'moon':'sun');document.documentElement.style.setProperty('--fg',l?'#0d1220':'#e9edf7');lucide.createIcons();};
+  setTimeout(sync,0);
+  $('themeBtn').addEventListener('click',()=>{
+    document.documentElement.classList.toggle('light');
+    localStorage.setItem('loyiha9-theme',document.documentElement.classList.contains('light')?'light':'dark');
+    sync();
+  });
+})();
+
+/* Fullscreen menyu */
+(function(){
+  const menu=$('menu'),btn=$('menuBtn');
+  const open=()=>{menu.classList.add('open');btn.classList.add('x');document.body.style.overflow='hidden';};
+  const close=()=>{menu.classList.remove('open');btn.classList.remove('x');document.body.style.overflow='';};
+  btn.addEventListener('click',()=>menu.classList.contains('open')?close():open());
+  $('menuClose').addEventListener('click',close);
+  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+  addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+})();
+
+/* Kursor */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  const c=$('cursor');
+  let x=innerWidth/2,y=innerHeight/2;
+  addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY;});
+  (function loop(){c.style.transform=`translate(${x}px,${y}px)`;requestAnimationFrame(loop);})();
+  document.addEventListener('mouseover',e=>{
+    if(e.target.closest('a,button,[data-cursor]'))c.classList.add('hovering');else c.classList.remove('hovering');
+  });
+})();
+
+/* Magnit tugmalar */
+(function(){
+  $$('.magnet').forEach(el=>{
+    el.addEventListener('mousemove',e=>{
+      const r=el.getBoundingClientRect();
+      el.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.22}px,${(e.clientY-r.top-r.height/2)*.22}px)`;
+    });
+    el.addEventListener('mouseleave',()=> el.style.transform='');
+  });
+})();
+
+/* 3D tilt kartochkalar */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  $$('[data-tilt]').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+      card.style.transform=`perspective(900px) rotateX(${(py-.5)*-9}deg) rotateY(${(px-.5)*11}deg)`;
+    });
+    card.addEventListener('mouseleave',()=> card.style.transform='');
+  });
+})();
+
+/* Preloader */
+(function(){
+  const bar=$('preBar'),num=$('preNum'),pre=$('pre');
+  let p=0;
+  const t=setInterval(()=>{
+    p=Math.min(100,p+Math.random()*13+4);
+    bar.style.width=p+'%';num.textContent=Math.floor(p)+'%';
+    if(p>=100){clearInterval(t);setTimeout(()=>{
+      pre.style.transition='opacity .6s var(--ease),clip-path .8s var(--ease)';
+      pre.style.clipPath='inset(0 0 100% 0)';pre.style.opacity='0';
+      setTimeout(()=>pre.remove(),700);
+      if(window.gsap)runReveals();
+    },220);}
+  },110);
+})();
+
+/* Scroll animatsiyalari (GSAP ScrollTrigger) */
+function runReveals(){
+  if(!window.gsap||!window.ScrollTrigger)return;
+  gsap.registerPlugin(ScrollTrigger);
+  $$('.reveal:not(.revealed)').forEach(el=>{
+    el.classList.add('revealed');
+    gsap.to(el,{opacity:1,y:0,x:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%'}});
+  });
+  $$('[data-parallax]').forEach(el=>{
+    gsap.to(el,{yPercent:+el.dataset.parallax,ease:'none',scrollTrigger:{trigger:el.closest('section')||el,start:'top bottom',end:'bottom top',scrub:true}});
+  });
+  $$('[data-count]').forEach(el=>{
+    const target=+el.dataset.count,suffix=el.dataset.suffix||'';
+    ScrollTrigger.create({trigger:el,start:'top 90%',once:true,onEnter(){
+      gsap.to({v:0},{v:target,duration:1.6,ease:'power2.out',onUpdate(){el.textContent=Math.floor(this.targets()[0].v)+suffix;}});
+    }});
+  });
+  $$('[data-split]').forEach(el=>{
+    const words=el.textContent.trim().split(/\s+/);
+    el.innerHTML=words.map(w=>`<span class="inline-block overflow-hidden align-bottom"><span class="inline-block" style="transform:translateY(110%)">${w}</span></span>`).join(' ');
+    gsap.to(el.querySelectorAll('span>span'),{y:0,duration:1.05,ease:'power4.out',stagger:.045,scrollTrigger:{trigger:el,start:'top 86%'}});
+  });
+}
+addEventListener('load',()=>{setTimeout(()=>{if(!$('pre'))runReveals();},1600);});
+addEventListener('scroll',()=>{
+  const s=scrollY/(document.body.scrollHeight-innerHeight)*100;
+  const sp=$('scrollProgress'); if(sp) sp.style.width=Math.min(s,100)+'%';
+},{passive:true});
+
+/* Three.js fon — jonli maydon */
+(async()=>{
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  try{
+    const THREE=await import('https://esm.sh/three@0.160.0');
+    const host=$('three-bg');if(!host)return;
+    const scene=new THREE.Scene();
+    const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);cam.position.z=8;
+    const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setSize(innerWidth,innerHeight);
+    host.appendChild(renderer.domElement);
+    const c1=new THREE.Color('#34d399'),c2=new THREE.Color('#22d3ee'),c3=new THREE.Color('#fbbf24');
+    const geo=new THREE.BufferGeometry();
+    const N=innerWidth<640?260:520,pos=new Float32Array(N*3),col=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      pos[i*3]=(Math.random()-.5)*26;pos[i*3+1]=(Math.random()-.5)*18;pos[i*3+2]=(Math.random()-.5)*12;
+      const c=[c1,c2,c3][i%3];col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
+    }
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    const mat=new THREE.PointsMaterial({size:.055,vertexColors:true,transparent:true,opacity:.85,depthWrite:false,blending:THREE.AdditiveBlending});
+    const pts=new THREE.Points(geo,mat);scene.add(pts);
+    const wire=new THREE.Mesh(new THREE.IcosahedronGeometry(2.6,1),
+      new THREE.MeshBasicMaterial({color:c1,wireframe:true,transparent:true,opacity:.12}));
+    scene.add(wire);
+    const wire2=new THREE.Mesh(new THREE.TorusGeometry(3.4,.008,3,90),
+      new THREE.MeshBasicMaterial({color:c2,transparent:true,opacity:.22}));
+    wire2.rotation.x=1.2;scene.add(wire2);
+    let mx=0,my=0;
+    addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-.5);my=(e.clientY/innerHeight-.5);});
+    addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+    (function tick(){
+      requestAnimationFrame(tick);
+      pts.rotation.y+=.0007;pts.rotation.x=my*.2;
+      wire.rotation.y+=.0016;wire.rotation.x+=.0007;
+      wire2.rotation.z+=.0012;
+      cam.position.x+=(mx*1.6-cam.position.x)*.05;
+      cam.position.y+=(-my*1.2-cam.position.y)*.05;
+      cam.lookAt(0,0,0);
+      renderer.render(scene,cam);
+    })();
+  }catch(e){/* fon animatsiyasi ishlamasa ham sayt ishlaydi */}
+})();
+
 
 const API=()=>new Promise(r=>setTimeout(()=>r([
- {id:1,title:'Yorqin kvartira',dist:'Chilonzor',type:'kvartira',rooms:3,area:86,floor:'7/12',price:118000,deal:'sale',badge:'YANGI',rate:4.8,metro:6,
-  grad:['from-amber-300 to-orange-500','from-rose-300 to-pink-500','from-sky-300 to-indigo-500'],feat:['Lift','Parkovka','Bolalar maydoni'],desc:'Yangi ta\'mirlangan, quyoshli, metro yaqinidagi 3 xonali kvartira. Hujjatlar to\'liq.'},
- {id:2,title:"Qadim ko'chadagi hovli",dist:'Shayxontohur',type:'hovli',rooms:5,area:210,floor:'2 qavat',price:245000,deal:'sale',badge:'PREMIUM',rate:4.9,metro:12,
-  grad:['from-emerald-300 to-teal-500','from-lime-300 to-green-500','from-cyan-300 to-blue-500'],feat:['Bog','Garaj','Hovuz'],desc:'Markazdagi hovli uyi: ikki qavat, bog\' va ta\'mirlangan hovuz. Tarixiy go\'zal joy.'},
- {id:3,title:'Biznes ofis',dist:'Yunusobod',type:'ofis',rooms:1,area:54,floor:'3/9',price:850,deal:'rent',badge:'IJARAGA',rate:4.5,metro:3,
-  grad:['from-slate-300 to-slate-500','from-indigo-300 to-violet-500','from-fuchsia-300 to-pink-500'],feat:['Internet','Rezervatsiya','Konditsioner'],desc:'Yunusobod tumanida ofis — oyiga 850 $. Kommunal to\'lovlar alohida.'},
- {id:4,title:'Dam olish dacha',dist:'Bekobod',type:'dacha',rooms:4,area:150,floor:'1 qavat',price:76000,deal:'sale',badge:'TABIAT',rate:4.6,metro:0,
-  grad:['from-green-300 to-emerald-600','from-yellow-300 to-amber-500','from-teal-300 to-cyan-600'],feat:['Anhor','Muzlatgich','Barbekyu'],desc:'Sohil bo\'yidagi dacha: o\'rmon havosi, anhor va kallazor. Yakka tartibda.'},
- {id:5,title:'Yashil kvartira',dist:'Mirzo Ulug\'bek',type:'kvartira',rooms:2,area:64,floor:'5/16',price:690,deal:'rent',badge:'CHEGIRMA',rate:4.7,metro:4,
-  grad:['from-teal-300 to-emerald-500','from-sky-300 to-cyan-500','from-violet-300 to-purple-500'],feat:['Mebel','Kabel TV','Sport zal'],desc:'To\'liq mebellangan 2 xonali kvartira, sport zali va yashil hudud.'},
- {id:6,title:'Oilaviy kvartira',dist:'Sergeli',type:'kvartira',rooms:4,area:112,floor:'9/14',price:96000,deal:'sale',badge:'OILA UCHUN',rate:4.9,metro:8,
-  grad:['from-orange-300 to-red-500','from-amber-300 to-orange-500','from-rose-300 to-pink-600'],feat:['Kollektor','2 hammom','Konsyerj'],desc:'4 xonali keng kvartira, ikki hammom, konsyerj xizmati va bolalar maydoni.'},
+  {id:1,t:'Yorqin kvartira',dist:"Chilonzor",type:'kvartira',rooms:3,area:86,floor:'7/12',price:118000,deal:'sale',badge:'YANGI',rate:4.8,metro:6,
+   grads:['linear-gradient(135deg,#fbbf24,#f97316)','linear-gradient(135deg,#fb7185,#ec4899)','linear-gradient(135deg,#38bdf8,#6366f1)'],feat:['Lift','Parkovka',"Bolalar maydoni"],desc:"Yangi ta\'mirlangan, quyoshli, metro yaqinidagi 3 xonali kvartira. Hujjatlar to\'liq."},
+  {id:2,t:"Qadim ko\'chada hovli",dist:"Shayxontohur",type:'hovli',rooms:5,area:210,floor:'2 qavat',price:245000,deal:'sale',badge:'PREMIUM',rate:4.9,metro:12,
+   grads:['linear-gradient(135deg,#34d399,#0d9488)','linear-gradient(135deg,#a3e635,#22c55e)','linear-gradient(135deg,#22d3ee,#3b82f6)'],feat:["Bog'",'Garaj','Hovuz'],desc:"Markazdagi hovli uyi: ikki qavat, bog' va ta\'mirlangan hovuz. Tarixiy go\'zal joy."},
+  {id:3,t:'Biznes ofis',dist:"Yunusobod",type:'ofis',rooms:1,area:54,floor:'3/9',price:850,deal:'rent',badge:'IJARAGA',rate:4.5,metro:3,
+   grads:['linear-gradient(135deg,#94a3b8,#475569)','linear-gradient(135deg,#818cf8,#7c3aed)','linear-gradient(135deg,#e879f9,#db2777)'],feat:['Internet','Rezervatsiya','Konditsioner'],desc:"Yunusobod tumanida ofis — oyiga 850 $. Kommunal to\'lovlar alohida."},
+  {id:4,t:'Dam olish dacha',dist:"Bekobod",type:'dacha',rooms:4,area:150,floor:'1 qavat',price:76000,deal:'sale',badge:'TABIAT',rate:4.6,metro:0,
+   grads:['linear-gradient(135deg,#4ade80,#16a34a)','linear-gradient(135deg,#fde047,#f59e0b)','linear-gradient(135deg,#2dd4bf,#06b6d4)'],feat:['Anhor','Muzlatgich','Barbekyu'],desc:"Sohil bo\'yidagi dacha: o\'rmon havosi, anhor va kallazor. Yakka tartibda."},
+  {id:5,t:'Yashil kvartira',dist:"Mirzo Ulug\'bek",type:'kvartira',rooms:2,area:64,floor:'5/16',price:690,deal:'rent',badge:'CHEGIRMA',rate:4.7,metro:4,
+   grads:['linear-gradient(135deg,#2dd4bf,#10b981)','linear-gradient(135deg,#38bdf8,#06b6d4)','linear-gradient(135deg,#a78bfa,#7c3aed)'],feat:['Mebel','Kabel TV','Sport zal'],desc:"To\'liq mebellangan 2 xonali kvartira, sport zali va yashil hudud."},
+  {id:6,t:'Oilaviy kvartira',dist:"Sergeli",type:'kvartira',rooms:4,area:112,floor:'9/14',price:96000,deal:'sale',badge:'OILA UCHUN',rate:4.9,metro:8,
+   grads:['linear-gradient(135deg,#fb923c,#ef4444)','linear-gradient(135deg,#fbbf24,#f97316)','linear-gradient(135deg,#fda4af,#e11d48)'],feat:['Kollektor','2 hammom','Konsyerj'],desc:"4 xonali keng kvartira, ikki hammom, konsyerj xizmati va bolalar maydoni."}
 ]),500));
-
-const $=id=>document.getElementById(id);
-const money=n=>n.toLocaleString('uz-UZ');
 let all=[],state={deal:'all',type:'all',rooms:'all',price:350000,q:''};
+const money=n=>n.toLocaleString('ru-RU').replace(/,/g,' ');
+const hIcon=t=>t==='hovli'?'🏡':t==='dacha'?'🌲':t==='ofis'?'🏢':'🏠';
 
 function card(p,i){
-  const bg=p.grad[0];
-  return `<article class="glass rounded-3xl overflow-hidden card-hover group cursor-pointer" data-prop="${p.id}" data-aos="fade-up" data-aos-delay="${i*70}">
-    <div class="h-52 bg-gradient-to-br ${bg} relative overflow-hidden">
-      <span class="shine"></span>
-      <div class="absolute inset-0 grid place-items-center text-6xl opacity-90">${p.type==='hovli'?'🏡':p.type==='dacha'?'🌲':p.type==='ofis'?'🏢':'🏠'}</div>
-      <span class="absolute top-3 left-3 text-[11px] font-black bg-black/40 backdrop-blur text-white px-2.5 py-1 rounded-lg">${p.badge}</span>
-      <span class="absolute top-3 right-3 text-[11px] font-black bg-white/90 text-slate-800 px-2.5 py-1 rounded-lg flex items-center gap-1"><i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i>${p.rate}</span>
-      <span class="absolute bottom-3 left-3 text-[11px] font-bold bg-emerald-500 text-white px-2.5 py-1 rounded-lg">${p.deal==='rent'?'IJARAGA':'SOTILADI'}</span>
-    </div>
-    <div class="p-6">
-      <div class="flex items-center gap-2 text-xs font-bold opacity-70"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-500"></i>${p.dist}${p.metro?` · metro ${p.metro} daqiqa`:' · metro yo\'q'}</div>
-      <h3 class="font-black text-lg mt-1.5">${p.title}</h3>
-      <div class="flex flex-wrap gap-3 mt-3 text-xs font-semibold">
-        <span class="flex items-center gap-1"><i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>${p.rooms} xona</span>
-        <span class="flex items-center gap-1"><i data-lucide="square" class="w-3.5 h-3.5"></i>${p.area} m²</span>
-        <span class="flex items-center gap-1"><i data-lucide="building" class="w-3.5 h-3.5"></i>${p.floor}</span>
-      </div>
-      <div class="flex flex-wrap gap-1.5 mt-4">${p.feat.map(f=>`<span class="text-[11px] font-semibold px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">${f}</span>`).join('')}</div>
-      <div class="flex items-end justify-between mt-5 pt-4 border-t border-black/5 dark:border-white/10">
-        <div><span class="text-2xl font-black text-emerald-500">${money(p.price)}</span><span class="text-sm font-semibold opacity-70">${p.deal==='rent'?' $/oy':' $'}</span></div>
-        <button class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white grid place-items-center hover:scale-110 transition"><i data-lucide="arrow-up-right"></i></button>
-      </div>
-    </div>
-  </article>`;
+  return '<article class="panel overflow-hidden glow group cursor-pointer reveal" data-prop="'+p.id+'">'
+    +'<div class="h-52 grid place-items-center text-6xl relative overflow-hidden" style="background:'+p.grads[0]+'">'+hIcon(p.type)
+    +'<span class="absolute top-3 left-3 badge" style="background:rgba(3,6,16,.55);color:#fff">'+p.badge+'</span>'
+    +'<span class="absolute top-3 right-3 badge" style="background:#fff;color:#06070c">'+p.rate+' ★</span></div>'
+    +'<div class="p-6"><div class="flex items-center gap-2 tag"><i data-lucide="map-pin" class="w-3.5 h-3.5" style="color:var(--c1)"></i>'+p.dist+(p.metro?' · metro '+p.metro+' daqiqa':' · metro yo\'q')+'</div>'
+    +'<h3 class="font-display font-bold text-lg mt-1.5">'+p.t+'</h3>'
+    +'<div class="flex flex-wrap gap-3 tag mt-3"><span>'+p.rooms+' xona</span><span>'+p.area+' m²</span><span>'+p.floor+'</span></div>'
+    +'<div class="flex flex-wrap gap-1.5 mt-4">'+p.feat.map(f=>'<span class="badge">'+f+'</span>').join('')+'</div>'
+    +'<div class="flex items-end justify-between mt-5 pt-4" style="border-top:1px solid var(--line)">'
+    +'<div><span class="display text-2xl font-bold grad">'+money(p.price)+'</span><span class="text-sm opacity-70">'+(p.deal==='rent'?' $/oy':' $')+'</span></div>'
+    +'<span class="w-10 h-10 rounded-xl grid place-items-center" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></span></div></div></article>';
 }
-const filtered=()=>all.filter(p=>(state.deal==='all'||p.deal===state.deal)&&(state.type==='all'||p.type===state.type)&&(state.rooms==='all'||String(p.rooms)===state.rooms)&&p.price<=state.price&&(p.title.toLowerCase().includes(state.q.toLowerCase())||p.dist.toLowerCase().includes(state.q.toLowerCase())));
-const render=()=>{
-  const list=filtered();
-  $('countOut').textContent=`${list.length} ta e'lon topildi`;
-  $('grid').innerHTML=list.length?list.map(card).join(''):'<div class="col-span-full text-center py-16 glass rounded-3xl"><span class="text-6xl">🏚️</span><p class="font-bold mt-4">Mos e\'lon topilmadi</p><p class="text-sm opacity-60 mt-1">Filtrlarni yumshatib ko\'ring</p></div>';
-  lucide.createIcons();AOS.refresh();
-};
-
-$('featSlides').innerHTML='';
+const list=()=>all.filter(p=>(state.deal==='all'||p.deal===state.deal)&&(state.type==='all'||p.type===state.type)&&(state.rooms==='all'||String(p.rooms)===state.rooms)&&p.price<=state.price&&(p.t.toLowerCase().includes(state.q.toLowerCase())||p.dist.toLowerCase().includes(state.q.toLowerCase())));
+function render(){
+  const l=list();
+  $('countOut').textContent=l.length+' ta e\'lon topildi';
+  $('grid').innerHTML=l.length?l.map(card).join(''):'<div class="col-span-full panel rounded-3xl grid place-items-center py-16 text-center"><span class="text-6xl">🏚️</span><p class="font-bold mt-3">Mos e\'lon topilmadi</p><p class="tag mt-1">Filtrlarni yumshatib ko\'ring</p></div>';
+  lucide.createIcons();runReveals();
+}
 function renderFeat(){
-  $('featSlides').innerHTML=all.map(p=>`
-    <div class="swiper-slide">
-      <div class="rounded-3xl overflow-hidden relative h-[400px] group">
-        <div class="absolute inset-0 bg-gradient-to-br ${p.grad[0]}"></div>
-        <div class="absolute inset-0 photo grid place-items-center text-[8rem]">${p.type==='hovli'?'🏡':p.type==='dacha'?'🌲':p.type==='ofis'?'🏢':'🏠'}</div>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent"></div>
-        <div class="absolute inset-x-0 bottom-0 p-7 text-white">
-          <div class="flex items-center gap-3 text-xs font-bold"><span class="bg-emerald-500 px-2.5 py-1 rounded-lg">${p.deal==='rent'?'IJARAGA':'SOTILADI'}</span><span>${p.rooms} xona · ${p.area} m² · ${p.dist}</span></div>
-          <h3 class="text-3xl font-black mt-3">${p.title}</h3>
-          <div class="flex items-end justify-between mt-4">
-            <div><span class="text-3xl font-black">${money(p.price)}</span><span class="font-semibold opacity-80">${p.deal==='rent'?' $/oy':' $'}</span></div>
-            <button data-view="${p.id}" class="px-5 py-2.5 rounded-2xl bg-white text-slate-900 font-bold text-sm hover:scale-105 transition">Batafsil ko'rish</button>
-          </div>
-        </div>
-      </div>
-    </div>`).join('');
+  $('featSlides').innerHTML=all.map(p=>'<div class="swiper-slide"><div class="rounded-3xl overflow-hidden relative h-[360px] group">'
+    +'<div class="absolute inset-0" style="background:'+p.grads[0]+'"></div>'
+    +'<div class="absolute inset-0 grid place-items-center text-[7rem] group-hover:scale-110 transition duration-700">'+hIcon(p.type)+'</div>'
+    +'<div class="absolute inset-0" style="background:linear-gradient(to top,rgba(2,8,20,.92),transparent 55%)"></div>'
+    +'<div class="absolute inset-x-0 bottom-0 p-6 text-white">'
+    +'<div class="flex items-center gap-3 tag"><span class="badge" style="background:var(--c1);color:#06070c">'+(p.deal==='rent'?'IJARAGA':'SOTILADI')+'</span><span>'+p.rooms+' xona · '+p.area+' m² · '+p.dist+'</span></div>'
+    +'<h3 class="display text-3xl font-bold mt-3">'+p.t+'</h3>'
+    +'<div class="flex items-end justify-between mt-4"><div><span class="display text-3xl font-bold">'+money(p.price)+'</span><span class="opacity-80">'+(p.deal==='rent'?' $/oy':' $')+'</span></div>'
+    +'<button class="btn btn-solid magnet" data-view="'+p.id+'">Batafsil</button></div></div></div></div>').join('');
   featSwiper.update();lucide.createIcons();
 }
-
 function renderPins(){
-  const positions=[[24,26],[62,18],[40,44],[76,50],[30,66],[58,74]];
-  $('pinBox').innerHTML=all.map((p,i)=>`
-    <button class="absolute -translate-x-1/2 -translate-y-1/2 group/pin" style="left:${positions[i%6][0]}%;top:${positions[i%6][1]}%" data-prop="${p.id}" title="${p.title}">
-      <span class="absolute inset-0 rounded-full bg-emerald-400 map-pin"></span>
-      <span class="relative w-9 h-9 rounded-full bg-emerald-500 text-white grid place-items-center text-xs font-black shadow-lg group-hover/pin:scale-125 transition">${p.rooms}</span>
-      <span class="absolute left-1/2 -translate-x-1/2 top-11 whitespace-nowrap text-[11px] font-bold bg-white text-slate-900 px-2 py-1 rounded-lg opacity-0 group-hover/pin:opacity-100 transition shadow-lg">${p.title} — ${money(p.price)} ${p.deal==='rent'?'$/oy':'$'}</span>
-    </button>`).join('');
+  const pos=[[24,26],[62,18],[40,44],[76,50],[30,66],[58,74]];
+  $('pinBox').innerHTML=all.map((p,i)=>'<button class="absolute -translate-x-1/2 -translate-y-1/2 group/pin" style="left:'+pos[i%6][0]+'%;top:'+pos[i%6][1]+'%" data-prop="'+p.id+'" title="'+p.t+'">'
+    +'<span class="absolute inset-0 rounded-full animate-ping" style="background:var(--c1);opacity:.5"></span>'
+    +'<span class="relative w-9 h-9 rounded-full grid place-items-center text-xs font-black shadow-lg group-hover/pin:scale-125 transition" style="background:var(--c1);color:#06070c">'+p.rooms+'</span>'
+    +'<span class="absolute left-1/2 -translate-x-1/2 top-11 whitespace-nowrap text-[11px] font-bold px-2 py-1 rounded-lg opacity-0 group-hover/pin:opacity-100 transition shadow-lg" style="background:#fff;color:#06070c">'+p.t+' — '+money(p.price)+' '+(p.deal==='rent'?'$/oy':'$')+'</span></button>').join('');
   $('pinCount').textContent=all.length+' ta e\'lon';
 }
-
+let propSwiper=null;
 function openProp(id){
-  const p=all.find(x=>x.id===Number(id));if(!p)return;
-  $('propCard').innerHTML=`
-    <div class="relative">
-      <div class="swiper propSwiper h-72">
-        <div class="swiper-wrapper">${p.grad.map(g=>`<div class="swiper-slide bg-gradient-to-br ${g} grid place-items-center text-[7rem]">${p.type==='hovli'?'🏡':p.type==='dacha'?'🌲':p.type==='ofis'?'🏢':'🏠'}</div>`).join('')}</div>
-        <div class="swiper-pagination"></div>
-      </div>
-      <button class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-black/50 text-white grid place-items-center hover:scale-110 transition z-10" data-close><i data-lucide="x"></i></button>
-      <span class="absolute top-4 left-4 text-[11px] font-black bg-emerald-500 text-white px-2.5 py-1 rounded-lg z-10">${p.badge}</span>
-    </div>
-    <div class="p-8">
-      <div class="flex flex-wrap items-start justify-between gap-4">
-        <div><div class="flex items-center gap-2 text-sm font-bold opacity-70"><i data-lucide="map-pin" class="w-4 h-4 text-emerald-500"></i>${p.dist}, Toshkent</div>
-        <h3 class="text-3xl font-black mt-1">${p.title}</h3></div>
-        <div class="text-right"><div class="text-3xl font-black text-emerald-500">${money(p.price)} <span class="text-base">${p.deal==='rent'?'$/oy':'$'}</span></div><div class="text-xs opacity-60">${p.deal==='rent'?'oylik ijara':'bir marta to\'lov'}</div></div>
-      </div>
-      <div class="grid sm:grid-cols-4 gap-3 mt-7">
-        <div class="rounded-2xl glass p-4 text-center"><i data-lucide="layout-grid" class="w-5 h-5 mx-auto text-emerald-500"></i><div class="font-black mt-2">${p.rooms}</div><div class="text-xs opacity-60">xona</div></div>
-        <div class="rounded-2xl glass p-4 text-center"><i data-lucide="square" class="w-5 h-5 mx-auto text-emerald-500"></i><div class="font-black mt-2">${p.area}</div><div class="text-xs opacity-60">m²</div></div>
-        <div class="rounded-2xl glass p-4 text-center"><i data-lucide="building" class="w-5 h-5 mx-auto text-emerald-500"></i><div class="font-black mt-2">${p.floor}</div><div class="text-xs opacity-60">qavat</div></div>
-        <div class="rounded-2xl glass p-4 text-center"><i data-lucide="star" class="w-5 h-5 mx-auto text-emerald-500 fill-emerald-500"></i><div class="font-black mt-2">${p.rate}</div><div class="text-xs opacity-60">reyting</div></div>
-      </div>
-      <p class="opacity-80 mt-6 leading-relaxed">${p.desc}</p>
-      <div class="flex flex-wrap gap-2 mt-5">${p.feat.map(f=>`<span class="text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">✓ ${f}</span>`).join('')}</div>
-      <div class="flex flex-wrap gap-3 mt-7 pt-6 border-t border-black/5 dark:border-white/10">
-        <button id="tourBtn" class="flex-1 min-w-[160px] py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold hover:scale-[1.02] transition">Ko'rishga yozilish</button>
-        <button id="callBtn" class="flex-1 min-w-[160px] py-3.5 rounded-2xl glass font-bold hover:bg-black/5 dark:hover:bg-white/10 transition">Agent bilan bog'lanish</button>
-        <button class="w-14 rounded-2xl grid place-items-center glass hover:text-rose-500 transition" title="Saqlash"><i data-lucide="heart"></i></button>
-      </div>
-      <div class="flex items-center gap-3 mt-6 rounded-2xl glass p-4">
-        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 grid place-items-center text-white font-bold">AK</div>
-        <div class="flex-1"><div class="font-bold text-sm">Anvar Karimov — agent</div><div class="text-xs opacity-60">5 yil tajriba · 214 bitiruv</div></div>
-        <span class="text-xs font-bold text-emerald-500">ONLAYN</span>
-      </div>
-    </div>`;
-  $('propModal').classList.remove('hidden');
-  requestAnimationFrame(()=>$('propCard').classList.remove('scale-90','opacity-0'));
-  document.body.style.overflow='hidden';
-  window.propSwiper=new Swiper('.propSwiper',{loop:true,pagination:{el:'.propSwiper .swiper-pagination',clickable:true}});
+  const p=all.find(x=>x.id===+id);if(!p)return;
+  $('propCard').innerHTML='<div class="relative">'
+    +'<div class="swiper propSwiper h-60"><div class="swiper-wrapper">'+p.grads.map(g=>'<div class="swiper-slide grid place-items-center text-[7rem]" style="background:'+g+'">'+hIcon(p.type)+'</div>').join('')+'</div><div class="swiper-pagination"></div></div>'
+    +'<button class="absolute top-4 right-4 burger" data-close aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button>'
+    +'<span class="absolute top-4 left-4 badge" style="background:var(--c1);color:#06070c">'+p.badge+'</span></div>'
+    +'<div class="p-7"><div class="flex flex-wrap items-start justify-between gap-4">'
+    +'<div><div class="flex items-center gap-2 tag"><i data-lucide="map-pin" class="w-4 h-4" style="color:var(--c1)"></i>'+p.dist+', Toshkent</div>'
+    +'<h3 class="display text-3xl font-bold mt-1">'+p.t+'</h3></div>'
+    +'<div class="text-right"><div class="display text-3xl font-bold grad">'+money(p.price)+' <span class="text-base">'+(p.deal==='rent'?'$/oy':'$')+'</span></div><div class="tag">'+(p.deal==='rent'?'oylik ijara':'bir marta to\'lov')+'</div></div></div>'
+    +'<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-7">'
+    +'<div class="panel p-4 text-center"><i data-lucide="layout-grid" class="w-5 h-5 mx-auto" style="color:var(--c1)"></i><div class="font-display font-bold mt-2">'+p.rooms+'</div><div class="tag">xona</div></div>'
+    +'<div class="panel p-4 text-center"><i data-lucide="square" class="w-5 h-5 mx-auto" style="color:var(--c1)"></i><div class="font-display font-bold mt-2">'+p.area+'</div><div class="tag">m²</div></div>'
+    +'<div class="panel p-4 text-center"><i data-lucide="building" class="w-5 h-5 mx-auto" style="color:var(--c1)"></i><div class="font-display font-bold mt-2">'+p.floor+'</div><div class="tag">qavat</div></div>'
+    +'<div class="panel p-4 text-center"><i data-lucide="star" class="w-5 h-5 mx-auto" style="color:var(--c2)"></i><div class="font-display font-bold mt-2">'+p.rate+'</div><div class="tag">reyting</div></div></div>'
+    +'<p class="opacity-80 mt-6 leading-relaxed">'+p.desc+'</p>'
+    +'<div class="flex flex-wrap gap-2 mt-5">'+p.feat.map(f=>'<span class="badge">✓ '+f+'</span>').join('')+'</div>'
+    +'<div class="flex flex-wrap gap-3 mt-7 pt-6" style="border-top:1px solid var(--line)">'
+    +'<button class="btn btn-solid magnet flex-1 min-w-[160px]">Ko\'rishga yozilish</button>'
+    +'<button class="btn btn-ghost flex-1 min-w-[160px]">Agent bilan bog\'lanish</button></div>'
+    +'<div class="flex items-center gap-3 mt-6 panel p-4">'
+    +'<div class="w-11 h-11 rounded-full grid place-items-center font-bold" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c">AK</div>'
+    +'<div class="flex-1"><div class="font-bold text-sm">Anvar Karimov — agent</div><div class="tag">5 yil tajriba · 214 bitiruv</div></div>'
+    +'<span class="tag" style="color:var(--c1)">ONLAYN</span></div></div>';
+  $('propModal').classList.add('on');document.body.style.overflow='hidden';
+  propSwiper=new Swiper('.propSwiper',{loop:true,pagination:{el:'.propSwiper .swiper-pagination',clickable:true}});
   lucide.createIcons();
 }
-const closeProp=()=>{$('propCard').classList.add('scale-90','opacity-0');setTimeout(()=>{$('propModal').classList.add('hidden');document.body.style.overflow='';},280);};
+function closeProp(){$('propModal').classList.remove('on');document.body.style.overflow='';}
 $('propModal').addEventListener('click',e=>{
   if(e.target.closest('[data-close]')||e.target.hasAttribute('data-close'))closeProp();
-  if(e.target.closest('#tourBtn')){toast('Ko\'rish vaqti belgilandi — agent siz bilan bog\'lanadi');closeProp();}
-  if(e.target.closest('#callBtn')){toast('Agent raqami: +998 90 123 45 67');}
+  if(e.target.closest('.btn')){APP.toast('Operatorimiz tez orada bog\'lanadi');}
 });
-
-$('chips').addEventListener('click',e=>{
-  const b=e.target.closest('.chip');if(!b)return;
-  document.querySelectorAll('#chips .chip').forEach(c=>c.classList.remove('active'));
-  b.classList.add('active');state.deal=b.dataset.s;render();
-});
-$('typeSel').addEventListener('change',e=>{state.type=e.target.value;render();});
-$('roomsSel').addEventListener('change',e=>{state.rooms=e.target.value;render();});
-$('priceRange').addEventListener('input',e=>{state.price=+e.target.value;$('priceOut').textContent=money(state.price)+' $';render();});
-$('qInput').addEventListener('input',e=>{state.q=e.target.value;render();});
-$('goBtn').addEventListener('click',()=>{render();document.getElementById('listings').scrollIntoView({behavior:'smooth'});toast(`Qidiruv natijalari yangilandi`);});
 document.addEventListener('click',e=>{
   const v=e.target.closest('[data-view]');
   if(v){openProp(v.dataset.view);return;}
   const p=e.target.closest('[data-prop]');
   if(p&&$('propModal').classList.contains('hidden'))openProp(p.dataset.prop);
 });
-$('addBtn').addEventListener('click',()=>toast('E\'lon berish formas — demo rejimida faollashtirilmagan'));
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('propModal').classList.contains('hidden'))closeProp();});
-let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2500);}
-
-const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
-const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
-document.getElementById('menuBtn')?.addEventListener('click',openMM);
-document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
-document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
-
+$('chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;
+  $$('#chips .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');state.deal=c.dataset.s;render();});
+$('typeSel').addEventListener('change',e=>{state.type=e.target.value;render();});
+$('roomsSel').addEventListener('change',e=>{state.rooms=e.target.value;render();});
+$('priceRange').addEventListener('input',e=>{state.price=+e.target.value;$('priceOut').textContent=money(state.price)+' $';render();});
+$('qInput').addEventListener('input',e=>{state.q=e.target.value;render();});
+$('goBtn').addEventListener('click',()=>{render();document.getElementById('listings').scrollIntoView({behavior:'smooth'});APP.toast('Qidiruv natijalari yangilandi');});
+$('addBtn').addEventListener('click',()=>APP.toast('E\'lon berish formas — demo rejimida faollashtirilmagan'));
+let featSwiper;
 (async()=>{
-  $('grid').innerHTML='<div class="col-span-full grid place-items-center py-20"><span class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></span></div>';
+  $('grid').innerHTML='<div class="col-span-full grid place-items-center py-20"><span class="w-12 h-12 rounded-full border-4 animate-spin" style="border-color:var(--c1);border-top-color:transparent"></span></div>';
   all=await API();
-  render();renderFeat();renderPins();syncTheme();
+  render();renderFeat();renderPins();
+  featSwiper=new Swiper('.featSwiper',{slidesPerView:1,spaceBetween:0,loop:true,grabCursor:true,pagination:{el:'.featSwiper .swiper-pagination',clickable:true},breakpoints:{640:{slidesPerView:2,spaceBetween:16},900:{slidesPerView:3,spaceBetween:24},1280:{slidesPerView:4,spaceBetween:24}}});
+  lucide.createIcons();
 })();
-let featSwiper=new Swiper('.featSwiper',{slidesPerView:1,spaceBetween:0,loop:true,grabCursor:true,pagination:{el:'.featSwiper .swiper-pagination',clickable:true},breakpoints:{640:{slidesPerView:2,spaceBetween:16},900:{slidesPerView:3,spaceBetween:24},1280:{slidesPerView:4,spaceBetween:24}}});
-AOS.init({duration:850,once:true});
+lucide.createIcons();
+
 </script>
 </body>
 </html>

@@ -1,381 +1,572 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" class="">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#04121f">
 <title>SayohatUz — Turizm agentligi</title>
+<meta name="description" content="Turizm agentligi: 3D manzillar kartochkalari, qidiruv tizimi va bronlash.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{ink:'#04121f'}}}}
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{display:['"Space Grotesk"','system-ui','sans-serif'],sans:['Inter','system-ui','sans-serif'],mono:['"JetBrains Mono"','monospace']},colors:{c1:'#00e5ff',c2:'#ff6b6b',c3:'#ffd60a',ink:'#04121f'}}}}
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
-html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
-.glass{background:rgba(255,255,255,.6);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.5)}
-.dark .glass{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)}
-.blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.45;animation:float 12s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(34px,-46px)}}
+:root{
+  --c1:#00e5ff;--c2:#ff6b6b;--c3:#ffd60a;--ink:#04121f;
+  --line:color-mix(in srgb,var(--fg) 12%,transparent);
+  --panel:color-mix(in srgb,var(--fg) 5%,transparent);
+  --radius:20px;--ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:dark;
+}
+html.light{--panel:color-mix(in srgb,var(--fg) 7%,transparent);--line:color-mix(in srgb,var(--fg) 15%,transparent);color-scheme:light}
+*{-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,system-ui,sans-serif;background:var(--ink);color:var(--fg);
+  overflow-x:hidden;
+}
+.font-display{font-family:'Space Grotesk',system-ui,sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.display{font-weight:700;letter-spacing:-.03em;line-height:.95}
+.grad{background:linear-gradient(100deg,var(--c1),var(--c2) 55%,var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.outline-txt{color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 45%,transparent)}
 
-.scene{perspective:1200px}
-.tilt{transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s;transform-style:preserve-3d;will-change:transform}
-.tilt-inner{transform-style:preserve-3d}
-.tilt .layer{transform:translateZ(50px)}
-.tilt .layer-deep{transform:translateZ(90px)}
-.tilt 
-.tilt:hover{box-shadow:0 40px 80px -20px rgba(2,132,199,.5)}
-.tilt .glare{position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.35),transparent 55%);opacity:0;transition:opacity .4s;pointer-events:none}
-.tilt:hover .glare{opacity:1}
-::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#0ea5e9;border-radius:99px}
-.chip.active{background:#0ea5e9;border-color:#0ea5e9;color:#fff}
-.star-pop{animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
-@keyframes pop{0%{transform:scale(0) rotate(-60deg)}100%{transform:scale(1) rotate(0)}}
+/* atmosfera qatlamlari */
+.noise,.scan,.gridbg{position:fixed;inset:0;pointer-events:none;z-index:1}
+.noise{opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:overlay}
+.gridbg{background-image:linear-gradient(color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(circle at 50% 30%,#000,transparent 78%)}
+.scan{background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.14) 3px 4px);opacity:.35}
+#three-bg{position:fixed;inset:0;z-index:0;opacity:.9}
+
+/* kursor */
+#cursor{position:fixed;left:0;top:0;z-index:9998;pointer-events:none;mix-blend-mode:difference}
+#cursor .ring{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border:1.5px solid #fff;border-radius:50%;transition:width .3s var(--ease),height .3s var(--ease),margin .3s var(--ease),opacity .3s}
+#cursor .dot{position:absolute;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:#fff;border-radius:50%}
+#cursor.hovering .ring{width:64px;height:64px;margin:-32px 0 0 -32px;opacity:.55}
+@media (hover:none),(pointer:coarse){#cursor{display:none}}
+
+/* preloader */
+#pre{position:fixed;inset:0;z-index:9999;background:var(--ink);display:grid;place-items:center;text-align:center}
+#pre .bar{width:min(320px,70vw);height:2px;background:color-mix(in srgb,var(--fg) 14%,transparent);margin:22px auto 0;overflow:hidden}
+#pre .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c1),var(--c2))}
+#pre .num{font-family:'JetBrains Mono',monospace;font-size:12px;opacity:.6;margin-top:12px;letter-spacing:.2em}
+#pre .name{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,64px);letter-spacing:-.03em}
+
+/* nav */
+.nav-blur{background:color-mix(in srgb,var(--ink) 62%,transparent);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.nav-link{position:relative}
+.nav-link::after{content:'';position:absolute;left:0;bottom:-4px;height:1.5px;width:0;background:linear-gradient(90deg,var(--c1),var(--c2));transition:width .35s var(--ease)}
+.nav-link:hover::after,.nav-link.active::after{width:100%}
+
+/* fullscreen menyu */
+#menu{position:fixed;inset:0;z-index:9990;background:color-mix(in srgb,var(--ink) 94%,transparent);backdrop-filter:blur(24px);
+  clip-path:circle(0% at calc(100% - 44px) 44px);transition:clip-path .8s var(--ease);display:flex;flex-direction:column;justify-content:center;padding:8vw}
+#menu.open{clip-path:circle(150% at calc(100% - 44px) 44px)}
+#menu a{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,72px);letter-spacing:-.03em;line-height:1.05;
+  color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 55%,transparent);transition:.4s var(--ease);display:block}
+#menu a:hover,#menu a:focus-visible{-webkit-text-stroke:1.4px var(--c2);color:var(--c2);transform:translateX(14px)}
+.burger{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.burger i{display:block;width:18px;height:1.6px;background:var(--fg);transition:.35s var(--ease)}
+.burger i+i{margin-top:5px}
+.burger.x i:first-child{transform:translateY(3.3px) rotate(45deg)}
+.burger.x i:last-child{transform:translateY(-3.3px) rotate(-45deg)}
+
+/* panellar */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(14px)}
+.glow{position:relative}
+.glow::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;
+  background:conic-gradient(from var(--a,0deg),transparent 0 55%,var(--c1) 70%,var(--c2) 85%,transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .4s;animation:spin 4s linear infinite}
+.glow:hover::before{opacity:1}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes spin{to{--a:360deg}}
+.tilt{transition:transform .5s var(--ease),box-shadow .5s;transform-style:preserve-3d;will-change:transform}
+.magnet{transition:transform .35s var(--ease)}
+.marquee{display:flex;width:max-content;animation:marq 26s linear infinite}
+@keyframes marq{to{transform:translateX(-50%)}}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:floaty 14s ease-in-out infinite;pointer-events:none}
+@keyframes floaty{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.12)}}
+.reveal{opacity:0;transform:translateY(34px)}
+.reveal-l{opacity:0;transform:translateX(-40px)}
+::-webkit-scrollbar{width:9px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--c1),var(--c2));border-radius:9px}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--c2);outline-offset:3px;border-radius:8px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.55rem;font-weight:700;
+  border-radius:999px;padding:.85rem 1.6rem;font-size:.92rem;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s;isolation:isolate}
+.btn::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,var(--c1),var(--c2));transition:filter .3s}
+.btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 14px 40px -12px var(--c1)}
+.btn-solid{color:#06070c}
+.btn-ghost{border:1px solid var(--line);background:var(--panel)}
+.btn-ghost::after{display:none}
+.btn-ghost:hover{border-color:var(--c2);color:var(--c2)}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:.5rem 1rem;font-size:.8rem;font-weight:600;transition:.3s}
+.chip:hover{border-color:var(--c2);color:var(--c2)}
+.chip.on{background:linear-gradient(100deg,var(--c1),var(--c2));color:#06070c;border-color:transparent}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;opacity:.62}
+.hairline{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+.toast-box{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:9997;opacity:0;transition:.4s var(--ease);pointer-events:none}
+.toast-box.on{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;z-index:9995;display:none}
+.modal.on{display:grid;place-items:center;padding:16px}
+.modal .veil{position:absolute;inset:0;background:rgba(2,3,8,.72);backdrop-filter:blur(8px)}
+.modal .card{position:relative;transform:scale(.94) translateY(14px);opacity:0;transition:.4s var(--ease)}
+.modal.on .card{transform:none;opacity:1}
+.badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;padding:.28rem .55rem;border-radius:6px;border:1px solid var(--line);background:var(--panel)}
+.glitch{position:relative}
+.glitch:hover::before,.glitch:hover::after{content:attr(data-t);position:absolute;inset:0;background:var(--ink)}
+.glitch:hover::before{color:var(--c1);transform:translate(-2px,-1px);clip-path:inset(0 0 62% 0)}
+.glitch:hover::after{color:var(--c2);transform:translate(2px,1px);clip-path:inset(58% 0 0 0)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}#three-bg{display:none}}
+
 </style>
 </head>
-<body class="bg-sky-50 text-slate-800 dark:bg-ink dark:text-slate-200 transition-colors duration-500 overflow-x-hidden">
+<body class="min-h-[100svh]">
+<div id="scrollProgress" class="fixed top-0 left-0 h-[3px] z-[70] pointer-events-none" style="background:linear-gradient(90deg,var(--c1),var(--c2));width:0" aria-hidden="true"></div>
+<div id="three-bg" aria-hidden="true"></div>
+<div class="gridbg" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true"></div>
+<div class="noise" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"><div class="ring"></div><div class="dot"></div></div>
+<div id="pre"><div><div class="name">SayohatUz</div><div class="bar"><i id="preBar"></i></div><div class="num" id="preNum">0%</div></div></div>
 
-<div class="blob bg-sky-400 w-80 h-80 -top-24 -left-24"></div>
-<div class="blob bg-cyan-300 w-72 h-72 top-[40%] -right-24" style="animation-delay:3s"></div>
-<div class="blob bg-amber-300 w-64 h-64 bottom-10 left-1/4" style="animation-delay:6s"></div>
-
-<header id="nav" class="sticky top-0 z-50 glass transition-shadow">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
-    <a href="#" class="flex items-center gap-2 font-black text-xl"><span class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-600 grid place-items-center text-white shadow-lg"><i data-lucide="palmtree"></i></span>Sayohat<span class="text-sky-500">Uz</span></a>
-    <nav class="hidden lg:flex items-center gap-6 text-sm font-medium flex-1">
-      <a class="hover:text-sky-500 transition" href="#destinations">Manzillar</a>
-      <a class="hover:text-sky-500 transition" href="#tours">Turlar</a>
-      <a class="hover:text-sky-500 transition" href="#booking">Band qilish</a>
-      <a class="hover:text-sky-500 transition" href="#reviews">Sharhlar</a>
-    </nav>
-    <button id="menuBtn" class="lg:hidden w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
-    <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
-    <button id="callBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-600 text-white text-sm font-bold hover:scale-105 transition shadow-lg">Qo'ng'iroq</button>
+<header id="nav" class="fixed inset-x-0 top-0 z-[60] transition-all duration-500">
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 h-[68px] flex items-center gap-5">
+    <a href="#top" class="font-display font-bold text-lg tracking-tight flex items-center gap-2.5 shrink-0">
+      <span class="w-9 h-9 rounded-xl grid place-items-center" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c"><i data-lucide="palmtree" class="w-[18px] h-[18px]"></i></span>
+      SayohatUz
+    </a>
+    <nav class="hidden lg:flex items-center gap-7 text-[13px] font-semibold ml-4"><a class="nav-link hover:opacity-70 transition" href="#destinations">Manzillar</a><a class="nav-link hover:opacity-70 transition" href="#tours">Turlar</a><a class="nav-link hover:opacity-70 transition" href="#booking">Band qilish</a><a class="nav-link hover:opacity-70 transition" href="#reviews">Sharhlar</a></nav>
+    <div class="ml-auto flex items-center gap-2">
+      <button id="themeBtn" class="burger" aria-label="Kun/tun rejimi"><i data-lucide="sun" id="themeIcon" class="w-[18px] h-[18px]"></i></button>
+      <a href="#booking" class="btn btn-solid magnet hidden sm:inline-flex">Band qilish</a>
+      <button id="menuBtn" class="burger lg:hidden" aria-label="Menyu"><span class="block"><i></i><i></i></span></button>
+    </div>
   </div>
-
 </header>
 
-<section class="relative pt-14 pb-8 px-5">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center max-w-3xl mx-auto mb-10">
-      <span class="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full glass mb-5" data-aos="fade-down"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-sky-500"></i> 2026-yil kuzgi ta'tillari mavjud</span>
-      <h1 class="text-5xl lg:text-6xl font-black leading-[1.08]" data-aos="fade-up">Dunyoning <span class="text-sky-500">go'zal</span> burchaklarini kashf eting</h1>
-      <p class="mt-5 text-lg text-slate-600 dark:text-slate-400" data-aos="fade-up" data-aos-delay="100">Tayyor turlar, chiptalar, viza va sug'urta — bitta joyda. Biz bilan sayohat qilish oson va qulay.</p>
-    </div>
+<div id="menu">
+  <div class="tag mb-6">Menyu</div>
+  <a href="#top">Bosh sahifa</a><a href="#destinations">Manzillar</a><a href="#tours">Turlar</a><a href="#booking">Band qilish</a><a href="#reviews">Sharhlar</a><a href="#call">Qo'ng'iroq</a>
+  <div class="mono text-xs opacity-45 mt-9">SayohatUz · 2026</div>
+  <button id="menuClose" class="absolute top-5 right-5 burger" aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button>
+</div>
 
-    <div class="glass rounded-3xl p-3 shadow-2xl max-w-4xl mx-auto" data-aos="zoom-in">
-      <div class="grid md:grid-cols-[1.2fr,1fr,1fr,auto] gap-2">
-        <label class="rounded-2xl bg-white/60 dark:bg-white/5 px-4 py-3.5 flex items-center gap-3 focus-within:ring-2 ring-sky-500 transition">
-          <i data-lucide="map-pin" class="w-5 h-5 text-sky-500 shrink-0"></i>
-          <span class="flex-1 min-w-0"><span class="block text-[11px] font-bold opacity-60">QAYERGA</span>
-          <input id="whereInput" class="bg-transparent outline-none text-sm font-bold w-full" placeholder="Shahar yoki mamlakat" list="destList"></span>
-          <datalist id="destList"><option value="Istanbul"></option><option value="Dubai"></option><option value="Antaliya"></option><option value="Male"></option><option value="Toshkent"></option><option value="Parij"></option></datalist>
+<main id="top" class="relative z-10">
+
+
+<section class="relative flex min-h-[100svh] items-center px-4 sm:px-6 lg:px-10 pt-28 pb-12">
+  <div class="blob w-[420px] h-[420px] -left-24 top-0" style="background:var(--c1)"></div>
+  <div class="blob w-[340px] h-[340px] right-0 bottom-10" style="background:var(--c2);animation-delay:3s"></div>
+  <div class="max-w-[1400px] mx-auto w-full">
+    <div class="max-w-3xl mb-10">
+      <div class="tag reveal mb-5">2026-yil kuzgi ta'tillari mavjud</div>
+      <h1 class="display text-[clamp(40px,7.5vw,96px)] reveal" data-split>Dunyoning go'zal burchaklarini kashf eting</h1>
+      <p class="mt-5 text-base sm:text-lg opacity-70 reveal">Tayyor turlar, chiptalar, viza va sug'urta — bitta joyda.</p>
+    </div>
+    <div class="panel rounded-3xl p-3 max-w-4xl reveal glow">
+      <div class="grid md:grid-cols-[1.2fr_1fr_1fr_auto] gap-2">
+        <label class="rounded-2xl px-4 py-3.5 flex items-center gap-3" style="background:var(--panel)">
+          <i data-lucide="map-pin" class="w-5 h-5 shrink-0" style="color:var(--c1)"></i>
+          <span class="flex-1 min-w-0 block"><span class="tag block">Qayerga</span>
+          <input id="whereInput" list="destList" class="bg-transparent outline-none text-sm font-bold w-full" placeholder="Shahar yoki mamlakat"></span>
+          <datalist id="destList"><option value="Istanbul"></option><option value="Dubai"></option><option value="Antaliya"></option><option value="Male"></option><option value="Parij"></option></datalist>
         </label>
-        <label class="rounded-2xl bg-white/60 dark:bg-white/5 px-4 py-3.5 flex items-center gap-3 focus-within:ring-2 ring-sky-500 transition cursor-pointer">
-          <i data-lucide="calendar" class="w-5 h-5 text-sky-500 shrink-0"></i>
-          <span class="flex-1 min-w-0"><span class="block text-[11px] font-bold opacity-60">QACHON</span>
-          <input type="date" id="dateInput" class="bg-transparent outline-none text-sm font-bold w-full"></span>
+        <label class="rounded-2xl px-4 py-3.5 flex items-center gap-3 cursor-pointer" style="background:var(--panel)">
+          <i data-lucide="calendar" class="w-5 h-5 shrink-0" style="color:var(--c1)"></i>
+          <span class="flex-1 min-w-0 block"><span class="tag block">Qachon</span><input type="date" id="dateInput" class="bg-transparent outline-none text-sm font-bold w-full"></span>
         </label>
-        <label class="rounded-2xl bg-white/60 dark:bg-white/5 px-4 py-3.5 flex items-center gap-3 focus-within:ring-2 ring-sky-500 transition cursor-pointer">
-          <i data-lucide="users" class="w-5 h-5 text-sky-500 shrink-0"></i>
-          <span class="flex-1 min-w-0"><span class="block text-[11px] font-bold opacity-60">KIMLAR</span>
-          <select id="peopleSelect" class="bg-transparent outline-none text-sm font-bold w-full cursor-pointer">
-            <option>1 kishi</option><option selected>2 kishi</option><option>Oilaviy (4)</option><option>Guruh (6+)</option>
-          </select></span>
+        <label class="rounded-2xl px-4 py-3.5 flex items-center gap-3 cursor-pointer" style="background:var(--panel)">
+          <i data-lucide="users" class="w-5 h-5 shrink-0" style="color:var(--c1)"></i>
+          <span class="flex-1 min-w-0 block"><span class="tag block">Kimlar</span>
+          <select id="peopleSelect" class="bg-transparent outline-none text-sm font-bold w-full cursor-pointer"><option>1 kishi</option><option selected>2 kishi</option><option>Oilaviy (4)</option><option>Guruh (6+)</option></select></span>
         </label>
-        <button id="searchBtn" class="rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-600 text-white font-bold px-8 py-4 hover:scale-[1.02] transition flex items-center justify-center gap-2">
-          <i data-lucide="search" class="w-5 h-5"></i>Qidirish
-        </button>
+        <button id="searchBtn" class="btn btn-solid magnet"><i data-lucide="search" class="w-[18px] h-[18px]"></i>Qidirish</button>
       </div>
     </div>
-    <p id="searchEcho" class="text-center text-sm opacity-60 mt-3"></p>
+    <p id="searchEcho" class="tag mt-3"></p>
   </div>
 </section>
 
-<section id="destinations" class="py-14 px-5">
-  <div class="max-w-7xl mx-auto">
-    <div class="flex flex-wrap items-end justify-between gap-4 mb-9" data-aos="fade-up">
+<section id="destinations" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-9">
       <div>
-        <h2 class="text-4xl font-black">Mashhur <span class="text-sky-500">manzillar</span></h2>
-        <p class="mt-2 text-slate-600 dark:text-slate-400">Kartani sichqoncha bilan boshqaring — 3D effektni his qiling</p>
+        <h2 class="display text-[clamp(28px,4.5vw,52px)] reveal" data-split>Mashhur manzillar</h2>
+        <p class="opacity-70 mt-2 reveal">Kartani sichqoncha bilan boshqaring — 3D effektni his qiling</p>
       </div>
-      <div id="filterChips" class="flex flex-wrap gap-2">
-        <button class="chip active px-4 py-2 rounded-full border text-sm font-semibold transition" data-f="all">Barchasi</button>
-        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-f="beach">Sohil</button>
-        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-f="city">Shahar</button>
-        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-f="nature">Tabiat</button>
+      <div id="filterChips" class="flex flex-wrap gap-2 reveal">
+        <button class="chip on" data-f="all">Barchasi</button>
+        <button class="chip" data-f="beach">Sohil</button>
+        <button class="chip" data-f="city">Shahar</button>
+        <button class="chip" data-f="nature">Tabiat</button>
       </div>
     </div>
-    <div id="destGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 scene"></div>
+    <div id="destGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 </section>
 
-<section id="tours" class="py-12 px-5">
-  <div class="max-w-7xl mx-auto">
-    <h2 class="text-4xl font-black mb-3" data-aos="fade-up">Tayyor <span class="text-sky-500">turlar</span></h2>
-    <p class="text-slate-600 dark:text-slate-400 mb-8" data-aos="fade-up">Narxga chipta, mehmonxona va transfer allaqachon kiritilgan</p>
-    <div class="swiper tourSwiper pb-14">
-      <div class="swiper-wrapper" id="tourSlides"></div>
-      <div class="swiper-pagination"></div>
-    </div>
+<section id="tours" class="relative px-4 sm:px-6 lg:px-10 py-10">
+  <div class="max-w-[1400px] mx-auto">
+    <h2 class="display text-[clamp(28px,4.5vw,52px)] mb-8 reveal" data-split>Tayyor turlar</h2>
+    <div class="swiper tourSwiper pb-12"><div class="swiper-wrapper" id="tourSlides"></div><div class="swiper-pagination"></div></div>
   </div>
 </section>
 
-<section id="booking" class="py-14 px-5">
-  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
-    <div class="glass rounded-3xl p-8" data-aos="fade-right">
-      <h2 class="text-3xl font-black">Sayohatni <span class="text-sky-500">bronlang</span></h2>
-      <p class="opacity-70 mt-2 text-sm">Mutaxassisimiz 30 daqiqada eng yaxshi variantni taklif qiladi</p>
-      <form id="bookForm" class="mt-7 space-y-4">
-        <div class="grid sm:grid-cols-2 gap-4">
-          <input required placeholder="Ism va familiya" class="px-4 py-3.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 outline-none focus:ring-2 ring-sky-500 transition text-sm font-medium">
-          <input required type="tel" placeholder="+998 __ ___ __ __" class="px-4 py-3.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 outline-none focus:ring-2 ring-sky-500 transition text-sm font-medium">
+<section id="booking" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1200px] mx-auto grid lg:grid-cols-2 gap-6">
+    <div class="panel p-8 reveal glow">
+      <h2 class="display text-[clamp(24px,3.5vw,40px)]" data-split>Sayohatni bronlang</h2>
+      <p class="opacity-70 mt-2 text-sm reveal">Mutaxassisimiz 30 daqiqada eng yaxshi variantni taklif qiladi</p>
+      <form id="bookForm" class="mt-7 space-y-3">
+        <div class="grid sm:grid-cols-2 gap-3">
+          <input required placeholder="Ism va familiya" class="w-full px-4 py-3.5 rounded-2xl outline-none text-sm font-medium" style="background:var(--panel);border:1px solid var(--line)">
+          <input required type="tel" placeholder="+998 __ ___ __ __" class="w-full px-4 py-3.5 rounded-2xl outline-none text-sm font-medium" style="background:var(--panel);border:1px solid var(--line)">
         </div>
-        <select class="w-full px-4 py-3.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 outline-none focus:ring-2 ring-sky-500 transition text-sm font-medium">
+        <select class="w-full px-4 py-3.5 rounded-2xl outline-none text-sm font-medium" style="background:var(--panel);border:1px solid var(--line)">
           <option>Istanbul — 3 kun, 2 kecha</option><option>Dubai — 5 kun, 4 kecha</option><option>Antaliya — 7 kun, oziq-ovqat bilan</option><option>Maldiv orollari — 6 kun</option>
         </select>
-        <div class="grid sm:grid-cols-2 gap-4">
-          <input type="date" class="px-4 py-3.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 outline-none focus:ring-2 ring-sky-500 transition text-sm font-medium">
-          <input type="number" min="1" value="2" placeholder="Kishilar soni" class="px-4 py-3.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 outline-none focus:ring-2 ring-sky-500 transition text-sm font-medium">
+        <div class="grid sm:grid-cols-2 gap-3">
+          <input type="date" class="w-full px-4 py-3.5 rounded-2xl outline-none text-sm font-medium" style="background:var(--panel);border:1px solid var(--line)">
+          <input type="number" min="1" value="2" placeholder="Kishilar soni" class="w-full px-4 py-3.5 rounded-2xl outline-none text-sm font-medium" style="background:var(--panel);border:1px solid var(--line)">
         </div>
-        <textarea rows="3" placeholder="Qo'shimcha istaklar (ovqat, o'rin, uchish vaqti)..." class="w-full px-4 py-3.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 outline-none focus:ring-2 ring-sky-500 transition text-sm font-medium"></textarea>
-        <button class="w-full py-4 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-600 text-white font-bold hover:scale-[1.02] transition shadow-lg">Bron so'rovini yuborish</button>
+        <textarea rows="3" placeholder="Qo'shimcha istaklar (ovqat, o'rin, uchish vaqti)..." class="w-full px-4 py-3.5 rounded-2xl outline-none text-sm font-medium resize-none" style="background:var(--panel);border:1px solid var(--line)"></textarea>
+        <button class="btn btn-solid w-full magnet">Bron so'rovini yuborish</button>
       </form>
     </div>
-    <div class="space-y-5">
-      <div class="rounded-3xl overflow-hidden glass" data-aos="fade-left">
-        <div class="h-48 bg-gradient-to-br from-sky-500 to-indigo-600 grid place-items-center text-7xl">🕌</div>
+    <div class="space-y-4">
+      <div class="panel overflow-hidden reveal glow" data-tilt>
+        <div class="h-44 grid place-items-center text-7xl" style="background:linear-gradient(135deg,var(--c1),#4f46e5)">🕌</div>
         <div class="p-6">
-          <h3 class="font-black text-xl">Istanbul — 2 kecha</h3>
-          <div class="flex items-center gap-4 mt-3 text-sm opacity-75"><span class="flex items-center gap-1"><i data-lucide="plane" class="w-4 h-4"></i>Aviabilet</span><span class="flex items-center gap-1"><i data-lucide="bed" class="w-4 h-4"></i>4* mehmonxona</span><span class="flex items-center gap-1"><i data-lucide="utensils" class="w-4 h-4"></i>Nonushta</span></div>
+          <h3 class="font-display font-bold text-xl">Istanbul — 2 kecha</h3>
+          <div class="flex flex-wrap gap-4 tag mt-3"><span>✈️ Aviabilet</span><span>🛏 4* mehmonxona</span><span>🍽 Nonushta</span></div>
           <div class="flex items-end justify-between mt-5">
-            <div><span class="text-3xl font-black text-sky-500">6 490 000</span><span class="text-sm opacity-60"> so'm</span><div class="text-xs opacity-60 line-through">7 900 000 so'm</div></div>
-            <button data-quick="Istanbul" class="px-4 py-2.5 rounded-xl bg-sky-500 text-white font-bold text-sm hover:scale-105 transition">Tanlash</button>
+            <div><span class="display text-3xl font-bold grad">6 490 000</span><span class="text-sm opacity-70"> so'm</span><div class="text-xs opacity-50 line-through">7 900 000 so'm</div></div>
+            <button data-quick="Istanbul" class="btn btn-solid magnet">Tanlash</button>
           </div>
         </div>
       </div>
-      <div class="glass rounded-3xl p-6" data-aos="fade-left" data-aos-delay="100">
-        <h4 class="font-black flex items-center gap-2"><i data-lucide="shield-check" class="text-sky-500"></i> Nega biz bilan?</h4>
+      <div class="panel p-6 reveal glow">
+        <h4 class="font-display font-bold flex items-center gap-2"><i data-lucide="shield-check" style="color:var(--c1)"></i>Nega biz bilan?</h4>
         <ul class="mt-4 space-y-3 text-sm">
-          <li class="flex gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-sky-500 shrink-0"></i> To'liq sug'urta va viza qo'llab-quvvati</li>
-          <li class="flex gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-sky-500 shrink-0"></i> 24/7 yordam telefon raqami</li>
-          <li class="flex gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-sky-500 shrink-0"></i> Bo'lib to'lash — 0% foiz</li>
-          <li class="flex gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-sky-500 shrink-0"></i> 500+ muvaffaqiyatli sayohat har oy</li>
+          <li class="flex gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 shrink-0" style="color:var(--c1)"></i>To'liq sug'urta va viza qo'llab-quvvati</li>
+          <li class="flex gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 shrink-0" style="color:var(--c1)"></i>24/7 yordam telefon raqami</li>
+          <li class="flex gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 shrink-0" style="color:var(--c1)"></i>Bo'lib to'lash — 0% foiz</li>
+          <li class="flex gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 shrink-0" style="color:var(--c1)"></i>500+ muvaffaqiyatli sayohat har oy</li>
         </ul>
       </div>
     </div>
   </div>
 </section>
 
-<section id="reviews" class="py-14 px-5">
-  <div class="max-w-6xl mx-auto">
-    <h2 class="text-4xl font-black mb-10 text-center" data-aos="fade-up">Sayohatchilar <span class="text-sky-500">sharhlari</span></h2>
-    <div class="swiper revSwiper pb-14">
-      <div class="swiper-wrapper" id="revSlides"></div>
-      <div class="swiper-pagination"></div>
-    </div>
+<section id="reviews" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1200px] mx-auto">
+    <h2 class="display text-[clamp(28px,4.5vw,52px)] text-center mb-10 reveal" data-split>Sayohatchilar sharhlari</h2>
+    <div class="swiper revSwiper pb-12"><div class="swiper-wrapper" id="revSlides"></div><div class="swiper-pagination"></div></div>
   </div>
 </section>
 
-<footer class="border-t border-black/5 dark:border-white/10 py-10 px-5">
-  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-    <div class="flex items-center gap-2 font-black"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-600 grid place-items-center text-white"><i data-lucide="palmtree" class="w-5 h-5"></i></span>SayohatUz</div>
-    <p class="text-sm opacity-60">© 2026 SayohatUz Travel Agency. Toshkent.</p>
-    <div class="flex gap-2">
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-sky-500 transition"><i data-lucide="instagram"></i></a>
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-sky-500 transition"><i data-lucide="telegram"></i></a>
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-sky-500 transition"><i data-lucide="phone"></i></a>
+<section id="call" class="relative px-4 sm:px-6 lg:px-10 pb-6">
+  <div class="max-w-[1200px] mx-auto panel rounded-3xl p-8 text-center reveal glow">
+    <div class="tag">Operator</div>
+    <div class="display text-[clamp(26px,4vw,44px)] font-bold mt-3 grad">+998 71 300 30 30</div>
+    <p class="opacity-70 mt-2">Har kuni 09:00 – 20:00 · Bepul konsultatsiya</p>
+  </div>
+</section>
+</main>
+
+<footer class="relative z-10 mt-10">
+  <div class="overflow-hidden border-y" style="border-color:var(--line)">
+    <div class="marquee py-5 font-display font-bold text-[clamp(28px,5vw,58px)] tracking-tight opacity-25 whitespace-nowrap">
+      <span>SAYOHATUZ · DUNYONI KASHF ETING · </span><span>SAYOHATUZ · DUNYONI KASHF ETING · </span>
     </div>
+  </div>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-9 flex flex-col md:flex-row items-center justify-between gap-5 text-xs opacity-60">
+    <div class="font-display font-bold text-sm opacity-100">SayohatUz</div>
+    <div>© 2026 · SayohatUz — barcha huquqlar himoyalangan</div>
+    <div class="flex gap-2"><a href="#" class="burger" aria-label="Instagram"><i data-lucide="instagram" class="w-[18px] h-[18px]"></i></a><a href="#" class="burger" aria-label="Telegram"><i data-lucide="send" class="w-[18px] h-[18px]"></i></a></div>
   </div>
 </footer>
 
-<div id="mobileMenu" class="lg:hidden fixed inset-0 z-[60] hidden">
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
-  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
-      <span class="font-black text-lg">Menyu</span>
-      <button class="w-9 h-9 grid place-items-center rounded-xl bg-black/5 dark:bg-white/10" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
-    </div>
-    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#destinations"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Manzillar</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#tours"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Turlar</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#booking"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Band qilish</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#reviews"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Sharhlar</a>
-    </nav>
-    <div class="px-5 py-4 border-t border-black/10 dark:border-white/10 text-xs opacity-60">© 2026 — barcha huquqlar himoyalangan</div>
-  </aside>
-</div>
+<div id="toast" class="toast-box panel px-5 py-3 flex items-center gap-3 text-sm font-bold"><i data-lucide="check-circle-2" class="w-5 h-5" style="color:var(--c2)"></i><span id="toastMsg"></span></div>
 
-<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] hidden">
-  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold shadow-xl"><i data-lucide="check-circle-2" class="text-sky-500"></i><span id="toastMsg"></span></div>
-</div>
-
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
-
-const root=document.documentElement;
-if(localStorage.getItem('su-theme')==='dark'||(!localStorage.getItem('su-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
-const themeIcon=document.getElementById('themeIcon');
-const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'moon':'sun');lucide.createIcons();};
-document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('su-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
-
+const APP={
+  brand:'SayohatUz',
+  theme:()=>document.documentElement.classList.contains('light')?'light':'dark',
+  toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('on');clearTimeout(this._t);this._t=setTimeout(()=>t.classList.remove('on'),2400);},
+  money(n,cur){return n.toLocaleString('ru-RU').replace(/,/g,' ')+(cur!==undefined?' '+cur:'');},
+  rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;},
+  sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+};
 const $=id=>document.getElementById(id);
-const DESTINATIONS=[
-  {id:1,city:'Istanbul',country:'Turkiya',type:'city',emoji:'🕌',g:'from-sky-500 via-indigo-500 to-purple-600',price:6490000,days:'3 kun / 2 kecha',rate:4.9,reviews:214,hot:true,tag:'Shahar ta\'tili'},
-  {id:2,city:'Dubai',country:'BAA',type:'city',emoji:'🏙️',g:'from-amber-400 via-orange-500 to-rose-500',price:9890000,days:'5 kun / 4 kecha',rate:4.8,reviews:186,hot:true,tag:'Shoir va sharq'},
-  {id:3,city:'Antaliya',country:'Turkiya',type:'beach',emoji:'🏖️',g:'from-cyan-400 via-sky-500 to-blue-600',price:7290000,days:'7 kun / oziq-ovqat bilan',rate:4.9,reviews:342,hot:true,tag:'All inclusive'},
-  {id:4,city:'Maldiv orollari',country:'Maldivlar',type:'beach',emoji:'🏝️',g:'from-teal-400 via-cyan-500 to-sky-600',price:15900000,days:'6 kun / bungalov',rate:5.0,reviews:98,hot:false,tag:'To\'y va romantika'},
-  {id:5,city:'Parij',country:'Fransiya',type:'city',emoji:'🗼',g:'from-rose-400 via-pink-500 to-fuchsia-600',price:13400000,days:'4 kun / 3 kecha',rate:4.7,reviews:145,hot:false,tag:'San\'at shahri'},
-  {id:6,city:'Chimyon',country:'O\'zbekiston',type:'nature',emoji:'⛰️',g:'from-emerald-400 via-teal-500 to-cyan-600',price:2490000,days:'3 kun / 2 kecha',rate:4.6,reviews:87,hot:false,tag:'Tabiat va buloq'},
+const $$=s=>[...document.querySelectorAll(s)];
+
+/* Kun / tun rejimi */
+(function(){
+  const saved=localStorage.getItem('loyiha8-theme');
+  const sys=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  const mode=saved||sys;
+  document.documentElement.classList.toggle('light',mode==='light');
+  const sync=()=>{const l=document.documentElement.classList.contains('light');
+    $('themeIcon').setAttribute('data-lucide',l?'moon':'sun');document.documentElement.style.setProperty('--fg',l?'#0d1220':'#e9edf7');lucide.createIcons();};
+  setTimeout(sync,0);
+  $('themeBtn').addEventListener('click',()=>{
+    document.documentElement.classList.toggle('light');
+    localStorage.setItem('loyiha8-theme',document.documentElement.classList.contains('light')?'light':'dark');
+    sync();
+  });
+})();
+
+/* Fullscreen menyu */
+(function(){
+  const menu=$('menu'),btn=$('menuBtn');
+  const open=()=>{menu.classList.add('open');btn.classList.add('x');document.body.style.overflow='hidden';};
+  const close=()=>{menu.classList.remove('open');btn.classList.remove('x');document.body.style.overflow='';};
+  btn.addEventListener('click',()=>menu.classList.contains('open')?close():open());
+  $('menuClose').addEventListener('click',close);
+  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+  addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+})();
+
+/* Kursor */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  const c=$('cursor');
+  let x=innerWidth/2,y=innerHeight/2;
+  addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY;});
+  (function loop(){c.style.transform=`translate(${x}px,${y}px)`;requestAnimationFrame(loop);})();
+  document.addEventListener('mouseover',e=>{
+    if(e.target.closest('a,button,[data-cursor]'))c.classList.add('hovering');else c.classList.remove('hovering');
+  });
+})();
+
+/* Magnit tugmalar */
+(function(){
+  $$('.magnet').forEach(el=>{
+    el.addEventListener('mousemove',e=>{
+      const r=el.getBoundingClientRect();
+      el.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.22}px,${(e.clientY-r.top-r.height/2)*.22}px)`;
+    });
+    el.addEventListener('mouseleave',()=> el.style.transform='');
+  });
+})();
+
+/* 3D tilt kartochkalar */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  $$('[data-tilt]').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+      card.style.transform=`perspective(900px) rotateX(${(py-.5)*-9}deg) rotateY(${(px-.5)*11}deg)`;
+    });
+    card.addEventListener('mouseleave',()=> card.style.transform='');
+  });
+})();
+
+/* Preloader */
+(function(){
+  const bar=$('preBar'),num=$('preNum'),pre=$('pre');
+  let p=0;
+  const t=setInterval(()=>{
+    p=Math.min(100,p+Math.random()*13+4);
+    bar.style.width=p+'%';num.textContent=Math.floor(p)+'%';
+    if(p>=100){clearInterval(t);setTimeout(()=>{
+      pre.style.transition='opacity .6s var(--ease),clip-path .8s var(--ease)';
+      pre.style.clipPath='inset(0 0 100% 0)';pre.style.opacity='0';
+      setTimeout(()=>pre.remove(),700);
+      if(window.gsap)runReveals();
+    },220);}
+  },110);
+})();
+
+/* Scroll animatsiyalari (GSAP ScrollTrigger) */
+function runReveals(){
+  if(!window.gsap||!window.ScrollTrigger)return;
+  gsap.registerPlugin(ScrollTrigger);
+  $$('.reveal:not(.revealed)').forEach(el=>{
+    el.classList.add('revealed');
+    gsap.to(el,{opacity:1,y:0,x:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%'}});
+  });
+  $$('[data-parallax]').forEach(el=>{
+    gsap.to(el,{yPercent:+el.dataset.parallax,ease:'none',scrollTrigger:{trigger:el.closest('section')||el,start:'top bottom',end:'bottom top',scrub:true}});
+  });
+  $$('[data-count]').forEach(el=>{
+    const target=+el.dataset.count,suffix=el.dataset.suffix||'';
+    ScrollTrigger.create({trigger:el,start:'top 90%',once:true,onEnter(){
+      gsap.to({v:0},{v:target,duration:1.6,ease:'power2.out',onUpdate(){el.textContent=Math.floor(this.targets()[0].v)+suffix;}});
+    }});
+  });
+  $$('[data-split]').forEach(el=>{
+    const words=el.textContent.trim().split(/\s+/);
+    el.innerHTML=words.map(w=>`<span class="inline-block overflow-hidden align-bottom"><span class="inline-block" style="transform:translateY(110%)">${w}</span></span>`).join(' ');
+    gsap.to(el.querySelectorAll('span>span'),{y:0,duration:1.05,ease:'power4.out',stagger:.045,scrollTrigger:{trigger:el,start:'top 86%'}});
+  });
+}
+addEventListener('load',()=>{setTimeout(()=>{if(!$('pre'))runReveals();},1600);});
+addEventListener('scroll',()=>{
+  const s=scrollY/(document.body.scrollHeight-innerHeight)*100;
+  const sp=$('scrollProgress'); if(sp) sp.style.width=Math.min(s,100)+'%';
+},{passive:true});
+
+/* Three.js fon — jonli maydon */
+(async()=>{
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  try{
+    const THREE=await import('https://esm.sh/three@0.160.0');
+    const host=$('three-bg');if(!host)return;
+    const scene=new THREE.Scene();
+    const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);cam.position.z=8;
+    const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setSize(innerWidth,innerHeight);
+    host.appendChild(renderer.domElement);
+    const c1=new THREE.Color('#00e5ff'),c2=new THREE.Color('#ff6b6b'),c3=new THREE.Color('#ffd60a');
+    const geo=new THREE.BufferGeometry();
+    const N=innerWidth<640?260:520,pos=new Float32Array(N*3),col=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      pos[i*3]=(Math.random()-.5)*26;pos[i*3+1]=(Math.random()-.5)*18;pos[i*3+2]=(Math.random()-.5)*12;
+      const c=[c1,c2,c3][i%3];col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
+    }
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    const mat=new THREE.PointsMaterial({size:.055,vertexColors:true,transparent:true,opacity:.85,depthWrite:false,blending:THREE.AdditiveBlending});
+    const pts=new THREE.Points(geo,mat);scene.add(pts);
+    const wire=new THREE.Mesh(new THREE.IcosahedronGeometry(2.6,1),
+      new THREE.MeshBasicMaterial({color:c1,wireframe:true,transparent:true,opacity:.12}));
+    scene.add(wire);
+    const wire2=new THREE.Mesh(new THREE.TorusGeometry(3.4,.008,3,90),
+      new THREE.MeshBasicMaterial({color:c2,transparent:true,opacity:.22}));
+    wire2.rotation.x=1.2;scene.add(wire2);
+    let mx=0,my=0;
+    addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-.5);my=(e.clientY/innerHeight-.5);});
+    addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+    (function tick(){
+      requestAnimationFrame(tick);
+      pts.rotation.y+=.0007;pts.rotation.x=my*.2;
+      wire.rotation.y+=.0016;wire.rotation.x+=.0007;
+      wire2.rotation.z+=.0012;
+      cam.position.x+=(mx*1.6-cam.position.x)*.05;
+      cam.position.y+=(-my*1.2-cam.position.y)*.05;
+      cam.lookAt(0,0,0);
+      renderer.render(scene,cam);
+    })();
+  }catch(e){/* fon animatsiyasi ishlamasa ham sayt ishlaydi */}
+})();
+
+
+const DEST=[
+  {id:1,city:'Istanbul',country:'Turkiya',type:'city',emoji:'🕌',g:'linear-gradient(150deg,#0ea5e9,#4f46e5,#7c3aed)',price:6490000,days:'3 kun / 2 kecha',rate:4.9,reviews:214,hot:1,tag:'Shahar ta\'tili'},
+  {id:2,city:'Dubai',country:'BAA',type:'city',emoji:'🏙️',g:'linear-gradient(150deg,#f59e0b,#f97316,#e11d48)',price:9890000,days:'5 kun / 4 kecha',rate:4.8,reviews:186,hot:1,tag:'Sharq sehr'},
+  {id:3,city:'Antaliya',country:'Turkiya',type:'beach',emoji:'🏖️',g:'linear-gradient(150deg,#22d3ee,#0ea5e9,#2563eb)',price:7290000,days:'7 kun / oziq-ovqat bilan',rate:4.9,reviews:342,hot:1,tag:'All inclusive'},
+  {id:4,city:'Maldiv orollari',country:'Maldivlar',type:'beach',emoji:'🏝️',g:'linear-gradient(150deg,#14b8a6,#06b6d4,#0284c7)',price:15900000,days:'6 kun / bungalov',rate:5,reviews:98,hot:0,tag:'Romantika'},
+  {id:5,city:'Parij',country:'Fransiya',type:'city',emoji:'🗼',g:'linear-gradient(150deg,#fb7185,#ec4899,#c026d3)',price:13400000,days:'4 kun / 3 kecha',rate:4.7,reviews:145,hot:0,tag:'San\'at shahri'},
+  {id:6,city:'Chimyon',country:"O\'zbekiston",type:'nature',emoji:'⛰️',g:'linear-gradient(150deg,#34d399,#10b981,#0891b2)',price:2490000,days:'3 kun / 2 kecha',rate:4.6,reviews:87,hot:0,tag:'Tabiat'}
 ];
 const TOURS=[
-  {n:'Istanbul shoir safari',d:'3 kun · 2 kecha',p:6490000,e:'🕌',g:'from-indigo-500 to-purple-600',inc:'Aviabilet, mehmonxona 4*, nonushta, transfer, gid'},
-  {n:'Dubai jannati',d:'5 kun · 4 kecha',p:9890000,e:'🏙️',g:'from-amber-500 to-rose-500',inc:'Aviabilet, 5* mehmonxona, safari turi, transfer'},
-  {n:'Antaliya all inclusive',d:'7 kun · 7 kecha',p:7290000,e:'🏖️',g:'from-cyan-500 to-blue-600',inc:'Aviabilet, 5* oziq-ovqat bilan, sohil, animatsiya'},
-  {n:'Maldiv romantikasi',d:'6 kun · 5 kecha',p:15900000,e:'🏝️',g:'from-teal-500 to-sky-600',inc:'Aviabilet, suv ustidagi bungalov, akvarium turi'},
-  {n:'Yevropa klassikasi',d:'8 kun · 7 kecha',p:18700000,e:'🗼',g:'from-rose-500 to-fuchsia-600',inc:'Parij, Rim, Barselona — aviabilet va mehmonxonalar'},
+  {n:'Istanbul shoir safari',d:'3 kun · 2 kecha',p:6490000,e:'🕌',g:'linear-gradient(150deg,#4f46e5,#7c3aed)',inc:'Aviabilet, mehmonxona 4*, nonushta, transfer, gid'},
+  {n:'Dubai jannati',d:'5 kun · 4 kecha',p:9890000,e:'🏙️',g:'linear-gradient(150deg,#f59e0b,#e11d48)',inc:'Aviabilet, 5* mehmonxona, safari turi, transfer'},
+  {n:'Antaliya all inclusive',d:'7 kun · 7 kecha',p:7290000,e:'🏖️',g:'linear-gradient(150deg,#06b6d4,#2563eb)',inc:'Aviabilet, 5* oziq-ovqat bilan, sohil, animatsiya'},
+  {n:'Maldiv romantikasi',d:'6 kun · 5 kecha',p:15900000,e:'🏝️',g:'linear-gradient(150deg,#14b8a6,#0284c7)',inc:'Aviabilet, suv ustidagi bungalov, akvarium turi'},
+  {n:'Yevropa klassikasi',d:'8 kun · 7 kecha',p:18700000,e:'🗼',g:'linear-gradient(150deg,#ec4899,#c026d3)',inc:'Parij, Rim, Barselona — aviabilet va mehmonxonalar'}
 ];
-const REVIEWS=[
+const REV=[
   {n:'Dilnoza K.',t:'Antaliya, 2026',s:5,x:'Ajoyib tashkil! Bolalarim ham juda xursand. Har bir detal oldindan tushuntirilgan.',i:'DK'},
   {n:'Aziz R.',t:'Dubai, 2026',s:5,x:'Safari turi ayni g\'alaba! Hotel juda hashamatli. Rahmat SayohatUz jamoasiga.',i:'AR'},
   {n:'Malika T.',t:'Istanbul, 2026',s:4,x:'Viza tez rasmiylashtirildi. Faqat aeroportdan kutib olish ozgina kechikdi, qolgani zo\'r.',i:'MT'},
-  {n:'Sardor U.',t:'Maldivlar, 2025',s:5,x:'To\'y safari mukammal edi. Bungalov va akvarium — esda qoladi.',i:'SU'},
+  {n:'Sardor U.',t:'Maldivlar, 2025',s:5,x:'To\'y safari mukammal edi. Bungalov va akvarium — esda qoladi.',i:'SU'}
 ];
-const money=n=>n.toLocaleString('uz-UZ');
-
-function destCard(d,i){
-  return `<article class="tilt relative rounded-[2rem] overflow-hidden h-[430px] bg-gradient-to-br ${d.g} text-white cursor-pointer card-hover" data-dest="${d.id}" data-aos="fade-up" data-aos-delay="${i*90}">
-    <div class="tilt-inner relative h-full p-7 flex flex-col">
-      <span class="glare"></span>
-      <div class="layer flex items-start justify-between">
-        <span class="text-[11px] font-black tracking-[2px] bg-black/25 backdrop-blur px-3 py-1.5 rounded-full">${d.tag.toUpperCase()}</span>
-        ${d.hot?'<span class="text-[11px] font-black bg-amber-400 text-slate-900 px-2.5 py-1.5 rounded-full flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3"></i>HOT</span>':''}
-      </div>
-      <div class="layer-deep flex-1 grid place-items-center pointer-events-none select-none"><span class="text-[9rem] drop-shadow-2xl">${d.emoji}</span></div>
-      <div class="layer relative">
-        <div class="flex items-center gap-2 text-sm font-bold opacity-90"><i data-lucide="map-pin" class="w-4 h-4"></i>${d.country}</div>
-        <h3 class="text-3xl font-black mt-1">${d.city}</h3>
-        <div class="flex items-center gap-3 mt-2 text-sm opacity-85">
-          <span class="flex items-center gap-1 font-bold"><i data-lucide="star" class="w-4 h-4 fill-amber-300 text-amber-300"></i>${d.rate}</span>
-          <span class="opacity-70">${d.reviews} sharh</span><span class="opacity-70">·</span><span>${d.days}</span>
-        </div>
-        <div class="flex items-end justify-between mt-5">
-          <div><div class="text-[11px] opacity-70">boshlanishi</div><div class="text-2xl font-black">${money(d.price)} <span class="text-sm font-semibold opacity-80">so'm</span></div></div>
-          <button data-book="${d.city}" class="px-5 py-2.5 rounded-2xl bg-white text-slate-900 font-bold text-sm hover:scale-110 transition shadow-xl">Tanlash</button>
-        </div>
-      </div>
-    </div>
-  </article>`;
-}
-const renderDests=(f='all')=>{
-  const list=f==='all'?DESTINATIONS:DESTINATIONS.filter(d=>d.type===f);
-  $('destGrid').innerHTML=list.map(destCard).join('');
-  lucide.createIcons();attachTilt();
-};
-
+const money=n=>n.toLocaleString('ru-RU').replace(/,/g,' ');
 function attachTilt(){
-  document.querySelectorAll('.tilt').forEach(card=>{
-    const onMove=e=>{
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  $$('[data-tilt]').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
       const r=card.getBoundingClientRect();
-      const x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
-      const rx=(y-.5)*-14, ry=(x-.5)*16;
-      card.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg) scale(1.03)`;
-      card.style.setProperty('--mx',x*100+'%');
-      card.style.setProperty('--my',y*100+'%');
-    };
-    const onLeave=()=>{card.style.transform='';};
-    card.addEventListener('mousemove',onMove);
-    card.addEventListener('mouseleave',onLeave);
-    card.addEventListener('touchmove',ev=>{const t=ev.touches[0];onMove(t);},{passive:true});
-    card.addEventListener('touchend',onLeave);
+      const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+      card.style.transform='perspective(1100px) rotateX('+((py-.5)*-11)+'deg) rotateY('+((px-.5)*13)+'deg) translateZ(16px)';
+    });
+    card.addEventListener('mouseleave',()=>card.style.transform='');
   });
 }
-
-$('tourSlides').innerHTML=TOURS.map(t=>`
-  <div class="swiper-slide h-auto">
-    <div class="glass rounded-3xl p-5 h-full flex flex-col">
-      <div class="h-36 rounded-2xl bg-gradient-to-br ${t.g} grid place-items-center text-6xl">${t.e}</div>
-      <h3 class="font-black text-lg mt-4">${t.n}</h3>
-      <div class="text-xs opacity-60 mt-1">${t.d}</div>
-      <p class="text-xs opacity-75 mt-3 leading-relaxed flex-1">${t.inc}</p>
-      <div class="flex items-end justify-between mt-4">
-        <div><div class="text-xl font-black text-sky-500">${money(t.p)}</div><div class="text-[11px] opacity-60">so'm / kishi</div></div>
-        <button data-book="${t.n}" class="px-4 py-2 rounded-xl bg-sky-500 text-white text-sm font-bold hover:scale-105 transition">Band</button>
-      </div>
-    </div>
-  </div>`).join('');
-$('revSlides').innerHTML=REVIEWS.map(r=>`
-  <div class="swiper-slide h-auto">
-    <div class="glass rounded-3xl p-7 h-full">
-      <div class="flex gap-1 text-amber-400 mb-4">${Array.from({length:r.s},()=>'<span class="star-pop inline-block">★</span>').join('')}</div>
-      <p class="opacity-85 leading-relaxed">"${r.x}"</p>
-      <div class="flex items-center gap-3 mt-6">
-        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-sky-400 to-cyan-600 grid place-items-center text-white font-bold">${r.i}</div>
-        <div><div class="font-bold text-sm">${r.n}</div><div class="text-xs opacity-60">${r.t}</div></div>
-      </div>
-    </div>
-  </div>`).join('');
-
-$('filterChips').addEventListener('click',e=>{
-  const b=e.target.closest('.chip');if(!b)return;
-  document.querySelectorAll('#filterChips .chip').forEach(c=>c.classList.remove('active'));
-  b.classList.add('active');renderDests(b.dataset.f);
+function destCard(d,i){
+  return '<article class="relative rounded-3xl overflow-hidden h-[400px] cursor-pointer reveal" data-tilt data-dest="'+d.id+'">'
+    +'<div class="absolute inset-0" style="background:'+d.g+'"></div>'
+    +'<div class="absolute inset-0" style="background:linear-gradient(to top,rgba(2,8,20,.9),rgba(2,8,20,.1) 55%,transparent)"></div>'
+    +'<div class="relative h-full p-6 flex flex-col">'
+    +'<div class="flex items-start justify-between gap-2">'
+    +'<span class="badge" style="background:rgba(3,6,16,.5);color:#fff">'+d.tag.toUpperCase()+'</span>'
+    +(d.hot?'<span class="badge" style="background:var(--c2);color:#06070c">🔥 HOT</span>':'')+'</div>'
+    +'<div class="flex-1 grid place-items-center pointer-events-none select-none"><span class="text-[8rem] drop-shadow-2xl">'+d.emoji+'</span></div>'
+    +'<div><div class="flex items-center gap-2 tag"><i data-lucide="map-pin" class="w-4 h-4"></i>'+d.country+'</div>'
+    +'<h3 class="display text-3xl font-bold mt-1">'+d.city+'</h3>'
+    +'<div class="flex items-center gap-3 tag mt-2"><span style="color:var(--c2)">'+d.rate+' ★</span><span>'+d.reviews+' sharh</span><span>'+d.days+'</span></div>'
+    +'<div class="flex items-end justify-between mt-5"><div><div class="tag">boshlanishi</div><div class="display text-2xl font-bold">'+money(d.price)+' <span class="text-sm opacity-80">so\'m</span></div></div>'
+    +'<button class="btn btn-solid magnet" data-book="'+d.city+'">Tanlash</button></div></div></div></article>';
+}
+function renderDest(f){
+  const list=f==='all'?DEST:DEST.filter(d=>d.type===f);
+  $('destGrid').innerHTML=list.map(destCard).join('');
+  lucide.createIcons();attachTilt();runReveals();
+}
+$('tourSlides').innerHTML=TOURS.map(t=>'<div class="swiper-slide h-auto"><div class="panel p-5 h-full flex flex-col glow" data-tilt>'
+  +'<div class="h-36 rounded-2xl grid place-items-center text-6xl" style="background:'+t.g+'">'+t.e+'</div>'
+  +'<h3 class="font-display font-bold text-lg mt-4">'+t.n+'</h3><div class="tag mt-1">'+t.d+'</div>'
+  +'<p class="text-xs opacity-70 mt-3 leading-relaxed flex-1">'+t.inc+'</p>'
+  +'<div class="flex items-end justify-between mt-4"><div><div class="font-display text-xl font-bold grad">'+money(t.p)+'</div><div class="tag">so\'m / kishi</div></div>'
+  +'<button class="btn btn-solid magnet text-xs" data-book="'+t.n+'">Band</button></div></div></div>').join('');
+$('revSlides').innerHTML=REV.map(r=>'<div class="swiper-slide h-auto"><div class="panel p-7 h-full glow">'
+  +'<div class="text-xl" style="color:var(--c2)">'+'★'.repeat(r.s)+'</div><p class="opacity-85 mt-4 leading-relaxed">"'+r.x+'"</p>'
+  +'<div class="flex items-center gap-3 mt-6"><div class="w-11 h-11 rounded-full grid place-items-center font-bold" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c">'+r.i+'</div>'
+  +'<div><div class="font-bold text-sm">'+r.n+'</div><div class="tag">'+r.t+'</div></div></div></div></div>').join('');
+$('filterChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;
+  $$('#filterChips .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');renderDest(c.dataset.f);});
+$('searchBtn').addEventListener('click',async()=>{
+  const where=$('whereInput').value.trim();
+  if(!where){APP.toast('Qayerga borishingizni kiriting');return;}
+  const btn=$('searchBtn'),old=btn.innerHTML;btn.disabled=true;
+  btn.innerHTML='<span class="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin"></span>';
+  await APP.sleep(1200);
+  btn.disabled=false;btn.innerHTML=old;
+  const people=$('peopleSelect').value,date=$('dateInput').value;
+  $('searchEcho').textContent='"'+where+'" uchun '+(date||'istalgan sanada')+' · '+people+' · 8 variant topildi';
+  const found=DEST.find(d=>d.city.toLowerCase().includes(where.toLowerCase()));
+  if(found){
+    $$('[data-dest]').forEach(c=>c.style.outline='');
+    const el=document.querySelector('[data-dest="'+found.id+'"]');
+    if(el){el.style.outline='3px solid var(--c1)';el.scrollIntoView({behavior:'smooth',block:'center'});}
+    APP.toast(found.city+' topildi — kartaga qarang');
+  }else APP.toast('Bu manzil uchun tur topilmadi, lekin alohida dastur tuzamiz');
+  lucide.createIcons();
 });
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-book]');
-  if(b){e.stopPropagation();document.getElementById('booking').scrollIntoView({behavior:'smooth'});toast(`"${b.dataset.book}" turi tanlandi — formani to'ldiring`);}
+  if(b){e.stopPropagation();document.getElementById('booking').scrollIntoView({behavior:'smooth'});APP.toast('"'+b.dataset.book+'" turi tanlandi — formani to\'ldiring');}
 });
-$('searchBtn').addEventListener('click',async()=>{
-  const where=$('whereInput').value.trim();
-  if(!where){toast('Qayerga borishingizni kiriting');return;}
-  const btn=$('searchBtn');btn.disabled=true;
-  btn.innerHTML='<span class="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>';
-  await new Promise(r=>setTimeout(r,1300));
-  btn.disabled=false;btn.innerHTML='<i data-lucide="search" class="w-5 h-5"></i>Qidirish';
-  const people=$('peopleSelect').value, date=$('dateInput').value;
-  $('searchEcho').textContent=where?`"${where}" uchun ${date||'istalgan sanada'} · ${people} · 8 variant topildi ✅`:'';
-  const found=DESTINATIONS.find(d=>d.city.toLowerCase().includes(where.toLowerCase()));
-  if(found){
-    document.querySelectorAll('.tilt').forEach(c=>c.style.outline='');
-    const el=document.querySelector(`[data-dest="${found.id}"]`);
-    el&&(el.style.outline='3px solid #0ea5e9');
-    el&&el.scrollIntoView({behavior:'smooth',block:'center'});
-    toast(`${found.city} topildi — kartaga qarang`);
-  }else toast('Bu manzil uchun tur topilmadi, lekin alohida dastur tuzamiz');
-  lucide.createIcons();
-});
-$('callBtn').addEventListener('click',()=>toast('Qo\'ng\'iroq: +998 71 300 30 30'));
 $('bookForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  const btn=e.target.querySelector('button'),old=btn.textContent;
-  btn.disabled=true;btn.innerHTML='<span class="inline-block w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin align-middle"></span> Yuborilmoqda...';
-  await new Promise(r=>setTimeout(r,1600));
-  btn.textContent='So\'rov qabul qilindi ✅';
-  toast('Operatorimiz 30 daqiqada siz bilan bog\'lanadi!');
+  const btn=e.target.querySelector('button'),old=btn.innerHTML;btn.disabled=true;
+  btn.innerHTML='<span class="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin"></span> Yuborilmoqda...';
+  await APP.sleep(1600);
+  btn.textContent='So\'rov qabul qilindi';
+  APP.toast('Operatorimiz 30 daqiqada siz bilan bog\'lanadi!');
   e.target.reset();
-  await new Promise(r=>setTimeout(r,1800));
-  btn.textContent=old;btn.disabled=false;
+  await APP.sleep(1800);
+  btn.innerHTML=old;btn.disabled=false;
 });
-document.querySelectorAll('[data-quick]').forEach(b=>b.addEventListener('click',()=>{
-  document.getElementById('booking').scrollIntoView({behavior:'smooth'});
-  toast(`${b.dataset.quick} tanlandi`);
-}));
-let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2500);}
-
-const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
-const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
-document.getElementById('menuBtn')?.addEventListener('click',openMM);
-document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
-document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
-
-renderDests();
-AOS.init({duration:900,once:true});
-new Swiper('.tourSwiper',{slidesPerView:1,spaceBetween:24,loop:true,grabCursor:true,pagination:{el:'.tourSwiper .swiper-pagination',clickable:true},autoplay:{delay:5000},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:3}}});
+renderDest('all');
+new Swiper('.tourSwiper',{slidesPerView:1,spaceBetween:24,loop:true,grabCursor:true,pagination:{el:'.tourSwiper .swiper-pagination',clickable:true},autoplay:{delay:5e3},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:3}}});
 new Swiper('.revSwiper',{slidesPerView:1,spaceBetween:24,loop:true,grabCursor:true,pagination:{el:'.revSwiper .swiper-pagination',clickable:true},breakpoints:{768:{slidesPerView:2},1200:{slidesPerView:3}}});
-syncTheme();
+lucide.createIcons();
+
 </script>
 </body>
 </html>

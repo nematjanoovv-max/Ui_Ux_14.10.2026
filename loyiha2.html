@@ -1,418 +1,595 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" class="">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#070b18">
 <title>MarketPro — Onlayn do'kon</title>
+<meta name="description" content="E-commerce platforma: mahsulotlar karuseli, narx filtri, kategoriyalar va savatcha.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{ink:'#0a0f1c',brand:'#6366f1'}}}}
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{display:['"Space Grotesk"','system-ui','sans-serif'],sans:['Inter','system-ui','sans-serif'],mono:['"JetBrains Mono"','monospace']},colors:{c1:'#7c5cff',c2:'#00e5ff',c3:'#ff2e88',ink:'#070b18'}}}}
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
-html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
-.glass{background:rgba(255,255,255,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.4)}
-.dark .glass{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09)}
-.blob{position:absolute;border-radius:9999px;filter:blur(90px);opacity:.5;z-index:-1;animation:float 10s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-40px)}}
-.card-hover{transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
-.card-hover:hover{transform:translateY(-8px);box-shadow:0 24px 50px -12px rgba(99,102,241,.35)}
-::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#6366f1;border-radius:99px}
-input[type=range]{accent-color:#6366f1}
-.fly{position:fixed;z-index:9999;pointer-events:none;font-size:28px;transition:all .8s cubic-bezier(.22,1,.36,1)}
-.bump{animation:bump .45s ease}
-@keyframes bump{0%,100%{transform:scale(1)}35%{transform:scale(1.3)}}
-.prod-enter{animation:prodIn .45s cubic-bezier(.22,1,.36,1)}
-@keyframes prodIn{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+:root{
+  --c1:#7c5cff;--c2:#00e5ff;--c3:#ff2e88;--ink:#070b18;
+  --line:color-mix(in srgb,var(--fg) 12%,transparent);
+  --panel:color-mix(in srgb,var(--fg) 5%,transparent);
+  --radius:20px;--ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:dark;
+}
+html.light{--panel:color-mix(in srgb,var(--fg) 7%,transparent);--line:color-mix(in srgb,var(--fg) 15%,transparent);color-scheme:light}
+*{-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,system-ui,sans-serif;background:var(--ink);color:var(--fg);
+  overflow-x:hidden;
+}
+.font-display{font-family:'Space Grotesk',system-ui,sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.display{font-weight:700;letter-spacing:-.03em;line-height:.95}
+.grad{background:linear-gradient(100deg,var(--c1),var(--c2) 55%,var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.outline-txt{color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 45%,transparent)}
+
+/* atmosfera qatlamlari */
+.noise,.scan,.gridbg{position:fixed;inset:0;pointer-events:none;z-index:1}
+.noise{opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:overlay}
+.gridbg{background-image:linear-gradient(color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(circle at 50% 30%,#000,transparent 78%)}
+.scan{background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.14) 3px 4px);opacity:.35}
+#three-bg{position:fixed;inset:0;z-index:0;opacity:.9}
+
+/* kursor */
+#cursor{position:fixed;left:0;top:0;z-index:9998;pointer-events:none;mix-blend-mode:difference}
+#cursor .ring{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border:1.5px solid #fff;border-radius:50%;transition:width .3s var(--ease),height .3s var(--ease),margin .3s var(--ease),opacity .3s}
+#cursor .dot{position:absolute;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:#fff;border-radius:50%}
+#cursor.hovering .ring{width:64px;height:64px;margin:-32px 0 0 -32px;opacity:.55}
+@media (hover:none),(pointer:coarse){#cursor{display:none}}
+
+/* preloader */
+#pre{position:fixed;inset:0;z-index:9999;background:var(--ink);display:grid;place-items:center;text-align:center}
+#pre .bar{width:min(320px,70vw);height:2px;background:color-mix(in srgb,var(--fg) 14%,transparent);margin:22px auto 0;overflow:hidden}
+#pre .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c1),var(--c2))}
+#pre .num{font-family:'JetBrains Mono',monospace;font-size:12px;opacity:.6;margin-top:12px;letter-spacing:.2em}
+#pre .name{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,64px);letter-spacing:-.03em}
+
+/* nav */
+.nav-blur{background:color-mix(in srgb,var(--ink) 62%,transparent);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.nav-link{position:relative}
+.nav-link::after{content:'';position:absolute;left:0;bottom:-4px;height:1.5px;width:0;background:linear-gradient(90deg,var(--c1),var(--c2));transition:width .35s var(--ease)}
+.nav-link:hover::after,.nav-link.active::after{width:100%}
+
+/* fullscreen menyu */
+#menu{position:fixed;inset:0;z-index:9990;background:color-mix(in srgb,var(--ink) 94%,transparent);backdrop-filter:blur(24px);
+  clip-path:circle(0% at calc(100% - 44px) 44px);transition:clip-path .8s var(--ease);display:flex;flex-direction:column;justify-content:center;padding:8vw}
+#menu.open{clip-path:circle(150% at calc(100% - 44px) 44px)}
+#menu a{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,72px);letter-spacing:-.03em;line-height:1.05;
+  color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 55%,transparent);transition:.4s var(--ease);display:block}
+#menu a:hover,#menu a:focus-visible{-webkit-text-stroke:1.4px var(--c2);color:var(--c2);transform:translateX(14px)}
+.burger{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.burger i{display:block;width:18px;height:1.6px;background:var(--fg);transition:.35s var(--ease)}
+.burger i+i{margin-top:5px}
+.burger.x i:first-child{transform:translateY(3.3px) rotate(45deg)}
+.burger.x i:last-child{transform:translateY(-3.3px) rotate(-45deg)}
+
+/* panellar */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(14px)}
+.glow{position:relative}
+.glow::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;
+  background:conic-gradient(from var(--a,0deg),transparent 0 55%,var(--c1) 70%,var(--c2) 85%,transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .4s;animation:spin 4s linear infinite}
+.glow:hover::before{opacity:1}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes spin{to{--a:360deg}}
+.tilt{transition:transform .5s var(--ease),box-shadow .5s;transform-style:preserve-3d;will-change:transform}
+.magnet{transition:transform .35s var(--ease)}
+.marquee{display:flex;width:max-content;animation:marq 26s linear infinite}
+@keyframes marq{to{transform:translateX(-50%)}}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:floaty 14s ease-in-out infinite;pointer-events:none}
+@keyframes floaty{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.12)}}
+.reveal{opacity:0;transform:translateY(34px)}
+.reveal-l{opacity:0;transform:translateX(-40px)}
+::-webkit-scrollbar{width:9px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--c1),var(--c2));border-radius:9px}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--c2);outline-offset:3px;border-radius:8px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.55rem;font-weight:700;
+  border-radius:999px;padding:.85rem 1.6rem;font-size:.92rem;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s;isolation:isolate}
+.btn::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,var(--c1),var(--c2));transition:filter .3s}
+.btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 14px 40px -12px var(--c1)}
+.btn-solid{color:#06070c}
+.btn-ghost{border:1px solid var(--line);background:var(--panel)}
+.btn-ghost::after{display:none}
+.btn-ghost:hover{border-color:var(--c2);color:var(--c2)}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:.5rem 1rem;font-size:.8rem;font-weight:600;transition:.3s}
+.chip:hover{border-color:var(--c2);color:var(--c2)}
+.chip.on{background:linear-gradient(100deg,var(--c1),var(--c2));color:#06070c;border-color:transparent}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;opacity:.62}
+.hairline{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+.toast-box{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:9997;opacity:0;transition:.4s var(--ease);pointer-events:none}
+.toast-box.on{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;z-index:9995;display:none}
+.modal.on{display:grid;place-items:center;padding:16px}
+.modal .veil{position:absolute;inset:0;background:rgba(2,3,8,.72);backdrop-filter:blur(8px)}
+.modal .card{position:relative;transform:scale(.94) translateY(14px);opacity:0;transition:.4s var(--ease)}
+.modal.on .card{transform:none;opacity:1}
+.badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;padding:.28rem .55rem;border-radius:6px;border:1px solid var(--line);background:var(--panel)}
+.glitch{position:relative}
+.glitch:hover::before,.glitch:hover::after{content:attr(data-t);position:absolute;inset:0;background:var(--ink)}
+.glitch:hover::before{color:var(--c1);transform:translate(-2px,-1px);clip-path:inset(0 0 62% 0)}
+.glitch:hover::after{color:var(--c2);transform:translate(2px,1px);clip-path:inset(58% 0 0 0)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}#three-bg{display:none}}
+
 </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-ink dark:text-slate-200 transition-colors duration-500 overflow-x-hidden">
+<body class="min-h-[100svh]">
+<div id="scrollProgress" class="fixed top-0 left-0 h-[3px] z-[70] pointer-events-none" style="background:linear-gradient(90deg,var(--c1),var(--c2));width:0" aria-hidden="true"></div>
+<div id="three-bg" aria-hidden="true"></div>
+<div class="gridbg" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true"></div>
+<div class="noise" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"><div class="ring"></div><div class="dot"></div></div>
+<div id="pre"><div><div class="name">MarketPro</div><div class="bar"><i id="preBar"></i></div><div class="num" id="preNum">0%</div></div></div>
 
-<div class="blob bg-indigo-400 w-72 h-72 -top-20 left-1/4"></div>
-<div class="blob bg-fuchsia-400 w-80 h-80 top-[45%] -right-24" style="animation-delay:2s"></div>
-
-<div class="bg-indigo-600 text-white text-xs text-center py-2 font-medium tracking-wide">🚚 200 000 so'mdan yuqori buyurtmalarga bepul yetkazib berish</div>
-
-<header class="sticky top-0 z-50 glass shadow-lg">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-4">
-    <a href="#" class="flex items-center gap-2 font-black text-xl shrink-0"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 grid place-items-center text-white"><i data-lucide="shopping-cart"></i></span>Market<span class="text-indigo-500">Pro</span></a>
-    <nav class="hidden lg:flex items-center gap-6 text-sm font-medium flex-1">
-      <a class="hover:text-indigo-500 transition" href="#products">Mahsulotlar</a>
-      <a class="hover:text-indigo-500 transition" href="#deals">Aksiyalar</a>
-      <a class="hover:text-indigo-500 transition" href="#features">Afzalliklar</a>
-      <a class="hover:text-indigo-500 transition" href="#footer">Aloqa</a>
-    </nav>
-    <div class="flex-1 lg:flex-none"></div>
-    <div class="hidden md:flex items-center glass rounded-xl px-3 py-2 gap-2 w-56">
-      <i data-lucide="search" class="w-4 h-4 opacity-60"></i>
-      <input id="searchInput" class="bg-transparent outline-none text-sm w-full" placeholder="Qidirish...">
+<header id="nav" class="fixed inset-x-0 top-0 z-[60] transition-all duration-500">
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 h-[68px] flex items-center gap-5">
+    <a href="#top" class="font-display font-bold text-lg tracking-tight flex items-center gap-2.5 shrink-0">
+      <span class="w-9 h-9 rounded-xl grid place-items-center" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c"><i data-lucide="shopping-cart" class="w-[18px] h-[18px]"></i></span>
+      MarketPro
+    </a>
+    <nav class="hidden lg:flex items-center gap-7 text-[13px] font-semibold ml-4"><a class="nav-link hover:opacity-70 transition" href="#products">Mahsulotlar</a><a class="nav-link hover:opacity-70 transition" href="#deals">Aksiyalar</a><a class="nav-link hover:opacity-70 transition" href="#features">Afzalliklar</a></nav>
+    <div class="ml-auto flex items-center gap-2">
+      <button id="themeBtn" class="burger" aria-label="Kun/tun rejimi"><i data-lucide="sun" id="themeIcon" class="w-[18px] h-[18px]"></i></button>
+      <button id="cartBtn" class="burger" aria-label="Savatcha"><i data-lucide="shopping-bag" class="w-[18px] h-[18px]"></i></button>
+      <button id="menuBtn" class="burger lg:hidden" aria-label="Menyu"><span class="block"><i></i><i></i></span></button>
     </div>
-    <button id="menuBtn" class="md:hidden w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
-    <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" class="w-5 h-5" id="themeIcon"></i></button>
-    <button id="cartBtn" class="relative w-9 h-9 grid place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white hover:scale-110 transition">
-      <i data-lucide="shopping-bag" class="w-5 h-5"></i>
-      <span id="cartCount" class="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 text-[11px] font-bold grid place-items-center bg-amber-400 text-slate-900 rounded-full">0</span>
-    </button>
   </div>
-
 </header>
 
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-6">
-  <div class="swiper heroSwiper rounded-3xl overflow-hidden">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide relative h-[380px] bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 text-white">
-        <div class="absolute inset-0 flex flex-col justify-center px-8 md:px-16 max-w-2xl" data-aos="fade-right">
-          <span class="text-xs font-bold bg-white/20 w-fit px-3 py-1 rounded-full">YANGI KOLLEKSIYA</span>
-          <h2 class="text-4xl md:text-5xl font-black mt-4 leading-tight">Aqlli gadjetlar<br>arzon narxlarda</h2>
-          <p class="mt-4 text-white/85">Naushniklar, smartwatch va aksessuarlar rasmiy kafolat bilan</p>
-          <a href="#products" class="mt-6 bg-white text-indigo-600 font-bold px-6 py-3 rounded-xl w-fit hover:scale-105 transition">Xarid qilish</a>
-        </div>
-        <span class="absolute right-6 bottom-4 text-[11rem] opacity-25 select-none">🎧</span>
-      </div>
-      <div class="swiper-slide relative h-[380px] bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 text-white">
-        <div class="absolute inset-0 flex flex-col justify-center px-8 md:px-16 max-w-2xl" data-aos="fade-right">
-          <span class="text-xs font-bold bg-white/20 w-fit px-3 py-1 rounded-full">LIMITLI AKSIYA</span>
-          <h2 class="text-4xl md:text-5xl font-black mt-4 leading-tight">Smart soatlarga<br>50% chegirma</h2>
-          <p class="mt-4 text-white/85">Faqat shu hafta davomida — 499 000 so'm</p>
-          <a href="#products" class="mt-6 bg-white text-emerald-600 font-bold px-6 py-3 rounded-xl w-fit hover:scale-105 transition">Batafsil</a>
-        </div>
-        <span class="absolute right-6 bottom-4 text-[11rem] opacity-25 select-none">⌚</span>
-      </div>
-      <div class="swiper-slide relative h-[380px] bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 text-white">
-        <div class="absolute inset-0 flex flex-col justify-center px-8 md:px-16 max-w-2xl" data-aos="fade-right">
-          <span class="text-xs font-bold bg-white/20 w-fit px-3 py-1 rounded-full">SO'NGGI DONALAR</span>
-          <h2 class="text-4xl md:text-5xl font-black mt-4 leading-tight">Fotoapparatlar<br>va obyektivlar</h2>
-          <p class="mt-4 text-white/85">Professional tarkiblar va sovg'alar uchun ajoyib tanlov</p>
-          <a href="#products" class="mt-6 bg-white text-orange-600 font-bold px-6 py-3 rounded-xl w-fit hover:scale-105 transition">Ko'rish</a>
-        </div>
-        <span class="absolute right-6 bottom-4 text-[11rem] opacity-25 select-none">📷</span>
-      </div>
-    </div>
-    <div class="swiper-pagination"></div>
-  </div>
-</section>
+<div id="menu">
+  <div class="tag mb-6">Menyu</div>
+  <a href="#top">Bosh sahifa</a><a href="#products">Mahsulotlar</a><a href="#deals">Aksiyalar</a><a href="#features">Afzalliklar</a><a href="#footer">Yordam</a>
+  <div class="mono text-xs opacity-45 mt-9">MarketPro · 2026</div>
+  <button id="menuClose" class="absolute top-5 right-5 burger" aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button>
+</div>
 
-<section id="features" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-  <div class="grid md:grid-cols-4 gap-4">
-    <div class="md:col-span-2 rounded-3xl p-7 bg-gradient-to-br from-indigo-600 to-violet-700 text-white relative overflow-hidden card-hover" data-aos="zoom-in">
-      <i data-lucide="shield-check" class="w-9 h-9"></i>
-      <h3 class="text-2xl font-black mt-4">100% rasmiy kafolat</h3>
-      <p class="text-white/80 mt-2 text-sm max-w-sm">Barcha mahsulotlar yetkazib beruvchidan to'g'ridan-to'g'ri. 14 kun ichida qaytarish huquqi.</p>
-      <span class="absolute -right-6 -bottom-8 text-[9rem] opacity-20">🛡️</span>
-    </div>
-    <div class="rounded-3xl p-7 glass card-hover" data-aos="fade-up" data-aos-delay="100">
-      <i data-lucide="credit-card" class="w-8 h-8 text-indigo-500"></i>
-      <h4 class="font-bold text-lg mt-3">Bo'lib to'lash</h4>
-      <p class="text-sm opacity-70 mt-1">0% foiz bilan 12 oyga</p>
-    </div>
-    <div class="rounded-3xl p-7 glass card-hover" data-aos="fade-up" data-aos-delay="200">
-      <i data-lucide="refresh-ccw" class="w-8 h-8 text-indigo-500"></i>
-      <h4 class="font-bold text-lg mt-3">14 kun qaytarish</h4>
-      <p class="text-sm opacity-70 mt-1">Savol bermasdan qaytaramiz</p>
-    </div>
-  </div>
-</section>
+<main id="top" class="relative z-10">
 
-<section id="products" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="flex flex-wrap items-end justify-between gap-6 mb-8" data-aos="fade-up">
-    <div>
-      <h2 class="text-4xl font-black">Mahsulotlar <span class="text-indigo-500">katalogi</span></h2>
-      <p class="mt-2 text-slate-500 dark:text-slate-400" id="resultCount">Jami 0 mahsulot</p>
-    </div>
-    <div class="glass rounded-2xl p-5 w-full sm:w-80">
-      <div class="flex items-center justify-between text-sm font-semibold mb-3">
-        <span class="flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4 text-indigo-500"></i> Narx filtri</span>
-        <span id="priceLabel" class="text-indigo-500 font-bold">15 000 000</span>
-      </div>
-      <input type="range" id="priceRange" min="100000" max="15000000" step="50000" value="15000000" class="w-full">
-      <div class="flex justify-between text-[11px] opacity-60 mt-1"><span>100 000</span><span>15 000 000</span></div>
-      <div id="catFilter" class="flex flex-wrap gap-2 mt-4">
-        <button class="catBtn active text-xs font-semibold px-3 py-1.5 rounded-full border transition" data-cat="all">Barchasi</button>
-        <button class="catBtn text-xs font-semibold px-3 py-1.5 rounded-full border transition" data-cat="audio">Audio</button>
-        <button class="catBtn text-xs font-semibold px-3 py-1.5 rounded-full border transition" data-cat="watch">Soatlar</button>
-        <button class="catBtn text-xs font-semibold px-3 py-1.5 rounded-full border transition" data-cat="camera">Kamera</button>
-        <button class="catBtn text-xs font-semibold px-3 py-1.5 rounded-full border transition" data-cat="laptop">Noutbuk</button>
-      </div>
-    </div>
-  </div>
-  <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
-</section>
 
-<section id="deals" class="py-14 px-5">
-  <div class="max-w-7xl mx-auto">
-    <h2 class="text-4xl font-black mb-8" data-aos="fade-up">Hafta <span class="text-indigo-500">aksiyalari</span></h2>
-    <div class="swiper dealsSwiper pb-14">
-      <div class="swiper-wrapper" id="dealSlides"></div>
+<section class="relative px-4 sm:px-6 lg:px-10 pt-28 pb-10">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="swiper heroSwiper rounded-3xl overflow-hidden">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide relative h-[300px] sm:h-[380px]" style="background:linear-gradient(120deg,#4f46e5,#7c3aed,#db2777)">
+          <div class="absolute inset-0 flex flex-col justify-center px-7 sm:px-14 max-w-2xl text-[#06070c]">
+            <span class="badge w-fit" style="background:#06070c;color:#fff">YANGI KOLLEKSIYA</span>
+            <h2 class="display text-[clamp(28px,5vw,52px)] mt-4">Aqlli gadjetlar<br>arzon narxlarda</h2>
+            <p class="mt-3 text-sm sm:text-base opacity-80">Naushniklar, smartwatch va aksessuarlar rasmiy kafolat bilan</p>
+            <a href="#products" class="btn btn-solid mt-5 magnet w-fit">Xarid qilish</a>
+          </div>
+          <span class="absolute right-6 bottom-2 text-[8rem] sm:text-[11rem] opacity-25 select-none">🎧</span>
+        </div>
+        <div class="swiper-slide relative h-[300px] sm:h-[380px]" style="background:linear-gradient(120deg,#059669,#0d9488,#0891b2)">
+          <div class="absolute inset-0 flex flex-col justify-center px-7 sm:px-14 max-w-2xl text-[#06070c]">
+            <span class="badge w-fit" style="background:#06070c;color:#fff">LIMITLI AKSIYA</span>
+            <h2 class="display text-[clamp(28px,5vw,52px)] mt-4">Smart soatlarga<br>50% chegirma</h2>
+            <p class="mt-3 text-sm sm:text-base opacity-80">Faqat shu hafta — 499 000 so'm</p>
+            <a href="#products" class="btn btn-solid mt-5 magnet w-fit">Batafsil</a>
+          </div>
+          <span class="absolute right-6 bottom-2 text-[8rem] sm:text-[11rem] opacity-25 select-none">⌚</span>
+        </div>
+        <div class="swiper-slide relative h-[300px] sm:h-[380px]" style="background:linear-gradient(120deg,#f59e0b,#f97316,#e11d48)">
+          <div class="absolute inset-0 flex flex-col justify-center px-7 sm:px-14 max-w-2xl text-[#06070c]">
+            <span class="badge w-fit" style="background:#06070c;color:#fff">SO'NGGI DONALAR</span>
+            <h2 class="display text-[clamp(28px,5vw,52px)] mt-4">Fotoapparatlar<br>va obyektivlar</h2>
+            <p class="mt-3 text-sm sm:text-base opacity-80">Professional tarkiblar va sovg'a uchun ajoyib tanlov</p>
+            <a href="#products" class="btn btn-solid mt-5 magnet w-fit">Ko'rish</a>
+          </div>
+          <span class="absolute right-6 bottom-2 text-[8rem] sm:text-[11rem] opacity-25 select-none">📷</span>
+        </div>
+      </div>
       <div class="swiper-pagination"></div>
     </div>
   </div>
 </section>
 
-<section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-  <div class="rounded-3xl p-10 bg-gradient-to-br from-indigo-600 to-fuchsia-600 text-white text-center relative overflow-hidden" data-aos="zoom-in">
-    <h3 class="text-3xl font-black">Chegirmalardan xabardor bo'ling</h3>
-    <p class="text-white/80 mt-3">E-pochtangizni qoldiring — eng yaxshi takliflar birinchi bo'lib sizga</p>
+<section id="features" class="relative px-4 sm:px-6 lg:px-10 py-10">
+  <div class="max-w-[1400px] mx-auto grid md:grid-cols-4 gap-4">
+    <div class="md:col-span-2 rounded-3xl p-7 reveal glow relative overflow-hidden" style="background:linear-gradient(130deg,var(--c1),#4338ca)">
+      <i data-lucide="shield-check" class="w-9 h-9 text-[#06070c]"></i>
+      <h3 class="font-display text-2xl font-bold mt-4 text-[#06070c]">100% rasmiy kafolat</h3>
+      <p class="text-[#06070c]/75 mt-2 text-sm max-w-sm">Barcha mahsulotlar yetkazib beruvchidan to'g'ridan-to'g'ri. 14 kun ichida qaytarish huquqi.</p>
+      <span class="absolute -right-6 -bottom-8 text-[9rem] opacity-20">🛡️</span>
+    </div>
+    <div class="panel p-7 reveal glow" data-tilt><i data-lucide="credit-card" class="w-8 h-8" style="color:var(--c2)"></i><h4 class="font-display font-bold text-lg mt-3">Bo'lib to'lash</h4><p class="text-sm opacity-70 mt-1">0% foiz bilan 12 oyga</p></div>
+    <div class="panel p-7 reveal glow" data-tilt><i data-lucide="refresh-ccw" class="w-8 h-8" style="color:var(--c2)"></i><h4 class="font-display font-bold text-lg mt-3">14 kun qaytarish</h4><p class="text-sm opacity-70 mt-1">Savol bermasdan qaytaramiz</p></div>
+  </div>
+</section>
+
+<section id="products" class="relative px-4 sm:px-6 lg:px-10 py-10">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="flex flex-wrap items-end justify-between gap-5 mb-8">
+      <div>
+        <h2 class="display text-[clamp(30px,5vw,58px)] reveal" data-split>Mahsulotlar katalogi</h2>
+        <p id="resultCount" class="tag mt-2 reveal">—</p>
+      </div>
+      <div class="panel p-5 w-full sm:w-80 reveal">
+        <div class="flex items-center justify-between text-sm font-bold mb-3"><span class="flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4" style="color:var(--c2)"></i>Narx filtri</span><span id="priceLabel" class="grad font-display">—</span></div>
+        <input type="range" id="priceRange" min="100000" max="15000000" step="50000" value="15000000" class="w-full" style="accent-color:var(--c1)">
+        <div class="flex justify-between tag mt-1"><span>100 000</span><span>15 000 000</span></div>
+        <div id="catFilter" class="flex flex-wrap gap-2 mt-4">
+          <button class="chip on" data-cat="all">Barchasi</button>
+          <button class="chip" data-cat="audio">Audio</button>
+          <button class="chip" data-cat="watch">Soatlar</button>
+          <button class="chip" data-cat="camera">Kamera</button>
+          <button class="chip" data-cat="laptop">Noutbuk</button>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 mb-5 reveal">
+      <div class="panel flex items-center gap-2 rounded-full px-4 py-2.5 flex-1 max-w-sm">
+        <i data-lucide="search" class="w-4 h-4 opacity-60"></i>
+        <input id="searchInput" class="bg-transparent outline-none text-sm w-full" placeholder="Mahsulot qidirish...">
+      </div>
+    </div>
+    <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+  </div>
+</section>
+
+<section id="deals" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1400px] mx-auto">
+    <h2 class="display text-[clamp(30px,5vw,58px)] mb-8 reveal" data-split>Hafta aksiyalari</h2>
+    <div class="swiper dealsSwiper pb-12"><div class="swiper-wrapper" id="dealSlides"></div><div class="swiper-pagination"></div></div>
+  </div>
+</section>
+
+<section class="relative px-4 sm:px-6 lg:px-10 py-10">
+  <div class="max-w-[1000px] mx-auto rounded-3xl p-8 sm:p-12 text-center reveal glow relative overflow-hidden" style="background:linear-gradient(130deg,var(--c1),var(--c3))">
+    <h3 class="display text-[clamp(26px,4vw,44px)] text-[#06070c]">Chegirmalardan xabardor bo'ling</h3>
+    <p class="text-[#06070c]/75 mt-3">E-pochtangizni qoldiring — eng yaxshi takliflar birinchi bo'lib sizga</p>
     <form id="subForm" class="mt-7 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-      <input type="email" required placeholder="example@mail.com" class="flex-1 px-5 py-3 rounded-xl text-slate-800 outline-none">
-      <button class="px-6 py-3 rounded-xl bg-white text-indigo-600 font-bold hover:scale-105 transition whitespace-nowrap">Obuna bo'lish</button>
+      <input type="email" required placeholder="example@mail.com" class="flex-1 px-5 py-3 rounded-full text-[#06070c] outline-none">
+      <button class="btn btn-solid magnet whitespace-nowrap">Obuna bo'lish</button>
     </form>
     <span class="absolute -left-8 -bottom-10 text-[10rem] opacity-15">✉️</span>
   </div>
 </section>
 
-<footer id="footer" class="border-t border-black/5 dark:border-white/10 py-12 px-5 mt-8">
-  <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-10">
-    <div>
-      <div class="flex items-center gap-2 font-black text-lg"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 grid place-items-center text-white"><i data-lucide="shopping-cart" class="w-5 h-5"></i></span>MarketPro</div>
-      <p class="text-sm opacity-60 mt-4">O'zbekistondagi eng qulay onlayn gadjet do'koni.</p>
-      <div class="flex gap-2 mt-5">
-        <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-indigo-500 transition"><i data-lucide="instagram" class="w-4 h-4"></i></a>
-        <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-indigo-500 transition"><i data-lucide="facebook" class="w-4 h-4"></i></a>
-        <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-indigo-500 transition"><i data-lucide="youtube" class="w-4 h-4"></i></a>
-      </div>
-    </div>
-    <div><h4 class="font-bold mb-4">Katalog</h4><ul class="space-y-2 text-sm opacity-65"><li><a href="#products" class="hover:text-indigo-500">Audio</a></li><li><a href="#products" class="hover:text-indigo-500">Smart soatlar</a></li><li><a href="#products" class="hover:text-indigo-500">Kameralar</a></li><li><a href="#products" class="hover:text-indigo-500">Noutbuklar</a></li></ul></div>
-    <div><h4 class="font-bold mb-4">Yordam</h4><ul class="space-y-2 text-sm opacity-65"><li><a href="#" class="hover:text-indigo-500">Yetkazib berish</a></li><li><a href="#" class="hover:text-indigo-500">To'lov</a></li><li><a href="#" class="hover:text-indigo-500">Qaytarish</a></li><li><a href="#" class="hover:text-indigo-500">Kafolat</a></li></ul></div>
-    <div><h4 class="font-bold mb-4">Aloqa</h4><ul class="space-y-2 text-sm opacity-65"><li class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4"></i> +998 71 200 00 00</li><li class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4"></i> info@marketpro.uz</li><li class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i> Toshkent, Chilonzor</li></ul></div>
+<div id="prodModal" class="modal"><div class="veil" data-close></div><div class="card panel w-full max-w-3xl grid md:grid-cols-2 overflow-hidden" id="prodCard"></div></div>
+<div id="cartModal" class="modal">
+  <div class="veil" data-close></div>
+  <div class="card panel w-full max-w-md max-h-[88vh] flex flex-col overflow-hidden">
+    <header class="flex items-center justify-between px-6 py-5" style="border-bottom:1px solid var(--line)">
+      <h3 class="font-display text-xl font-bold">Savatcha</h3>
+      <button class="burger" data-close aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button>
+    </header>
+    <div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-3"></div>
+    <footer class="p-6 space-y-3" style="border-top:1px solid var(--line)">
+      <div class="flex justify-between text-sm"><span class="opacity-60">Mahsulotlar</span><span id="cartQty" class="font-bold">0 dona</span></div>
+      <div class="flex justify-between items-end"><span class="font-display font-bold">Jami</span><span id="cartTotal" class="font-display text-2xl font-bold grad">0</span></div>
+      <button id="checkoutBtn" class="btn btn-solid w-full magnet">Rasmiylashtirish</button>
+    </footer>
   </div>
-  <div class="max-w-7xl mx-auto border-t border-black/5 dark:border-white/10 mt-10 pt-6 text-center text-sm opacity-60">© 2026 MarketPro. Barcha huquqlar himoyalangan.</div>
+</div>
+</main>
+
+<footer class="relative z-10 mt-10">
+  <div class="overflow-hidden border-y" style="border-color:var(--line)">
+    <div class="marquee py-5 font-display font-bold text-[clamp(28px,5vw,58px)] tracking-tight opacity-25 whitespace-nowrap">
+      <span>200 000 SO'MDAN YUQORI — BEPUL YETKAZISH · </span><span>200 000 SO'MDAN YUQORI — BEPUL YETKAZISH · </span>
+    </div>
+  </div>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-9 flex flex-col md:flex-row items-center justify-between gap-5 text-xs opacity-60">
+    <div class="font-display font-bold text-sm opacity-100">MarketPro</div>
+    <div>© 2026 · MarketPro — barcha huquqlar himoyalangan</div>
+    <div class="flex gap-2"><a href="#" class="burger" aria-label="Instagram"><i data-lucide="instagram" class="w-[18px] h-[18px]"></i></a><a href="#" class="burger" aria-label="YouTube"><i data-lucide="youtube" class="w-[18px] h-[18px]"></i></a></div>
+  </div>
 </footer>
 
-<div id="prodModal" class="fixed inset-0 z-[60] hidden">
-  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-close></div>
-  <div class="absolute inset-0 grid place-items-center p-4 pointer-events-none">
-    <div id="prodCard" class="pointer-events-auto w-full max-w-3xl bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-2xl scale-90 opacity-0 transition-all duration-300 grid md:grid-cols-2"></div>
-  </div>
-</div>
+<div id="toast" class="toast-box panel px-5 py-3 flex items-center gap-3 text-sm font-bold"><i data-lucide="check-circle-2" class="w-5 h-5" style="color:var(--c2)"></i><span id="toastMsg"></span></div>
 
-<div id="cartModal" class="fixed inset-0 z-[65] hidden">
-  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-close></div>
-  <aside id="cartPanel" class="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl flex flex-col translate-x-full transition-transform duration-300">
-    <header class="flex items-center justify-between px-6 py-5 border-b border-black/5 dark:border-white/10">
-      <h3 class="font-black text-xl">Savatcha</h3>
-      <button class="w-9 h-9 grid place-items-center rounded-xl glass" data-close><i data-lucide="x"></i></button>
-    </header>
-    <div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
-    <footer class="border-t border-black/5 dark:border-white/10 p-6 space-y-3">
-      <div class="flex justify-between text-sm"><span class="opacity-60">Mahsulotlar</span><span id="cartQty" class="font-semibold">0 dona</span></div>
-      <div class="flex justify-between text-lg font-black"><span>Jami</span><span id="cartTotal" class="text-indigo-500">0 so'm</span></div>
-      <button id="checkoutBtn" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white font-bold hover:scale-[1.02] transition disabled:opacity-40">Rasmiylashtirish</button>
-    </footer>
-  </aside>
-</div>
-
-<div id="mobileMenu" class="lg:hidden fixed inset-0 z-[60] hidden">
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
-  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
-      <span class="font-black text-lg">Menyu</span>
-      <button class="w-9 h-9 grid place-items-center rounded-xl bg-black/5 dark:bg-white/10" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
-    </div>
-    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#products"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Mahsulotlar</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#deals"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Aksiyalar</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#features"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Afzalliklar</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#footer"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Aloqa</a>
-    </nav>
-    <div class="px-5 py-4 border-t border-black/10 dark:border-white/10 text-xs opacity-60">© 2026 — barcha huquqlar himoyalangan</div>
-  </aside>
-</div>
-
-<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] hidden">
-  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 shadow-xl font-semibold"><i data-lucide="check-circle-2" class="text-green-500"></i><span id="toastMsg"></span></div>
-</div>
-
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
-
-const root=document.documentElement;
-if(localStorage.getItem('mp-theme')==='dark'||(!localStorage.getItem('mp-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
-const themeIcon=document.getElementById('themeIcon');
-const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'moon':'sun');lucide.createIcons();};
-document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('mp-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
-
-const API_PRODUCTS=[
-  {id:1,name:'AirPods Pro 2',cat:'audio',price:1850000,old:2290000,emoji:'🎧',badge:'TOP',rate:4.9,desc:'Shovqinni bekor qilish, adaptiv audio',g:'from-slate-300 to-slate-500'},
-  {id:2,name:'Galaxy Watch 6',cat:'watch',price:499000,old:999000,emoji:'⌚',badge:'-50%',rate:4.7,desc:'Yurak urishi va Spo2 monitoringi',g:'from-emerald-300 to-teal-500'},
-  {id:3,name:'Sony Alpha A7',cat:'camera',price:12400000,old:13800000,emoji:'📷',badge:'YANGI',rate:5.0,desc:'33MP to\'liq kadrli matritsa',g:'from-amber-300 to-orange-500'},
-  {id:4,name:'MacBook Air M3',cat:'laptop',price:14700000,old:0,emoji:'💻',badge:'',rate:4.9,desc:'13 dyuym, 16GB RAM, 512GB SSD',g:'from-indigo-300 to-violet-500'},
-  {id:5,name:'JBL Flip 6',cat:'audio',price:899000,old:1099000,emoji:'🔊',badge:'-18%',rate:4.6,desc:'12 soat batareya, IP67 himoya',g:'from-sky-300 to-blue-500'},
-  {id:6,name:'Amazfit GTR 4',cat:'watch',price:729000,old:0,emoji:'⌚',badge:'',rate:4.5,desc:'150+ sport rejimi, GPS',g:'from-rose-300 to-pink-500'},
-  {id:7,name:'Canon EOS R50',cat:'camera',price:6890000,old:0,emoji:'📸',badge:'YANGI',rate:4.8,desc:'24.2MP, 4K60 video yozuv',g:'from-stone-300 to-zinc-500'},
-  {id:8,name:'ASUS VivoBook 15',cat:'laptop',price:5650000,old:6200000,emoji:'💻',badge:'-9%',rate:4.4,desc:'Core i5, 8GB RAM, 512GB SSD',g:'from-cyan-300 to-blue-500'},
-  {id:9,name:'Marshall Major IV',cat:'audio',price:1290000,old:0,emoji:'🎵',badge:'',rate:4.8,desc:'80 soat batareya, simsiz',g:'from-neutral-300 to-stone-600'},
-  {id:10,name:'Xiaomi Band 8',cat:'watch',price:389000,old:459000,emoji:'⌚',badge:'-15%',rate:4.4,desc:'Yengil va arzon fitnes treker',g:'from-green-300 to-emerald-500'},
-  {id:11,name:'Fujifilm Instax',cat:'camera',price:1150000,old:0,emoji:'📷',badge:'',rate:4.6,desc:'Lazer bosilgan fotosuratlar',g:'from-pink-300 to-rose-500'},
-  {id:12,name:'Lenovo IdeaPad 3',cat:'laptop',price:4390000,old:4900000,emoji:'💻',badge:'-10%',rate:4.3,desc:'Ryzen 5, 8GB RAM, o\'chirish SSD',g:'from-violet-300 to-purple-500'},
-];
-const money=n=>n.toLocaleString('uz-UZ')+" so'm";
-
-let cart=JSON.parse(localStorage.getItem('mp-cart')||'[]');
-let state={cat:'all',maxPrice:15000000,query:''};
-
-const grid=document.getElementById('grid');
-const filtered=()=>API_PRODUCTS.filter(p=>(state.cat==='all'||p.cat===state.cat)&&p.price<=state.maxPrice&&p.name.toLowerCase().includes(state.query.toLowerCase()));
-
-function cardHTML(p,i){
-  const disc=p.old?Math.round((1-p.price/p.old)*100):0;
-  return `<article class="prod-enter glass rounded-3xl overflow-hidden card-hover group" style="animation-delay:${i*50}ms">
-    <div class="h-44 bg-gradient-to-br ${p.g} grid place-items-center text-6xl relative cursor-pointer" data-view="${p.id}">
-      ${p.emoji}
-      ${p.badge?`<span class="absolute top-3 left-3 text-[11px] font-bold px-2 py-1 rounded-lg ${disc?'bg-rose-500 text-white':'bg-white text-slate-800'}">${p.badge}</span>`:''}
-      <span class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition grid place-items-center"><span class="bg-white text-slate-900 text-sm font-bold px-4 py-2 rounded-xl">Ko'rish</span></span>
-    </div>
-    <div class="p-5">
-      <div class="flex items-center gap-1 text-amber-400 text-xs">${'★'.repeat(Math.round(p.rate))}<span class="opacity-50 ml-1">${p.rate}</span></div>
-      <h3 class="font-bold mt-2 leading-snug">${p.name}</h3>
-      <p class="text-xs opacity-60 mt-1 line-clamp-2">${p.desc}</p>
-      <div class="flex items-end justify-between mt-4">
-        <div><div class="font-black text-indigo-500">${money(p.price)}</div>${p.old?`<div class="text-xs opacity-50 line-through">${money(p.old)}</div>`:''}</div>
-        <button data-add="${p.id}" class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white grid place-items-center hover:scale-110 active:scale-90 transition"><i data-lucide="plus"></i></button>
-      </div>
-    </div>
-  </article>`;
-}
-const render=()=>{
-  const list=filtered();
-  document.getElementById('resultCount').textContent=`Jami ${list.length} mahsulot topildi`;
-  grid.innerHTML=list.length?list.map(cardHTML).join(''):`<div class="col-span-full text-center py-16 glass rounded-3xl"><span class="text-5xl">🔍</span><p class="font-bold mt-3">Mahsulot topilmadi</p><p class="text-sm opacity-60">Filtrlarni o'zgartirib ko'ring</p></div>`;
-  lucide.createIcons();
+const APP={
+  brand:'MarketPro',
+  theme:()=>document.documentElement.classList.contains('light')?'light':'dark',
+  toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('on');clearTimeout(this._t);this._t=setTimeout(()=>t.classList.remove('on'),2400);},
+  money(n,cur){return n.toLocaleString('ru-RU').replace(/,/g,' ')+(cur!==undefined?' '+cur:'');},
+  rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;},
+  sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 };
-
 const $=id=>document.getElementById(id);
-const saveCart=()=>localStorage.setItem('mp-cart',JSON.stringify(cart));
-const renderCart=()=>{
-  const qty=cart.reduce((s,i)=>s+i.qty,0);
-  $('cartCount').textContent=qty;
+const $$=s=>[...document.querySelectorAll(s)];
+
+/* Kun / tun rejimi */
+(function(){
+  const saved=localStorage.getItem('loyiha2-theme');
+  const sys=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  const mode=saved||sys;
+  document.documentElement.classList.toggle('light',mode==='light');
+  const sync=()=>{const l=document.documentElement.classList.contains('light');
+    $('themeIcon').setAttribute('data-lucide',l?'moon':'sun');document.documentElement.style.setProperty('--fg',l?'#0d1220':'#e9edf7');lucide.createIcons();};
+  setTimeout(sync,0);
+  $('themeBtn').addEventListener('click',()=>{
+    document.documentElement.classList.toggle('light');
+    localStorage.setItem('loyiha2-theme',document.documentElement.classList.contains('light')?'light':'dark');
+    sync();
+  });
+})();
+
+/* Fullscreen menyu */
+(function(){
+  const menu=$('menu'),btn=$('menuBtn');
+  const open=()=>{menu.classList.add('open');btn.classList.add('x');document.body.style.overflow='hidden';};
+  const close=()=>{menu.classList.remove('open');btn.classList.remove('x');document.body.style.overflow='';};
+  btn.addEventListener('click',()=>menu.classList.contains('open')?close():open());
+  $('menuClose').addEventListener('click',close);
+  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+  addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+})();
+
+/* Kursor */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  const c=$('cursor');
+  let x=innerWidth/2,y=innerHeight/2;
+  addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY;});
+  (function loop(){c.style.transform=`translate(${x}px,${y}px)`;requestAnimationFrame(loop);})();
+  document.addEventListener('mouseover',e=>{
+    if(e.target.closest('a,button,[data-cursor]'))c.classList.add('hovering');else c.classList.remove('hovering');
+  });
+})();
+
+/* Magnit tugmalar */
+(function(){
+  $$('.magnet').forEach(el=>{
+    el.addEventListener('mousemove',e=>{
+      const r=el.getBoundingClientRect();
+      el.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.22}px,${(e.clientY-r.top-r.height/2)*.22}px)`;
+    });
+    el.addEventListener('mouseleave',()=> el.style.transform='');
+  });
+})();
+
+/* 3D tilt kartochkalar */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  $$('[data-tilt]').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+      card.style.transform=`perspective(900px) rotateX(${(py-.5)*-9}deg) rotateY(${(px-.5)*11}deg)`;
+    });
+    card.addEventListener('mouseleave',()=> card.style.transform='');
+  });
+})();
+
+/* Preloader */
+(function(){
+  const bar=$('preBar'),num=$('preNum'),pre=$('pre');
+  let p=0;
+  const t=setInterval(()=>{
+    p=Math.min(100,p+Math.random()*13+4);
+    bar.style.width=p+'%';num.textContent=Math.floor(p)+'%';
+    if(p>=100){clearInterval(t);setTimeout(()=>{
+      pre.style.transition='opacity .6s var(--ease),clip-path .8s var(--ease)';
+      pre.style.clipPath='inset(0 0 100% 0)';pre.style.opacity='0';
+      setTimeout(()=>pre.remove(),700);
+      if(window.gsap)runReveals();
+    },220);}
+  },110);
+})();
+
+/* Scroll animatsiyalari (GSAP ScrollTrigger) */
+function runReveals(){
+  if(!window.gsap||!window.ScrollTrigger)return;
+  gsap.registerPlugin(ScrollTrigger);
+  $$('.reveal:not(.revealed)').forEach(el=>{
+    el.classList.add('revealed');
+    gsap.to(el,{opacity:1,y:0,x:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%'}});
+  });
+  $$('[data-parallax]').forEach(el=>{
+    gsap.to(el,{yPercent:+el.dataset.parallax,ease:'none',scrollTrigger:{trigger:el.closest('section')||el,start:'top bottom',end:'bottom top',scrub:true}});
+  });
+  $$('[data-count]').forEach(el=>{
+    const target=+el.dataset.count,suffix=el.dataset.suffix||'';
+    ScrollTrigger.create({trigger:el,start:'top 90%',once:true,onEnter(){
+      gsap.to({v:0},{v:target,duration:1.6,ease:'power2.out',onUpdate(){el.textContent=Math.floor(this.targets()[0].v)+suffix;}});
+    }});
+  });
+  $$('[data-split]').forEach(el=>{
+    const words=el.textContent.trim().split(/\s+/);
+    el.innerHTML=words.map(w=>`<span class="inline-block overflow-hidden align-bottom"><span class="inline-block" style="transform:translateY(110%)">${w}</span></span>`).join(' ');
+    gsap.to(el.querySelectorAll('span>span'),{y:0,duration:1.05,ease:'power4.out',stagger:.045,scrollTrigger:{trigger:el,start:'top 86%'}});
+  });
+}
+addEventListener('load',()=>{setTimeout(()=>{if(!$('pre'))runReveals();},1600);});
+addEventListener('scroll',()=>{
+  const s=scrollY/(document.body.scrollHeight-innerHeight)*100;
+  const sp=$('scrollProgress'); if(sp) sp.style.width=Math.min(s,100)+'%';
+},{passive:true});
+
+/* Three.js fon — jonli maydon */
+(async()=>{
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  try{
+    const THREE=await import('https://esm.sh/three@0.160.0');
+    const host=$('three-bg');if(!host)return;
+    const scene=new THREE.Scene();
+    const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);cam.position.z=8;
+    const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setSize(innerWidth,innerHeight);
+    host.appendChild(renderer.domElement);
+    const c1=new THREE.Color('#7c5cff'),c2=new THREE.Color('#00e5ff'),c3=new THREE.Color('#ff2e88');
+    const geo=new THREE.BufferGeometry();
+    const N=innerWidth<640?260:520,pos=new Float32Array(N*3),col=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      pos[i*3]=(Math.random()-.5)*26;pos[i*3+1]=(Math.random()-.5)*18;pos[i*3+2]=(Math.random()-.5)*12;
+      const c=[c1,c2,c3][i%3];col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
+    }
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    const mat=new THREE.PointsMaterial({size:.055,vertexColors:true,transparent:true,opacity:.85,depthWrite:false,blending:THREE.AdditiveBlending});
+    const pts=new THREE.Points(geo,mat);scene.add(pts);
+    const wire=new THREE.Mesh(new THREE.IcosahedronGeometry(2.6,1),
+      new THREE.MeshBasicMaterial({color:c1,wireframe:true,transparent:true,opacity:.12}));
+    scene.add(wire);
+    const wire2=new THREE.Mesh(new THREE.TorusGeometry(3.4,.008,3,90),
+      new THREE.MeshBasicMaterial({color:c2,transparent:true,opacity:.22}));
+    wire2.rotation.x=1.2;scene.add(wire2);
+    let mx=0,my=0;
+    addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-.5);my=(e.clientY/innerHeight-.5);});
+    addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+    (function tick(){
+      requestAnimationFrame(tick);
+      pts.rotation.y+=.0007;pts.rotation.x=my*.2;
+      wire.rotation.y+=.0016;wire.rotation.x+=.0007;
+      wire2.rotation.z+=.0012;
+      cam.position.x+=(mx*1.6-cam.position.x)*.05;
+      cam.position.y+=(-my*1.2-cam.position.y)*.05;
+      cam.lookAt(0,0,0);
+      renderer.render(scene,cam);
+    })();
+  }catch(e){/* fon animatsiyasi ishlamasa ham sayt ishlaydi */}
+})();
+
+
+const goods=[
+  {id:1,name:'AirPods Pro 2',cat:'audio',price:1850000,old:2290000,emoji:'🎧',badge:'TOP',rate:4.9,desc:"Shovqinni bekor qilish, adaptiv audio",g:'linear-gradient(135deg,#94a3b8,#475569)'},
+  {id:2,name:'Galaxy Watch 6',cat:'watch',price:499000,old:999000,emoji:'⌚',badge:'-50%',rate:4.7,desc:"Yurak urishi va Spo2 monitoringi",g:'linear-gradient(135deg,#10b981,#0d9488)'},
+  {id:3,name:'Sony Alpha A7',cat:'camera',price:12400000,old:13800000,emoji:'📷',badge:'YANGI',rate:5,desc:"To\'liq kadrli 33MP matritsa",g:'linear-gradient(135deg,#f59e0b,#ea580c)'},
+  {id:4,name:'MacBook Air M3',cat:'laptop',price:14700000,old:0,emoji:'💻',badge:'',rate:4.9,desc:"13 dyuym, 16GB RAM, 512GB SSD",g:'linear-gradient(135deg,#818cf8,#6d28d9)'},
+  {id:5,name:'JBL Flip 6',cat:'audio',price:899000,old:1099000,emoji:'🔊',badge:'-18%',rate:4.6,desc:"12 soat batareya, IP67 himoya",g:'linear-gradient(135deg,#38bdf8,#2563eb)'},
+  {id:6,name:'Amazfit GTR 4',cat:'watch',price:729000,old:0,emoji:'⌚',badge:'',rate:4.5,desc:"150+ sport rejimi, GPS",g:'linear-gradient(135deg,#fb7185,#e11d48)'},
+  {id:7,name:'Canon EOS R50',cat:'camera',price:6890000,old:0,emoji:'📸',badge:'YANGI',rate:4.8,desc:"24.2MP, 4K60 video yozuv",g:'linear-gradient(135deg,#a8a29e,#57534e)'},
+  {id:8,name:'ASUS VivoBook 15',cat:'laptop',price:5650000,old:6200000,emoji:'💻',badge:'-9%',rate:4.4,desc:"Core i5, 8GB RAM, 512GB SSD",g:'linear-gradient(135deg,#22d3ee,#0284c7)'},
+  {id:9,name:'Marshall Major IV',cat:'audio',price:1290000,old:0,emoji:'🎵',badge:'',rate:4.8,desc:"80 soat batareya, simsiz",g:'linear-gradient(135deg,#d6d3d1,#44403c)'},
+  {id:10,name:'Xiaomi Band 8',cat:'watch',price:389000,old:459000,emoji:'⌚',badge:'-15%',rate:4.4,desc:"Yengil va arzon fitnes treker",g:'linear-gradient(135deg,#4ade80,#16a34a)'},
+  {id:11,name:'Fujifilm Instax',cat:'camera',price:1150000,old:0,emoji:'📷',badge:'',rate:4.6,desc:"Lazer bosilgan fotosuratlar",g:'linear-gradient(135deg,#f9a8d4,#ec4899)'},
+  {id:12,name:'Lenovo IdeaPad 3',cat:'laptop',price:4390000,old:4900000,emoji:'💻',badge:'-10%',rate:4.3,desc:"Ryzen 5, 8GB RAM, SSD",g:'linear-gradient(135deg,#c4b5fd,#7c3aed)'}
+];
+let cart=[],state={cat:'all',maxPrice:15e6,q:''};
+const save=()=>localStorage.setItem('loyiha2-cart',JSON.stringify(cart));
+try{cart=JSON.parse(localStorage.getItem('loyiha2-cart')||'[]')}catch(e){}
+
+const list=()=>goods.filter(g=>(state.cat==='all'||g.cat===state.cat)&&g.price<=state.maxPrice&&g.name.toLowerCase().includes(state.q.toLowerCase()));
+function card(g,i){
+  const off=g.old?Math.round((1-g.price/g.old)*100):0;
+  return '<article class="panel glow overflow-hidden reveal group" data-id="'+g.id+'">'
+    +'<div class="h-44 grid place-items-center text-6xl relative cursor-pointer" style="background:'+g.g+'" data-view="'+g.id+'">'+g.emoji
+    +(g.badge?'<span class="absolute top-3 left-3 badge" style="background:'+(off?'#e11d48':'#06070c')+';color:#fff">'+g.badge+'</span>':'')
+    +'<span class="absolute inset-0 opacity-0 group-hover:opacity-100 transition grid place-items-center" style="background:rgba(2,3,8,.45)"><span class="btn btn-solid text-xs">Ko\'rish</span></span></div>'
+    +'<div class="p-5"><div class="flex items-center gap-1 text-xs" style="color:var(--c2)">'+'★'.repeat(Math.round(g.rate))+'<span class="opacity-50 ml-1">'+g.rate+'</span></div>'
+    +'<h3 class="font-display font-bold mt-2 leading-snug">'+g.name+'</h3>'
+    +'<p class="text-xs opacity-60 mt-1">'+g.desc+'</p>'
+    +'<div class="flex items-end justify-between mt-4"><div><div class="font-display font-bold grad">'+APP.money(g.price,"so\'m")+'</div>'
+    +(g.old?'<div class="text-xs opacity-40 line-through">'+APP.money(g.old,"so\'m")+'</div>':'')+'</div>'
+    +'<button class="burger" data-add="'+g.id+'" aria-label="Savatchaga"><i data-lucide="plus" class="w-[18px] h-[18px]"></i></button></div></div></article>';
+}
+function render(){
+  const l=list();
+  $('resultCount').textContent=l.length+' ta mahsulot topildi';
+  $('grid').innerHTML=l.length?l.map(card).join(''):'<div class="col-span-full panel rounded-3xl grid place-items-center py-16 text-center"><span class="text-6xl">🔍</span><p class="font-bold mt-3">Mahsulot topilmadi</p><p class="tag mt-1">Filtrlarni o\'zgartirib ko\'ring</p></div>';
+  lucide.createIcons();runReveals();
+}
+function add(id){
+  const g=goods.find(x=>x.id===+id);
+  const ex=cart.find(i=>i.id===g.id);
+  if(ex)ex.qty++;else cart.push({id:g.id,name:g.name,price:g.price,emoji:g.emoji,g:g.g,qty:1});
+  save();renderCart();APP.toast(g.name+' qo\'shildi');
+}
+function renderCart(){
+  const qty=cart.reduce((s,i)=>s+i.qty,0),total=cart.reduce((s,i)=>s+i.price*i.qty,0);
   $('cartQty').textContent=qty+' dona';
-  $('cartTotal').textContent=money(cart.reduce((s,i)=>s+i.price*i.qty,0));
+  $('cartTotal').textContent=APP.money(total,"so\'m");
   $('checkoutBtn').disabled=!cart.length;
-  if(!cart.length){$('cartItems').innerHTML=`<div class="h-full grid place-items-center text-center py-16"><div><span class="text-6xl">🛍️</span><p class="font-bold mt-3">Savatcha bo'sh</p><p class="text-sm opacity-60">Mahsulot qo'shing</p></div></div>`;return;}
-  $('cartItems').innerHTML=cart.map(i=>`<div class="glass rounded-2xl p-3 flex items-center gap-3">
-    <div class="w-14 h-14 rounded-xl bg-gradient-to-br ${i.g} grid place-items-center text-3xl shrink-0">${i.emoji}</div>
-    <div class="flex-1 min-w-0"><h4 class="font-bold text-sm truncate">${i.name}</h4><p class="text-indigo-500 font-bold text-sm">${money(i.price)}</p></div>
-    <div class="flex items-center gap-1.5">
-      <button data-dec="${i.id}" class="w-7 h-7 rounded-lg glass font-bold">−</button>
-      <span class="w-6 text-center text-sm font-bold">${i.qty}</span>
-      <button data-inc="${i.id}" class="w-7 h-7 rounded-lg bg-indigo-500 text-white font-bold">+</button>
-      <button data-del="${i.id}" class="w-7 h-7 grid place-items-center text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-    </div></div>`).join('');
+  if(!cart.length){$('cartItems').innerHTML='<div class="grid place-items-center py-14 text-center"><span class="text-6xl">🛍️</span><p class="font-bold mt-3">Savatcha bo\'sh</p></div>';
+    $('cartBtn').innerHTML='<i data-lucide="shopping-bag" class="w-[18px] h-[18px]"></i>';lucide.createIcons();return;}
+  $('cartBtn').innerHTML='<i data-lucide="shopping-bag" class="w-[18px] h-[18px]"></i><span class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 grid place-items-center text-[10px] font-bold rounded-full" style="background:var(--c2);color:#06070c">'+qty+'</span>';
+  $('cartItems').innerHTML=cart.map(i=>'<div class="panel p-3 flex items-center gap-3">'
+    +'<div class="w-12 h-12 rounded-xl grid place-items-center text-2xl shrink-0" style="background:'+i.g+'">'+i.emoji+'</div>'
+    +'<div class="flex-1 min-w-0"><h4 class="font-bold text-sm truncate">'+i.name+'</h4><p class="text-xs grad font-bold">'+APP.money(i.price,"so\'m")+'</p></div>'
+    +'<div class="flex items-center gap-1.5"><button class="w-7 h-7 rounded-lg panel font-bold" data-dec="'+i.id+'">−</button>'
+    +'<span class="w-6 text-center text-sm font-bold">'+i.qty+'</span>'
+    +'<button class="w-7 h-7 rounded-lg font-bold" style="background:var(--c2);color:#06070c" data-inc="'+i.id+'">+</button>'
+    +'<button class="w-7 h-7 grid place-items-center text-rose-400" data-del="'+i.id+'" aria-label="O\'chirish"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>').join('');
   lucide.createIcons();
-};
-const addToCart=id=>{
-  const p=API_PRODUCTS.find(x=>x.id===Number(id));if(!p)return;
-  const ex=cart.find(i=>i.id===p.id);
-  if(ex)ex.qty++;else cart.push({...p,qty:1});
-  saveCart();renderCart();bump();toast(`${p.name} qo'shildi`);
-};
-const bump=()=>{const c=$('cartCount');c.classList.remove('bump');void c.offsetWidth;c.classList.add('bump');};
-const fly=(emoji,from)=>{
-  const t=$('cartBtn').getBoundingClientRect(),el=document.createElement('div');
-  el.className='fly';el.textContent=emoji;el.style.left=from.left+'px';el.style.top=from.top+'px';
-  document.body.appendChild(el);
-  requestAnimationFrame(()=>{el.style.left=t.left+t.width/2-14+'px';el.style.top=t.top+t.height/2-14+'px';el.style.transform='scale(.3) rotate(200deg)';el.style.opacity='0';});
-  setTimeout(()=>el.remove(),820);
-};
-
-const openCart=()=>{$('cartModal').classList.remove('hidden');requestAnimationFrame(()=>$('cartPanel').classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
-const closeCart=()=>{$('cartPanel').classList.add('translate-x-full');setTimeout(()=>{$('cartModal').classList.add('hidden');document.body.style.overflow='';},300);};
-const openProduct=id=>{
-  const p=API_PRODUCTS.find(x=>x.id===Number(id));if(!p)return;
-  $('prodCard').innerHTML=`
-    <div class="h-64 md:h-full bg-gradient-to-br ${p.g} grid place-items-center text-[8rem] relative">${p.emoji}
-      <button class="absolute top-4 right-4 w-9 h-9 rounded-xl glass grid place-items-center md:hidden" data-close><i data-lucide="x"></i></button></div>
-    <div class="p-8 flex flex-col">
-      <div class="flex justify-between items-start">
-        <h3 class="text-2xl font-black leading-tight">${p.name}</h3>
-        <button class="w-9 h-9 rounded-xl glass grid place-items-center hidden md:grid" data-close><i data-lucide="x"></i></button>
-      </div>
-      <div class="flex items-center gap-1 text-amber-400 mt-2 text-sm">${'★'.repeat(Math.round(p.rate))}<span class="opacity-60 ml-1">${p.rate} reyting</span></div>
-      <p class="opacity-70 mt-4 leading-relaxed">${p.desc}. Raqamli ko'rsatkichlar, yuqori sifatli materiallar va 12 oy rasmiy kafolat. Yetkazib berish butun O'zbekiston bo'ylab.</p>
-      <ul class="mt-4 space-y-2 text-sm">
-        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Rasmiy kafolat 12 oy</li>
-        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Bepul yetkazib berish</li>
-        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Bo'lib to'lash imkoniyati</li>
-      </ul>
-      <div class="mt-auto pt-6 flex items-center justify-between">
-        <div><div class="text-3xl font-black text-indigo-500">${money(p.price)}</div>${p.old?`<div class="text-sm opacity-50 line-through">${money(p.old)}</div>`:''}</div>
-        <button data-add-modal="${p.id}" class="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white font-bold hover:scale-105 transition">Savatchaga</button>
-      </div>
-    </div>`;
-  $('prodModal').classList.remove('hidden');
-  requestAnimationFrame(()=>{$('prodCard').classList.remove('scale-90','opacity-0');});
-  document.body.style.overflow='hidden';lucide.createIcons();
-};
-const closeProduct=()=>{$('prodCard').classList.add('scale-90','opacity-0');setTimeout(()=>{$('prodModal').classList.add('hidden');document.body.style.overflow='';},280);};
-
-grid.addEventListener('click',e=>{
-  const add=e.target.closest('[data-add]'),view=e.target.closest('[data-view]');
-  if(add){const p=API_PRODUCTS.find(x=>x.id===Number(add.dataset.add));fly(p.emoji,add.getBoundingClientRect());addToCart(add.dataset.add);}
-  if(view)openProduct(view.dataset.view);
-});
-$('cartItems').addEventListener('click',e=>{
+}
+function openModal(id,node){$(id).classList.add('on');document.body.style.overflow='hidden';
+  requestAnimationFrame(()=>{if(node)node.classList.add('on');});}
+function closeModal(id){$(id).classList.remove('on');document.body.style.overflow='';}
+$('cartBtn').addEventListener('click',()=>openModal('cartModal'));
+$('cartModal').addEventListener('click',e=>{
+  if(e.target.closest('[data-close]')||e.target.hasAttribute('data-close'))closeModal('cartModal');
   const inc=e.target.closest('[data-inc]'),dec=e.target.closest('[data-dec]'),del=e.target.closest('[data-del]');
-  if(inc){cart.find(i=>i.id===Number(inc.dataset.inc)).qty++;saveCart();renderCart();}
-  if(dec){const id=Number(dec.dataset.dec),i=cart.find(c=>c.id===id);i.qty>1?i.qty--:cart=cart.filter(c=>c.id!==id);saveCart();renderCart();}
-  if(del){cart=cart.filter(c=>c.id!==Number(del.dataset.del));saveCart();renderCart();}
+  if(inc){cart.find(i=>i.id===+inc.dataset.inc).qty++;save();renderCart();}
+  if(dec){const id=+dec.dataset.dec,it=cart.find(i=>i.id===id);it.qty>1?it.qty--:cart=cart.filter(i=>i.id!==id);save();renderCart();}
+  if(del){cart=cart.filter(i=>i.id!==+del.dataset.del);save();renderCart();}
 });
+$('checkoutBtn').addEventListener('click',async()=>{
+  const b=$('checkoutBtn'),old=b.innerHTML;b.disabled=true;
+  b.innerHTML='<span class="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin"></span> To\'lov tekshirilmoqda...';
+  await APP.sleep(1700);
+  cart=[];save();renderCart();
+  b.textContent='To\'lov muvaffaqiyatli';
+  await APP.sleep(1500);
+  b.innerHTML=old;b.disabled=false;closeModal('cartModal');
+  APP.toast('Buyurtmangiz uchun rahmat!');
+});
+function openProduct(id){
+  const g=goods.find(x=>x.id===+id);if(!g)return;
+  const off=g.old?Math.round((1-g.price/g.old)*100):0;
+  $('prodCard').innerHTML='<div class="h-64 md:h-full grid place-items-center text-[7rem] relative" style="background:'+g.g+'">'+g.emoji
+    +'<button class="absolute top-4 right-4 burger" data-close aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button></div>'
+    +'<div class="p-7 flex flex-col"><div class="flex items-center gap-2 mb-2"><span class="badge">'+g.cat+'</span><span class="badge">'+g.rate+'★</span></div>'
+    +'<h3 class="display text-3xl font-bold">'+g.name+'</h3>'
+    +'<p class="opacity-75 mt-3 leading-relaxed text-sm">'+g.desc+'. Raqamli ko\'rsatkichlar, yuqori sifatli materiallar va 12 oy rasmiy kafolat. Yetkazib berish butun O\'zbekiston bo\'ylab.</p>'
+    +'<ul class="mt-4 space-y-2 text-sm"><li class="flex gap-2"><i data-lucide="check" class="w-4 h-4" style="color:var(--c2)"></i>Rasmiy kafolat 12 oy</li>'
+    +'<li class="flex gap-2"><i data-lucide="check" class="w-4 h-4" style="color:var(--c2)"></i>Bepul yetkazib berish</li>'
+    +'<li class="flex gap-2"><i data-lucide="check" class="w-4 h-4" style="color:var(--c2)"></i>Bo\'lib to\'lash imkoniyati</li></ul>'
+    +'<div class="mt-auto pt-6 flex items-center justify-between gap-3"><div><div class="display text-3xl font-bold grad">'+APP.money(g.price,"so\'m")+'</div>'
+    +(g.old?'<div class="text-xs opacity-40 line-through">'+APP.money(g.old,"so\'m")+'</div>':'')+'</div>'
+    +'<button class="btn btn-solid magnet" data-add="'+g.id+'">Savatchaga</button></div></div>';
+  openModal('prodModal');lucide.createIcons();
+}
 $('prodModal').addEventListener('click',e=>{
-  if(e.target.closest('[data-close]'))closeProduct();
-  const a=e.target.closest('[data-add-modal]');
-  if(a){const p=API_PRODUCTS.find(x=>x.id===Number(a.dataset.addModal));fly(p.emoji,a.getBoundingClientRect());addToCart(a.dataset.addModal);closeProduct();}
+  if(e.target.closest('[data-close]')||e.target.hasAttribute('data-close'))closeModal('prodModal');
+  const a=e.target.closest('[data-add]');
+  if(a){add(a.dataset.add);closeModal('prodModal');}
 });
-$('cartModal').addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeCart();});
-$('cartBtn').addEventListener('click',openCart);
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeCart();closeProduct();}});
-$('checkoutBtn').addEventListener('click',async e=>{
-  const btn=e.currentTarget;btn.disabled=true;const old=btn.textContent;
-  btn.innerHTML='<span class="inline-block w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin align-middle"></span> To\'lov tekshirilmoqda...';
-  await new Promise(r=>setTimeout(r,1800));
-  btn.textContent='To\'lov muvaffaqiyatli ✅';
-  cart=[];saveCart();renderCart();
-  await new Promise(r=>setTimeout(r,1800));
-  btn.textContent=old;closeCart();toast('Buyurtmangiz uchun rahmat!');
+$('grid').addEventListener('click',e=>{
+  const b=e.target.closest('[data-add]');
+  if(b){add(b.dataset.add);return;}
+  const v=e.target.closest('[data-view]');
+  if(v)openProduct(v.dataset.view);
 });
-$('searchInput').addEventListener('input',e=>{state.query=e.target.value;render();});
-$('priceRange').addEventListener('input',e=>{state.maxPrice=Number(e.target.value);$('priceLabel').textContent=state.maxPrice.toLocaleString('uz-UZ');render();});
 $('catFilter').addEventListener('click',e=>{
-  const b=e.target.closest('.catBtn');if(!b)return;
-  document.querySelectorAll('.catBtn').forEach(x=>x.classList.remove('active','bg-indigo-500','text-white','border-indigo-500'));
-  b.classList.add('active','bg-indigo-500','text-white','border-indigo-500');
-  state.cat=b.dataset.cat;render();
+  const c=e.target.closest('.chip');if(!c)return;
+  $$('#catFilter .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');
+  state.cat=c.dataset.cat;render();
 });
-$('subForm').addEventListener('submit',e=>{e.preventDefault();e.target.reset();toast('Obuna bo\'ldingiz! 🎉');});
+$('priceRange').addEventListener('input',e=>{state.maxPrice=+e.target.value;$('priceLabel').textContent=APP.money(state.maxPrice);render();});
+$('searchInput').addEventListener('input',e=>{state.q=e.target.value;render();});
+$('subForm').addEventListener('submit',e=>{e.preventDefault();e.target.reset();APP.toast('Obuna bo\'ldingiz!');});
 
-let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2200);}
-
-$('dealSlides').innerHTML=API_PRODUCTS.filter(p=>p.badge&&p.badge!=='TOP').map(p=>`
-  <div class="swiper-slide pb-2 h-auto">
-    <div class="glass rounded-3xl p-6 h-full flex flex-col card-hover">
-      <div class="h-36 rounded-2xl bg-gradient-to-br ${p.g} grid place-items-center text-6xl">${p.emoji}</div>
-      <span class="mt-4 text-[11px] font-bold bg-rose-500 text-white w-fit px-2 py-1 rounded-lg">${p.badge}</span>
-      <h4 class="font-bold mt-2">${p.name}</h4>
-      <div class="mt-auto pt-4 flex items-center justify-between">
-        <span class="font-black text-indigo-500">${money(p.price)}</span>
-        <button data-add="${p.id}" class="cartAdd w-9 h-9 rounded-xl bg-indigo-500 text-white grid place-items-center hover:scale-110 transition"><i data-lucide="plus"></i></button>
-      </div>
-    </div>
-  </div>`).join('');
-
-const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
-const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
-document.getElementById('menuBtn')?.addEventListener('click',openMM);
-document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
-document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
-
-render();renderCart();syncTheme();
-AOS.init({duration:800,once:true});
-new Swiper('.heroSwiper',{loop:true,effect:'fade',autoplay:{delay:6000},pagination:{el:'.heroSwiper .swiper-pagination',clickable:true}});
+$('dealSlides').innerHTML=goods.filter(g=>g.badge).map(g=>'<div class="swiper-slide h-auto"><div class="panel p-5 h-full flex flex-col glow" data-tilt>'
+  +'<div class="h-36 rounded-2xl grid place-items-center text-6xl" style="background:'+g.g+'">'+g.emoji+'</div>'
+  +'<span class="badge mt-4 w-fit" style="background:#e11d48;color:#fff">'+g.badge+'</span>'
+  +'<h4 class="font-display font-bold mt-2">'+g.name+'</h4>'
+  +'<div class="mt-auto pt-4 flex items-center justify-between"><span class="font-display font-bold grad">'+APP.money(g.price,"so\'m")+'</span>'
+  +'<button class="burger" data-add="'+g.id+'" aria-label="Savatchaga"><i data-lucide="plus" class="w-[18px] h-[18px]"></i></button></div></div></div>').join('');
+render();renderCart();
+new Swiper('.heroSwiper',{loop:true,effect:'fade',autoplay:{delay:6e3},pagination:{el:'.heroSwiper .swiper-pagination',clickable:true}});
 new Swiper('.dealsSwiper',{slidesPerView:1,spaceBetween:20,loop:true,grabCursor:true,pagination:{el:'.dealsSwiper .swiper-pagination',clickable:true},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:4}}});
-document.querySelector('#catFilter .catBtn').classList.add('bg-indigo-500','text-white','border-indigo-500');
+lucide.createIcons();
+
 </script>
 </body>
 </html>

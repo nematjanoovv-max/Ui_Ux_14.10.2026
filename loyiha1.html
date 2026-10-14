@@ -1,426 +1,563 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" class="">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0710">
 <title>TezYetkaz — Oziq-ovqat yetkazib berish</title>
+<meta name="description" content="Tez yetkazib berish xizmati: bento grid menyu, savatcha va jonli buyurtma kuzatuvi.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{brand:{50:'#fff7ed',100:'#ffedd5',200:'#fed7aa',300:'#fdba74',400:'#fb923c',500:'#f97316',600:'#ea580c',700:'#c2410c'},ink:'#0b1020'},boxShadow:{glass:'0 8px 32px rgba(31,38,135,.15)',glow:'0 0 40px rgba(249,115,22,.35)'}}}}
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{display:['"Space Grotesk"','system-ui','sans-serif'],sans:['Inter','system-ui','sans-serif'],mono:['"JetBrains Mono"','monospace']},colors:{c1:'#ff5c2b',c2:'#ffd60a',c3:'#ff2e88',ink:'#0a0710'}}}}
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
+:root{
+  --c1:#ff5c2b;--c2:#ffd60a;--c3:#ff2e88;--ink:#0a0710;
+  --line:color-mix(in srgb,var(--fg) 12%,transparent);
+  --panel:color-mix(in srgb,var(--fg) 5%,transparent);
+  --radius:20px;--ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:dark;
+}
+html.light{--panel:color-mix(in srgb,var(--fg) 7%,transparent);--line:color-mix(in srgb,var(--fg) 15%,transparent);color-scheme:light}
+*{-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif}
-.glass{background:rgba(255,255,255,.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.35)}
-.dark .glass{background:rgba(17,24,39,.55);border:1px solid rgba(255,255,255,.08)}
-.blob{position:absolute;border-radius:9999px;filter:blur(80px);opacity:.55;z-index:-1;animation:float 9s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-30px) scale(1.08)}}
-.card-hover{transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
-.card-hover:hover{transform:translateY(-8px)}
-::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#fb923c;border-radius:99px}
-.cart-bump{animation:bump .4s ease}
-@keyframes bump{0%,100%{transform:scale(1)}30%{transform:scale(1.35)}}
-.fly{position:fixed;z-index:9999;font-size:26px;pointer-events:none;transition:all .8s cubic-bezier(.22,1,.36,1)}
-.chip.active{background:#f97316;color:#fff;border-color:#f97316}
+body{
+  font-family:Inter,system-ui,sans-serif;background:var(--ink);color:var(--fg);
+  overflow-x:hidden;
+}
+.font-display{font-family:'Space Grotesk',system-ui,sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.display{font-weight:700;letter-spacing:-.03em;line-height:.95}
+.grad{background:linear-gradient(100deg,var(--c1),var(--c2) 55%,var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.outline-txt{color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 45%,transparent)}
+
+/* atmosfera qatlamlari */
+.noise,.scan,.gridbg{position:fixed;inset:0;pointer-events:none;z-index:1}
+.noise{opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:overlay}
+.gridbg{background-image:linear-gradient(color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(circle at 50% 30%,#000,transparent 78%)}
+.scan{background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.14) 3px 4px);opacity:.35}
+#three-bg{position:fixed;inset:0;z-index:0;opacity:.9}
+
+/* kursor */
+#cursor{position:fixed;left:0;top:0;z-index:9998;pointer-events:none;mix-blend-mode:difference}
+#cursor .ring{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border:1.5px solid #fff;border-radius:50%;transition:width .3s var(--ease),height .3s var(--ease),margin .3s var(--ease),opacity .3s}
+#cursor .dot{position:absolute;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:#fff;border-radius:50%}
+#cursor.hovering .ring{width:64px;height:64px;margin:-32px 0 0 -32px;opacity:.55}
+@media (hover:none),(pointer:coarse){#cursor{display:none}}
+
+/* preloader */
+#pre{position:fixed;inset:0;z-index:9999;background:var(--ink);display:grid;place-items:center;text-align:center}
+#pre .bar{width:min(320px,70vw);height:2px;background:color-mix(in srgb,var(--fg) 14%,transparent);margin:22px auto 0;overflow:hidden}
+#pre .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c1),var(--c2))}
+#pre .num{font-family:'JetBrains Mono',monospace;font-size:12px;opacity:.6;margin-top:12px;letter-spacing:.2em}
+#pre .name{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,64px);letter-spacing:-.03em}
+
+/* nav */
+.nav-blur{background:color-mix(in srgb,var(--ink) 62%,transparent);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.nav-link{position:relative}
+.nav-link::after{content:'';position:absolute;left:0;bottom:-4px;height:1.5px;width:0;background:linear-gradient(90deg,var(--c1),var(--c2));transition:width .35s var(--ease)}
+.nav-link:hover::after,.nav-link.active::after{width:100%}
+
+/* fullscreen menyu */
+#menu{position:fixed;inset:0;z-index:9990;background:color-mix(in srgb,var(--ink) 94%,transparent);backdrop-filter:blur(24px);
+  clip-path:circle(0% at calc(100% - 44px) 44px);transition:clip-path .8s var(--ease);display:flex;flex-direction:column;justify-content:center;padding:8vw}
+#menu.open{clip-path:circle(150% at calc(100% - 44px) 44px)}
+#menu a{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,72px);letter-spacing:-.03em;line-height:1.05;
+  color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 55%,transparent);transition:.4s var(--ease);display:block}
+#menu a:hover,#menu a:focus-visible{-webkit-text-stroke:1.4px var(--c2);color:var(--c2);transform:translateX(14px)}
+.burger{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.burger i{display:block;width:18px;height:1.6px;background:var(--fg);transition:.35s var(--ease)}
+.burger i+i{margin-top:5px}
+.burger.x i:first-child{transform:translateY(3.3px) rotate(45deg)}
+.burger.x i:last-child{transform:translateY(-3.3px) rotate(-45deg)}
+
+/* panellar */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(14px)}
+.glow{position:relative}
+.glow::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;
+  background:conic-gradient(from var(--a,0deg),transparent 0 55%,var(--c1) 70%,var(--c2) 85%,transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .4s;animation:spin 4s linear infinite}
+.glow:hover::before{opacity:1}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes spin{to{--a:360deg}}
+.tilt{transition:transform .5s var(--ease),box-shadow .5s;transform-style:preserve-3d;will-change:transform}
+.magnet{transition:transform .35s var(--ease)}
+.marquee{display:flex;width:max-content;animation:marq 26s linear infinite}
+@keyframes marq{to{transform:translateX(-50%)}}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:floaty 14s ease-in-out infinite;pointer-events:none}
+@keyframes floaty{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.12)}}
+.reveal{opacity:0;transform:translateY(34px)}
+.reveal-l{opacity:0;transform:translateX(-40px)}
+::-webkit-scrollbar{width:9px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--c1),var(--c2));border-radius:9px}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--c2);outline-offset:3px;border-radius:8px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.55rem;font-weight:700;
+  border-radius:999px;padding:.85rem 1.6rem;font-size:.92rem;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s;isolation:isolate}
+.btn::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,var(--c1),var(--c2));transition:filter .3s}
+.btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 14px 40px -12px var(--c1)}
+.btn-solid{color:#06070c}
+.btn-ghost{border:1px solid var(--line);background:var(--panel)}
+.btn-ghost::after{display:none}
+.btn-ghost:hover{border-color:var(--c2);color:var(--c2)}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:.5rem 1rem;font-size:.8rem;font-weight:600;transition:.3s}
+.chip:hover{border-color:var(--c2);color:var(--c2)}
+.chip.on{background:linear-gradient(100deg,var(--c1),var(--c2));color:#06070c;border-color:transparent}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;opacity:.62}
+.hairline{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+.toast-box{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:9997;opacity:0;transition:.4s var(--ease);pointer-events:none}
+.toast-box.on{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;z-index:9995;display:none}
+.modal.on{display:grid;place-items:center;padding:16px}
+.modal .veil{position:absolute;inset:0;background:rgba(2,3,8,.72);backdrop-filter:blur(8px)}
+.modal .card{position:relative;transform:scale(.94) translateY(14px);opacity:0;transition:.4s var(--ease)}
+.modal.on .card{transform:none;opacity:1}
+.badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;padding:.28rem .55rem;border-radius:6px;border:1px solid var(--line);background:var(--panel)}
+.glitch{position:relative}
+.glitch:hover::before,.glitch:hover::after{content:attr(data-t);position:absolute;inset:0;background:var(--ink)}
+.glitch:hover::before{color:var(--c1);transform:translate(-2px,-1px);clip-path:inset(0 0 62% 0)}
+.glitch:hover::after{color:var(--c2);transform:translate(2px,1px);clip-path:inset(58% 0 0 0)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}#three-bg{display:none}}
+
 </style>
 </head>
-<body class="bg-orange-50 text-slate-800 dark:bg-ink dark:text-slate-200 transition-colors duration-500 overflow-x-hidden">
+<body class="min-h-[100svh]">
+<div id="scrollProgress" class="fixed top-0 left-0 h-[3px] z-[70] pointer-events-none" style="background:linear-gradient(90deg,var(--c1),var(--c2));width:0" aria-hidden="true"></div>
+<div id="three-bg" aria-hidden="true"></div>
+<div class="gridbg" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true"></div>
+<div class="noise" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"><div class="ring"></div><div class="dot"></div></div>
+<div id="pre"><div><div class="name">TezYetkaz</div><div class="bar"><i id="preBar"></i></div><div class="num" id="preNum">0%</div></div></div>
 
-<div class="blob bg-orange-400 w-72 h-72 top-10 left-[-60px]"></div>
-<div class="blob bg-pink-400 w-80 h-80 top-[40%] right-[-80px]" style="animation-delay:1.5s"></div>
-
-<header id="nav" class="fixed top-0 inset-x-0 z-50 glass shadow-glass transition-all duration-300">
-  <nav class="max-w-7xl mx-auto flex items-center justify-between px-5 py-3">
-    <a href="#" class="flex items-center gap-2 font-extrabold text-xl">
-      <span class="w-10 h-10 grid place-items-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-glow"><i data-lucide="utensils-crossed"></i></span>
-      Tez<span class="text-brand-500">Yetkaz</span>
+<header id="nav" class="fixed inset-x-0 top-0 z-[60] transition-all duration-500">
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 h-[68px] flex items-center gap-5">
+    <a href="#top" class="font-display font-bold text-lg tracking-tight flex items-center gap-2.5 shrink-0">
+      <span class="w-9 h-9 rounded-xl grid place-items-center" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c"><i data-lucide="utensils-crossed" class="w-[18px] h-[18px]"></i></span>
+      TezYetkaz
     </a>
-    <ul class="hidden md:flex items-center gap-7 text-sm font-medium">
-      <li><a class="hover:text-brand-500 transition" href="#bento">Bento menyu</a></li>
-      <li><a class="hover:text-brand-500 transition" href="#menu">Menyu</a></li>
-      <li><a class="hover:text-brand-500 transition" href="#how">Qanday ishlaydi</a></li>
-      <li><a class="hover:text-brand-500 transition" href="#reviews">Sharhlar</a></li>
-    </ul>
-    <div class="flex items-center gap-2">
-      <button id="menuBtn" class="md:hidden w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
-      <button id="themeBtn" aria-label="Rejim" class="w-10 h-10 grid place-items-center rounded-xl glass hover:scale-110 transition"><i data-lucide="sun-moon" class="w-5 h-5"></i></button>
-      <button id="cartBtn" class="relative w-10 h-10 grid place-items-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white hover:scale-110 transition shadow-glow">
-        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
-        <span id="cartCount" class="absolute -top-1 -right-1 min-w-5 h-5 px-1 grid place-items-center text-[11px] font-bold bg-white text-brand-600 rounded-full">0</span>
-      </button>
+    <nav class="hidden lg:flex items-center gap-7 text-[13px] font-semibold ml-4"><a class="nav-link hover:opacity-70 transition" href="#menu">Menyu</a><a class="nav-link hover:opacity-70 transition" href="#bento">Bento</a><a class="nav-link hover:opacity-70 transition" href="#how">Qanday ishlaydi</a><a class="nav-link hover:opacity-70 transition" href="#reviews">Sharhlar</a></nav>
+    <div class="ml-auto flex items-center gap-2">
+      <button id="themeBtn" class="burger" aria-label="Kun/tun rejimi"><i data-lucide="sun" id="themeIcon" class="w-[18px] h-[18px]"></i></button>
+      <button id="cartBtn" class="burger" aria-label="Savatcha"><i data-lucide="shopping-bag" class="w-[18px] h-[18px]"></i></button>
+      <button id="menuBtn" class="burger lg:hidden" aria-label="Menyu"><span class="block"><i></i><i></i></span></button>
     </div>
-  </nav>
-
+  </div>
 </header>
 
-<section class="relative pt-32 pb-20 px-5">
-  <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-    <div data-aos="fade-up">
-      <span class="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full glass mb-5"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> 30 daqiqada bepul yetkazish</span>
-      <h1 class="text-5xl lg:text-6xl font-black leading-tight">Eng mazali <span class="bg-gradient-to-r from-brand-500 to-pink-500 bg-clip-text text-transparent">taomlar</span> eshigingizgacha</h1>
-      <p class="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-lg">500+ restoran, minglab taom. Bento menyudan bir bosishda tanlang — savatchangiz o'zi hisoblab boradi.</p>
-      <div class="mt-8 flex flex-col sm:flex-row gap-3">
-        <div class="glass rounded-2xl flex items-center px-4 py-3 flex-1 gap-3">
-          <i data-lucide="map-pin" class="text-brand-500"></i>
-          <input id="addressInput" class="bg-transparent outline-none w-full text-sm" placeholder="Yetkazib berish manzilini kiriting...">
-        </div>
-        <a href="#menu" class="px-7 py-3 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 text-white font-bold shadow-glow hover:scale-105 transition text-center">Buyurtma berish</a>
+<div id="menu">
+  <div class="tag mb-6">Menyu</div>
+  <a href="#top">Bosh sahifa</a><a href="#menu">Menyu</a><a href="#bento">Bento</a><a href="#how">Qanday ishlaydi</a><a href="#reviews">Sharhlar</a>
+  <div class="mono text-xs opacity-45 mt-9">TezYetkaz · 2026</div>
+  <button id="menuClose" class="absolute top-5 right-5 burger" aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button>
+</div>
+
+<main id="top" class="relative z-10">
+
+
+<section class="relative flex min-h-[100svh] items-center pt-28 pb-14 px-4 sm:px-6 lg:px-10">
+  <div class="blob w-[420px] h-[420px] -left-24 top-10" style="background:var(--c1)"></div>
+  <div class="blob w-[360px] h-[360px] right-0 bottom-0" style="background:var(--c3);animation-delay:2s"></div>
+  <div class="max-w-[1400px] mx-auto w-full grid lg:grid-cols-[1.15fr_.85fr] gap-10 items-center">
+    <div>
+      <div class="tag reveal mb-5">30 daqiqada bepul yetkazish</div>
+      <h1 class="display text-[clamp(42px,8vw,104px)] reveal"><span class="grad">Eng mazali</span><br><span class="outline-txt">taomlar</span> eshigingizgacha</h1>
+      <p class="mt-6 max-w-xl text-base sm:text-lg opacity-70 reveal">500+ restoran, minglab taom. Bento menyudan bir bosishda tanlang — savatchangiz o'zi hisoblab boradi.</p>
+      <div class="mt-8 flex flex-wrap gap-3 reveal">
+        <a href="#menu" class="btn btn-solid magnet"><i data-lucide="utensils-crossed" class="w-[18px] h-[18px]"></i> Buyurtma berish</a>
+        <a href="#bento" class="btn btn-ghost magnet">Bento menyu</a>
       </div>
-      <div class="mt-10 grid grid-cols-3 gap-4 max-w-md">
-        <div class="glass rounded-2xl p-4 text-center" data-aos="zoom-in" data-aos-delay="100"><div class="text-2xl font-black text-brand-500">500+</div><div class="text-xs opacity-70">Restoran</div></div>
-        <div class="glass rounded-2xl p-4 text-center" data-aos="zoom-in" data-aos-delay="200"><div class="text-2xl font-black text-brand-500">25 daq</div><div class="text-xs opacity-70">O'rtacha vaqt</div></div>
-        <div class="glass rounded-2xl p-4 text-center" data-aos="zoom-in" data-aos-delay="300"><div class="text-2xl font-black text-brand-500">4.9★</div><div class="text-xs opacity-70">Reyting</div></div>
+      <div class="mt-10 grid grid-cols-3 gap-3 max-w-md reveal">
+        <div class="panel p-4 text-center"><div class="font-display text-2xl font-bold grad" data-count="500" data-suffix="+">0</div><div class="tag mt-1">Restoran</div></div>
+        <div class="panel p-4 text-center"><div class="font-display text-2xl font-bold grad" data-count="25" data-suffix=" daq">0</div><div class="tag mt-1">O'rtacha</div></div>
+        <div class="panel p-4 text-center"><div class="font-display text-2xl font-bold grad" data-count="49" data-suffix="★">0</div><div class="tag mt-1">Reyting</div></div>
       </div>
     </div>
-    <div class="relative" data-aos="fade-left" data-aos-delay="200">
-      <div class="glass rounded-[2rem] p-6 shadow-glass">
+    <div class="reveal" data-tilt>
+      <div class="panel glow p-6 relative overflow-hidden">
+        <div class="tag mb-4">Hozir mashhur</div>
         <div class="grid grid-cols-2 gap-4">
-          <div class="col-span-2 rounded-2xl h-44 bg-gradient-to-br from-amber-300 to-orange-500 grid place-items-center text-7xl card-hover shadow-lg">🍔</div>
-          <div class="rounded-2xl h-32 bg-gradient-to-br from-rose-300 to-pink-500 grid place-items-center text-5xl card-hover shadow-lg">🍕</div>
-          <div class="rounded-2xl h-32 bg-gradient-to-br from-emerald-300 to-teal-500 grid place-items-center text-5xl card-hover shadow-lg">🥗</div>
-          <div class="rounded-2xl h-32 bg-gradient-to-br from-violet-300 to-purple-500 grid place-items-center text-5xl card-hover shadow-lg">🥤</div>
-          <div class="rounded-2xl h-32 bg-gradient-to-br from-yellow-200 to-amber-400 grid place-items-center text-5xl card-hover shadow-lg">🍰</div>
+          <div class="col-span-2 h-40 rounded-2xl grid place-items-center text-7xl" style="background:linear-gradient(135deg,var(--c1),var(--c3))">🍔</div>
+          <div class="h-28 rounded-2xl grid place-items-center text-5xl" style="background:linear-gradient(135deg,var(--c2),var(--c1))">🍕</div>
+          <div class="h-28 rounded-2xl grid place-items-center text-5xl" style="background:linear-gradient(135deg,var(--c3),#7c5cff)">🥗</div>
+          <div class="h-28 rounded-2xl grid place-items-center text-5xl" style="background:linear-gradient(135deg,#7c5cff,var(--c2))">🥤</div>
+          <div class="h-28 rounded-2xl grid place-items-center text-5xl" style="background:linear-gradient(135deg,var(--c2),var(--c3))">🍰</div>
         </div>
-      </div>
-      <div class="absolute -bottom-5 -left-5 glass rounded-2xl px-4 py-3 flex items-center gap-3 shadow-glass" data-aos="fade-up" data-aos-delay="500">
-        <span class="w-9 h-9 rounded-xl bg-green-500/20 text-green-500 grid place-items-center"><i data-lucide="bike"></i></span>
-        <div><div class="text-sm font-bold">Kuryer yo'lda</div><div class="text-xs opacity-60">2 daqiqada yetib boradi</div></div>
+        <div class="mt-4 flex items-center gap-3 text-xs opacity-70"><span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Kuryer yo'lda — 2 daqiqada yetib boradi</div>
       </div>
     </div>
   </div>
 </section>
 
-<section id="bento" class="py-20 px-5">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-14" data-aos="fade-up">
-      <h2 class="text-4xl font-black">Bento <span class="text-brand-500">menyu</span></h2>
-      <p class="mt-3 text-slate-600 dark:text-slate-400">Kategoriyalarni zamonaviy kartochkalardan tanlang</p>
+<section id="bento" class="relative px-4 sm:px-6 lg:px-10 py-16">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="flex items-end justify-between gap-4 mb-9">
+      <h2 class="display text-[clamp(30px,5vw,58px)] reveal" data-split>Bento menyu</h2>
+      <div class="tag reveal">Kategoriyalar</div>
     </div>
-    <div class="grid md:grid-cols-4 auto-rows-[190px] gap-4">
-      <div class="md:col-span-2 md:row-span-2 rounded-3xl p-7 bg-gradient-to-br from-brand-500 to-pink-500 text-white relative overflow-hidden card-hover shadow-glow" data-aos="zoom-in">
-        <div class="relative z-10">
-          <span class="text-xs font-bold bg-white/25 px-3 py-1 rounded-full">🔥 Eng mashhur</span>
-          <h3 class="text-3xl font-black mt-4">Burger & Sendvich</h3>
-          <p class="text-white/80 mt-2 text-sm max-w-[220px]">Mol go'shtli klassik burgerlar, xrustal sous bilan</p>
-          <button data-add="Burger" data-price="38000" class="mt-6 bg-white text-brand-600 font-bold px-5 py-2.5 rounded-xl hover:scale-105 transition inline-flex items-center gap-2">Savatchaga <i data-lucide="plus" class="w-4 h-4"></i></button>
-        </div>
+    <div class="bento grid grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[168px]">
+      <div class="col-span-2 row-span-2 rounded-3xl p-7 relative overflow-hidden reveal glow" style="background:linear-gradient(140deg,var(--c1),var(--c3))">
+        <span class="badge">ENG MASHHUR</span>
+        <h3 class="font-display text-4xl font-bold mt-5 text-[#06070c]">Burger & Sendvich</h3>
+        <p class="text-sm text-[#06070c]/70 mt-2 max-w-[220px]">Mol go'shtli klassik burgerlar, xrustal sous bilan</p>
+        <button class="btn btn-solid mt-6 magnet" data-add="Burger" data-price="38000">Savatchaga qo'shish</button>
         <span class="absolute -right-4 -bottom-6 text-[9rem] opacity-30 select-none">🍔</span>
       </div>
-      <div class="rounded-3xl p-6 glass card-hover" data-aos="fade-up" data-aos-delay="100">
-        <span class="text-4xl">🍕</span><h4 class="font-bold mt-3">Pitsa</h4><p class="text-xs opacity-60 mt-1">32 xil</p>
-        <button data-add="Pitsa" data-price="65000" class="mt-3 text-brand-500 text-sm font-bold hover:underline">Qo'shish +</button>
-      </div>
-      <div class="rounded-3xl p-6 glass card-hover" data-aos="fade-up" data-aos-delay="200">
-        <span class="text-4xl">🥗</span><h4 class="font-bold mt-3">Salatlar</h4><p class="text-xs opacity-60 mt-1">18 xil</p>
-        <button data-add="Salat" data-price="29000" class="mt-3 text-brand-500 text-sm font-bold hover:underline">Qo'shish +</button>
-      </div>
-      <div class="rounded-3xl p-6 bg-gradient-to-br from-emerald-400 to-teal-500 text-white card-hover" data-aos="fade-up" data-aos-delay="300">
-        <span class="text-4xl">🥗</span><h4 class="font-bold mt-3">Sog'lom</h4><p class="text-xs text-white/80 mt-1">Kaloriya hisobi bilan</p>
-      </div>
-      <div class="rounded-3xl p-6 bg-gradient-to-br from-violet-500 to-purple-600 text-white card-hover" data-aos="fade-up" data-aos-delay="400">
-        <span class="text-4xl">🥤</span><h4 class="font-bold mt-3">Ichimliklar</h4><p class="text-xs text-white/80 mt-1">Sovuq va issiq</p>
-        <button data-add="Kola" data-price="12000" class="mt-3 text-white text-sm font-bold bg-white/20 px-3 py-1 rounded-lg hover:bg-white/30 transition">+ Qo'shish</button>
-      </div>
+      <div class="panel glow p-6 reveal" data-tilt><span class="text-4xl">🍕</span><h4 class="font-display text-xl font-bold mt-3">Pitsa</h4><p class="tag mt-1">32 xil</p><button class="btn btn-ghost mt-3 text-xs" data-add="Pitsa" data-price="65000">Qo'shish +</button></div>
+      <div class="panel glow p-6 reveal" data-tilt><span class="text-4xl">🥗</span><h4 class="font-display text-xl font-bold mt-3">Salatlar</h4><p class="tag mt-1">18 xil</p><button class="btn btn-ghost mt-3 text-xs" data-add="Salat" data-price="29000">Qo'shish +</button></div>
+      <div class="p-6 rounded-3xl reveal glow" style="background:linear-gradient(140deg,#10b981,#0ea5e9)"><span class="text-4xl">🥗</span><h4 class="font-display text-xl font-bold mt-3 text-[#06070c]">Sog'lom</h4><p class="text-xs text-[#06070c]/70 mt-1">Kaloriya hisobi bilan</p></div>
+      <div class="p-6 rounded-3xl reveal glow" style="background:linear-gradient(140deg,#7c5cff,var(--c1))"><span class="text-4xl">🥤</span><h4 class="font-display text-xl font-bold mt-3 text-[#06070c]">Ichimliklar</h4><button class="btn btn-solid mt-3 text-xs" data-add="Kola" data-price="12000">+ Qo'shish</button></div>
     </div>
   </div>
 </section>
 
-<section id="menu" class="py-16 px-5">
-  <div class="max-w-7xl mx-auto">
-    <div class="flex flex-wrap items-end justify-between gap-6 mb-10" data-aos="fade-up">
-      <div>
-        <h2 class="text-4xl font-black">Bugungi <span class="text-brand-500">menyu</span></h2>
-        <p class="mt-2 text-slate-600 dark:text-slate-400">Kategoriya bo'yicha filtrlash</p>
-      </div>
-      <div id="chips" class="flex flex-wrap gap-2">
-        <button class="chip active px-4 py-2 rounded-full border text-sm font-semibold transition" data-cat="all">Barchasi</button>
-        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-cat="fast">Fast-food</button>
-        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-cat="salad">Salatlar</button>
-        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-cat="drink">Ichimliklar</button>
-        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-cat="desert">Desertlar</button>
+<section id="menu" class="relative px-4 sm:px-6 lg:px-10 py-10">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="flex flex-wrap items-end justify-between gap-5 mb-8">
+      <h2 class="display text-[clamp(30px,5vw,58px)] reveal" data-split>Bugungi menyu</h2>
+      <div id="chips" class="flex flex-wrap gap-2 reveal">
+        <button class="chip on" data-cat="all">Barchasi</button>
+        <button class="chip" data-cat="fast">Fast-food</button>
+        <button class="chip" data-cat="salad">Salatlar</button>
+        <button class="chip" data-cat="drink">Ichimliklar</button>
+        <button class="chip" data-cat="desert">Desertlar</button>
       </div>
     </div>
-    <div id="products" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+    <div id="products" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
   </div>
 </section>
 
-<section id="how" class="py-20 px-5">
-  <div class="max-w-6xl mx-auto">
-    <h2 class="text-4xl font-black text-center mb-14" data-aos="fade-up">Qanday <span class="text-brand-500">ishlaydi</span></h2>
-    <div class="grid md:grid-cols-3 gap-6">
-      <div class="glass rounded-3xl p-8 text-center card-hover" data-aos="fade-up"><div class="w-14 h-14 mx-auto rounded-2xl bg-brand-500 text-white grid place-items-center text-2xl font-black">1</div><h4 class="font-bold text-lg mt-5">Tanlang</h4><p class="text-sm opacity-70 mt-2">Bento menyudan sevimli taomingizni bir bosishda qo'shing</p></div>
-      <div class="glass rounded-3xl p-8 text-center card-hover" data-aos="fade-up" data-aos-delay="150"><div class="w-14 h-14 mx-auto rounded-2xl bg-brand-500 text-white grid place-items-center text-2xl font-black">2</div><h4 class="font-bold text-lg mt-5">To'lang</h4><p class="text-sm opacity-70 mt-2">Click, Payme yoki naqd — savatchada darhol hisob</p></div>
-      <div class="glass rounded-3xl p-8 text-center card-hover" data-aos="fade-up" data-aos-delay="300"><div class="w-14 h-14 mx-auto rounded-2xl bg-brand-500 text-white grid place-items-center text-2xl font-black">3</div><h4 class="font-bold text-lg mt-5">Yetkazamiz</h4><p class="text-sm opacity-70 mt-2">30 daqiqada issiq holda eshigingizgacha</p></div>
+<section id="how" class="relative px-4 sm:px-6 lg:px-10 py-16">
+  <div class="max-w-[1400px] mx-auto">
+    <h2 class="display text-[clamp(30px,5vw,58px)] text-center mb-12 reveal" data-split>Qanday ishlaydi</h2>
+    <div class="grid md:grid-cols-3 gap-5">
+      <div class="panel p-8 reveal glow" data-tilt><div class="font-display text-5xl font-bold grad">01</div><h4 class="font-display text-xl font-bold mt-4">Tanlang</h4><p class="text-sm opacity-70 mt-2">Bento menyudan sevimli taomingizni bir bosishda qo'shing</p></div>
+      <div class="panel p-8 reveal glow" data-tilt><div class="font-display text-5xl font-bold grad">02</div><h4 class="font-display text-xl font-bold mt-4">To'lang</h4><p class="text-sm opacity-70 mt-2">Click, Payme yoki naqd — savatchada darhol hisob</p></div>
+      <div class="panel p-8 reveal glow" data-tilt><div class="font-display text-5xl font-bold grad">03</div><h4 class="font-display text-xl font-bold mt-4">Yetkazamiz</h4><p class="text-sm opacity-70 mt-2">30 daqiqada issiq holda eshigingizgacha</p></div>
     </div>
   </div>
 </section>
 
-<section id="reviews" class="py-16 px-5">
-  <div class="max-w-5xl mx-auto">
-    <h2 class="text-4xl font-black text-center mb-10" data-aos="fade-up">Mijozlar <span class="text-brand-500">fikri</span></h2>
-    <div class="swiper reviewSwiper pb-14">
-      <div class="swiper-wrapper" id="reviewSlides"></div>
-      <div class="swiper-pagination"></div>
-    </div>
+<section id="reviews" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1200px] mx-auto">
+    <h2 class="display text-[clamp(30px,5vw,58px)] text-center mb-10 reveal" data-split>Mijozlar fikri</h2>
+    <div class="swiper revSwiper pb-12"><div class="swiper-wrapper" id="revSlides"></div><div class="swiper-pagination"></div></div>
   </div>
 </section>
 
-<footer class="border-t border-black/5 dark:border-white/10 py-10 px-5 mt-10">
-  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-    <div class="flex items-center gap-2 font-extrabold text-lg"><span class="w-9 h-9 grid place-items-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white"><i data-lucide="utensils-crossed" class="w-5 h-5"></i></span>TezYetkaz</div>
-    <p class="text-sm opacity-60">© 2026 TezYetkaz. Barcha huquqlar himoyalangan.</p>
-    <div class="flex gap-3">
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-brand-500 transition"><i data-lucide="instagram" class="w-4 h-4"></i></a>
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-brand-500 transition"><i data-lucide="send" class="w-4 h-4"></i></a>
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-brand-500 transition"><i data-lucide="phone" class="w-4 h-4"></i></a>
+<div id="cartModal" class="modal">
+  <div class="veil" data-close></div>
+  <div class="card panel w-full max-w-md max-h-[88vh] flex flex-col overflow-hidden">
+    <header class="flex items-center justify-between px-6 py-5" style="border-bottom:1px solid var(--line)">
+      <h3 class="font-display text-xl font-bold">Savatcha</h3>
+      <button class="burger" data-close aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button>
+    </header>
+    <div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-3"></div>
+    <footer class="p-6 space-y-3" style="border-top:1px solid var(--line)">
+      <div class="flex justify-between text-sm"><span class="opacity-60">Yetkazish</span><span class="font-bold" style="color:var(--c2)">Bepul</span></div>
+      <div class="flex justify-between items-end"><span class="font-display font-bold">Jami</span><span id="cartTotal" class="font-display text-2xl font-bold grad">0</span></div>
+      <button id="orderBtn" class="btn btn-solid w-full magnet">Buyurtma berish</button>
+    </footer>
+  </div>
+</div>
+</main>
+
+<footer class="relative z-10 mt-10">
+  <div class="overflow-hidden border-y" style="border-color:var(--line)">
+    <div class="marquee py-5 font-display font-bold text-[clamp(28px,5vw,58px)] tracking-tight opacity-25 whitespace-nowrap">
+      <span>TEZYETKAZ · YETKAZISH · 30 DAQIQA · </span><span>TEZYETKAZ · YETKAZISH · 30 DAQIQA · </span>
     </div>
+  </div>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-9 flex flex-col md:flex-row items-center justify-between gap-5 text-xs opacity-60">
+    <div class="font-display font-bold text-sm opacity-100">TezYetkaz</div>
+    <div>© 2026 · TezYetkaz — barcha huquqlar himoyalangan</div>
+    <div class="flex gap-2"><a href="#" class="burger" aria-label="Instagram"><i data-lucide="instagram" class="w-[18px] h-[18px]"></i></a><a href="#" class="burger" aria-label="Telegram"><i data-lucide="send" class="w-[18px] h-[18px]"></i></a></div>
   </div>
 </footer>
 
-<div id="cartModal" class="fixed inset-0 z-[60] hidden">
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
-  <aside class="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl flex flex-col translate-x-full transition-transform duration-400" id="cartPanel">
-    <header class="flex items-center justify-between px-6 py-5 border-b border-black/5 dark:border-white/10">
-      <h3 class="font-black text-xl flex items-center gap-2"><i data-lucide="shopping-bag" class="text-brand-500"></i> Savatcha</h3>
-      <button class="w-9 h-9 grid place-items-center rounded-xl glass" data-close><i data-lucide="x"></i></button>
-    </header>
-    <div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
-    <footer class="border-t border-black/5 dark:border-white/10 p-6 space-y-3">
-      <div class="flex justify-between text-sm"><span class="opacity-60">Yetkazish</span><span class="font-semibold">Bepul</span></div>
-      <div class="flex justify-between text-lg font-black"><span>Jami</span><span id="cartTotal" class="text-brand-500">0 so'm</span></div>
-      <button id="orderBtn" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 text-white font-bold shadow-glow hover:scale-[1.02] transition disabled:opacity-50">Buyurtma berish</button>
-    </footer>
-  </aside>
-</div>
+<div id="toast" class="toast-box panel px-5 py-3 flex items-center gap-3 text-sm font-bold"><i data-lucide="check-circle-2" class="w-5 h-5" style="color:var(--c2)"></i><span id="toastMsg"></span></div>
 
-<div id="mobileMenu" class="md:hidden fixed inset-0 z-[60] hidden">
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
-  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
-      <span class="font-black text-lg">Menyu</span>
-      <button class="w-9 h-9 grid place-items-center rounded-xl bg-black/5 dark:bg-white/10" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
-    </div>
-    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#bento"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Bento menyu</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#menu"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Menyu</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#how"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Qanday ishlaydi</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#reviews"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Sharhlar</a>
-    </nav>
-    <div class="px-5 py-4 border-t border-black/10 dark:border-white/10 text-xs opacity-60">© 2026 — barcha huquqlar himoyalangan</div>
-  </aside>
-</div>
-
-<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] hidden">
-  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 shadow-glass font-semibold"><i data-lucide="check-circle-2" class="text-green-500"></i><span id="toastMsg"></span></div>
-</div>
-
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
+const APP={
+  brand:'TezYetkaz',
+  theme:()=>document.documentElement.classList.contains('light')?'light':'dark',
+  toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('on');clearTimeout(this._t);this._t=setTimeout(()=>t.classList.remove('on'),2400);},
+  money(n,cur){return n.toLocaleString('ru-RU').replace(/,/g,' ')+(cur!==undefined?' '+cur:'');},
+  rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;},
+  sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+};
+const $=id=>document.getElementById(id);
+const $$=s=>[...document.querySelectorAll(s)];
 
-const root=document.documentElement;
-const savedTheme=localStorage.getItem('ty-theme');
-if(savedTheme==='dark'||(!savedTheme&&window.matchMedia('(prefers-color-scheme: dark)').matches))root.classList.add('dark');
-const themeBtn=document.getElementById('themeBtn');
-const syncThemeIcon=()=>{themeBtn.innerHTML=`<i data-lucide="${root.classList.contains('dark')?'sun':'moon'}" class="w-5 h-5"></i>`;lucide.createIcons()};
-themeBtn.addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('ty-theme',root.classList.contains('dark')?'dark':'light');syncThemeIcon();});
+/* Kun / tun rejimi */
+(function(){
+  const saved=localStorage.getItem('loyiha1-theme');
+  const sys=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  const mode=saved||sys;
+  document.documentElement.classList.toggle('light',mode==='light');
+  const sync=()=>{const l=document.documentElement.classList.contains('light');
+    $('themeIcon').setAttribute('data-lucide',l?'moon':'sun');document.documentElement.style.setProperty('--fg',l?'#0d1220':'#e9edf7');lucide.createIcons();};
+  setTimeout(sync,0);
+  $('themeBtn').addEventListener('click',()=>{
+    document.documentElement.classList.toggle('light');
+    localStorage.setItem('loyiha1-theme',document.documentElement.classList.contains('light')?'light':'dark');
+    sync();
+  });
+})();
 
-const products=[
-  {id:1,name:'Klassik Burger',cat:'fast',price:38000,emoji:'🍔',desc:'Mol go\'shti, cheddar, maxsus sous',rate:4.9,grad:'from-amber-300 to-orange-500'},
-  {id:2,name:'Pepperoni Pitsa',cat:'fast',price:65000,emoji:'🍕',desc:'32 sm, ikki marta pechonoz',rate:4.8,grad:'from-rose-300 to-pink-500'},
-  {id:3,name:'Sezar Salat',cat:'salad',price:29000,emoji:'🥗',desc:'Tovuq, kruton, parmezan',rate:4.7,grad:'from-emerald-300 to-teal-500'},
-  {id:4,name:'Moxito',cat:'drink',price:18000,emoji:'🍹',desc:'Yashil choy va limon',rate:4.6,grad:'from-lime-300 to-green-500'},
-  {id:5,name:'Tiramisu',cat:'desert',price:32000,emoji:'🍰',desc:'Italiya klassikasi',rate:5.0,grad:'from-yellow-200 to-amber-400'},
-  {id:6,name:'Lavash',cat:'fast',price:34000,emoji:'🌯',desc:'Tovuq go\'shti va sabzavotlar',rate:4.8,grad:'from-orange-300 to-red-500'},
-  {id:7,name:'Greek Salat',cat:'salad',price:27000,emoji:'🥙',desc:'Feta va zaytun',rate:4.5,grad:'from-teal-300 to-cyan-500'},
-  {id:8,name:'Amerikano',cat:'drink',price:15000,emoji:'☕',desc:'Ikki portion espresso',rate:4.7,grad:'from-stone-300 to-amber-700'},
-  {id:9,name:'Cheesecake',cat:'desert',price:30000,emoji:'🧁',desc:'Yumshoq va sutli',rate:4.9,grad:'from-pink-200 to-rose-400'},
-  {id:10,name:'Hot-Dog',cat:'fast',price:22000,emoji:'🌭',desc:'Ikki sosiska va sous',rate:4.4,grad:'from-amber-200 to-yellow-500'},
-  {id:11,name:'Fanta',cat:'drink',price:12000,emoji:'🥤',desc:'0.5L sovuq',rate:4.3,grad:'from-orange-200 to-orange-500'},
-  {id:12,name:'Medovik',cat:'desert',price:35000,emoji:'🍮',desc:'Ballar bilan',rate:4.8,grad:'from-amber-200 to-orange-400'},
+/* Fullscreen menyu */
+(function(){
+  const menu=$('menu'),btn=$('menuBtn');
+  const open=()=>{menu.classList.add('open');btn.classList.add('x');document.body.style.overflow='hidden';};
+  const close=()=>{menu.classList.remove('open');btn.classList.remove('x');document.body.style.overflow='';};
+  btn.addEventListener('click',()=>menu.classList.contains('open')?close():open());
+  $('menuClose').addEventListener('click',close);
+  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+  addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+})();
+
+/* Kursor */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  const c=$('cursor');
+  let x=innerWidth/2,y=innerHeight/2;
+  addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY;});
+  (function loop(){c.style.transform=`translate(${x}px,${y}px)`;requestAnimationFrame(loop);})();
+  document.addEventListener('mouseover',e=>{
+    if(e.target.closest('a,button,[data-cursor]'))c.classList.add('hovering');else c.classList.remove('hovering');
+  });
+})();
+
+/* Magnit tugmalar */
+(function(){
+  $$('.magnet').forEach(el=>{
+    el.addEventListener('mousemove',e=>{
+      const r=el.getBoundingClientRect();
+      el.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.22}px,${(e.clientY-r.top-r.height/2)*.22}px)`;
+    });
+    el.addEventListener('mouseleave',()=> el.style.transform='');
+  });
+})();
+
+/* 3D tilt kartochkalar */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  $$('[data-tilt]').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+      card.style.transform=`perspective(900px) rotateX(${(py-.5)*-9}deg) rotateY(${(px-.5)*11}deg)`;
+    });
+    card.addEventListener('mouseleave',()=> card.style.transform='');
+  });
+})();
+
+/* Preloader */
+(function(){
+  const bar=$('preBar'),num=$('preNum'),pre=$('pre');
+  let p=0;
+  const t=setInterval(()=>{
+    p=Math.min(100,p+Math.random()*13+4);
+    bar.style.width=p+'%';num.textContent=Math.floor(p)+'%';
+    if(p>=100){clearInterval(t);setTimeout(()=>{
+      pre.style.transition='opacity .6s var(--ease),clip-path .8s var(--ease)';
+      pre.style.clipPath='inset(0 0 100% 0)';pre.style.opacity='0';
+      setTimeout(()=>pre.remove(),700);
+      if(window.gsap)runReveals();
+    },220);}
+  },110);
+})();
+
+/* Scroll animatsiyalari (GSAP ScrollTrigger) */
+function runReveals(){
+  if(!window.gsap||!window.ScrollTrigger)return;
+  gsap.registerPlugin(ScrollTrigger);
+  $$('.reveal:not(.revealed)').forEach(el=>{
+    el.classList.add('revealed');
+    gsap.to(el,{opacity:1,y:0,x:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%'}});
+  });
+  $$('[data-parallax]').forEach(el=>{
+    gsap.to(el,{yPercent:+el.dataset.parallax,ease:'none',scrollTrigger:{trigger:el.closest('section')||el,start:'top bottom',end:'bottom top',scrub:true}});
+  });
+  $$('[data-count]').forEach(el=>{
+    const target=+el.dataset.count,suffix=el.dataset.suffix||'';
+    ScrollTrigger.create({trigger:el,start:'top 90%',once:true,onEnter(){
+      gsap.to({v:0},{v:target,duration:1.6,ease:'power2.out',onUpdate(){el.textContent=Math.floor(this.targets()[0].v)+suffix;}});
+    }});
+  });
+  $$('[data-split]').forEach(el=>{
+    const words=el.textContent.trim().split(/\s+/);
+    el.innerHTML=words.map(w=>`<span class="inline-block overflow-hidden align-bottom"><span class="inline-block" style="transform:translateY(110%)">${w}</span></span>`).join(' ');
+    gsap.to(el.querySelectorAll('span>span'),{y:0,duration:1.05,ease:'power4.out',stagger:.045,scrollTrigger:{trigger:el,start:'top 86%'}});
+  });
+}
+addEventListener('load',()=>{setTimeout(()=>{if(!$('pre'))runReveals();},1600);});
+addEventListener('scroll',()=>{
+  const s=scrollY/(document.body.scrollHeight-innerHeight)*100;
+  const sp=$('scrollProgress'); if(sp) sp.style.width=Math.min(s,100)+'%';
+},{passive:true});
+
+/* Three.js fon — jonli maydon */
+(async()=>{
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  try{
+    const THREE=await import('https://esm.sh/three@0.160.0');
+    const host=$('three-bg');if(!host)return;
+    const scene=new THREE.Scene();
+    const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);cam.position.z=8;
+    const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setSize(innerWidth,innerHeight);
+    host.appendChild(renderer.domElement);
+    const c1=new THREE.Color('#ff5c2b'),c2=new THREE.Color('#ffd60a'),c3=new THREE.Color('#ff2e88');
+    const geo=new THREE.BufferGeometry();
+    const N=innerWidth<640?260:520,pos=new Float32Array(N*3),col=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      pos[i*3]=(Math.random()-.5)*26;pos[i*3+1]=(Math.random()-.5)*18;pos[i*3+2]=(Math.random()-.5)*12;
+      const c=[c1,c2,c3][i%3];col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
+    }
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    const mat=new THREE.PointsMaterial({size:.055,vertexColors:true,transparent:true,opacity:.85,depthWrite:false,blending:THREE.AdditiveBlending});
+    const pts=new THREE.Points(geo,mat);scene.add(pts);
+    const wire=new THREE.Mesh(new THREE.IcosahedronGeometry(2.6,1),
+      new THREE.MeshBasicMaterial({color:c1,wireframe:true,transparent:true,opacity:.12}));
+    scene.add(wire);
+    const wire2=new THREE.Mesh(new THREE.TorusGeometry(3.4,.008,3,90),
+      new THREE.MeshBasicMaterial({color:c2,transparent:true,opacity:.22}));
+    wire2.rotation.x=1.2;scene.add(wire2);
+    let mx=0,my=0;
+    addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-.5);my=(e.clientY/innerHeight-.5);});
+    addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+    (function tick(){
+      requestAnimationFrame(tick);
+      pts.rotation.y+=.0007;pts.rotation.x=my*.2;
+      wire.rotation.y+=.0016;wire.rotation.x+=.0007;
+      wire2.rotation.z+=.0012;
+      cam.position.x+=(mx*1.6-cam.position.x)*.05;
+      cam.position.y+=(-my*1.2-cam.position.y)*.05;
+      cam.lookAt(0,0,0);
+      renderer.render(scene,cam);
+    })();
+  }catch(e){/* fon animatsiyasi ishlamasa ham sayt ishlaydi */}
+})();
+
+
+const dishes=[
+  {id:1,name:'Klassik Burger',cat:'fast',price:38000,emoji:'🍔',desc:"Mol go\'shti, cheddar, maxsus sous",rate:4.9,grad:'linear-gradient(135deg,var(--c1),var(--c3))'},
+  {id:2,name:'Pepperoni Pitsa',cat:'fast',price:65000,emoji:'🍕',desc:"32 sm, ikki marta pechonoz",rate:4.8,grad:'linear-gradient(135deg,var(--c2),var(--c1))'},
+  {id:3,name:'Sezar Salat',cat:'salad',price:29000,emoji:'🥗',desc:"Tovuq, kruton, parmezan",rate:4.7,grad:'linear-gradient(135deg,#10b981,#0ea5e9)'},
+  {id:4,name:'Moxito',cat:'drink',price:18000,emoji:'🍹',desc:"Yashil choy va limon",rate:4.6,grad:'linear-gradient(135deg,#84cc16,#10b981)'},
+  {id:5,name:'Tiramisu',cat:'desert',price:32000,emoji:'🍰',desc:"Italiya klassikasi",rate:5,grad:'linear-gradient(135deg,var(--c2),#f59e0b)'},
+  {id:6,name:'Lavash',cat:'fast',price:34000,emoji:'🌯',desc:"Tovuq go\'shti va sabzavotlar",rate:4.8,grad:'linear-gradient(135deg,var(--c3),var(--c1))'},
+  {id:7,name:'Greek Salat',cat:'salad',price:27000,emoji:'🥙',desc:"Feta va zaytun",rate:4.5,grad:'linear-gradient(135deg,#0ea5e9,#14b8a6)'},
+  {id:8,name:'Amerikano',cat:'drink',price:15000,emoji:'☕',desc:"Ikki portion espresso",rate:4.7,grad:'linear-gradient(135deg,#d6d3d1,#92400e)'},
+  {id:9,name:'Cheesecake',cat:'desert',price:30000,emoji:'🧁',desc:"Yumshoq va sutli",rate:4.9,grad:'linear-gradient(135deg,#fbcfe8,#f43f5e)'},
+  {id:10,name:'Hot-Dog',cat:'fast',price:22000,emoji:'🌭',desc:"Ikki sosiska va sous",rate:4.4,grad:'linear-gradient(135deg,#fde68a,#f59e0b)'},
+  {id:11,name:'Fanta',cat:'drink',price:12000,emoji:'🥤',desc:"0.5L sovuq",rate:4.3,grad:'linear-gradient(135deg,#fdba74,#f97316)'},
+  {id:12,name:'Medovik',cat:'desert',price:35000,emoji:'🍮',desc:"Ballar bilan",rate:4.8,grad:'linear-gradient(135deg,#fcd34d,#fb923c)'}
 ];
 const reviews=[
-  {name:'Dilnoza Karimova',role:'Mijoz',text:'Buyurtmim 20 daqiqada keldi, hammasi issiq edi. Bento menyu juda qulay!',ava:'DK'},
-  {name:'Jasur Aliyev',role:'Blogger',text:'Ilovadagi eng tez yetkazib berish xizmati. Narxlar ham arzon.',ava:'JA'},
-  {name:'Malika Tosheva',role:'O\'qituvchi',text:'Salatlar juda yangi va mazzali. Har hafta buyurtma qilaman.',ava:'MT'},
-  {name:'Sardor Umarov',role:'Dasturchi',text:'Savatcha logikasi juda sodda, bir bosishda buyurtma berdim.',ava:'SU'},
+  {n:'Dilnoza Karimova',r:'Mijoz',t:"Buyurtmim 20 daqiqada keldi, hammasi issiq edi. Bento menyu juda qulay!",i:'DK'},
+  {n:'Jasur Aliyev',r:'Blogger',t:"Ilovadagi eng tez yetkazib berish xizmati. Narxlar ham arzon.",i:'JA'},
+  {n:'Malika Tosheva',r:"O\'qituvchi",t:"Salatlar juda yangi va mazzali. Har hafta buyurtma qilaman.",i:'MT'},
+  {n:'Sardor Umarov',r:'Dasturchi',t:"Savatcha logikasi juda sodda, bir bosishda buyurtma berdim.",i:'SU'}
 ];
+let cart=[],cat='all';
+const save=()=>localStorage.setItem('loyiha1-cart',JSON.stringify(cart));
+try{cart=JSON.parse(localStorage.getItem('loyiha1-cart')||'[]')}catch(e){}
 
-let cart=JSON.parse(localStorage.getItem('ty-cart')||'[]');
-let activeCat='all';
-const money=n=>n.toLocaleString('uz-UZ')+" so'm";
-
-const productGrid=document.getElementById('products');
-const renderProducts=()=>{
-  const list=activeCat==='all'?products:products.filter(p=>p.cat===activeCat);
-  productGrid.innerHTML=list.map((p,i)=>`
-    <article class="glass rounded-3xl overflow-hidden card-hover group" data-aos="fade-up" data-aos-delay="${i*60}">
-      <div class="h-40 bg-gradient-to-br ${p.grad} grid place-items-center text-6xl relative">
-        ${p.emoji}
-        <span class="absolute top-3 right-3 text-xs font-bold bg-white/90 text-slate-800 px-2 py-1 rounded-lg flex items-center gap-1"><i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i>${p.rate}</span>
-      </div>
-      <div class="p-5">
-        <h3 class="font-bold text-lg">${p.name}</h3>
-        <p class="text-xs opacity-60 mt-1 h-8">${p.desc}</p>
-        <div class="flex items-center justify-between mt-4">
-          <span class="font-black text-brand-500">${money(p.price)}</span>
-          <button data-product="${p.id}" class="addBtn w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white grid place-items-center hover:scale-110 active:scale-95 transition shadow-glow"><i data-lucide="plus"></i></button>
-        </div>
-      </div>
-    </article>`).join('');
-  lucide.createIcons();AOS.refresh();
-};
-
-const cartCount=document.getElementById('cartCount');
-const cartItemsBox=document.getElementById('cartItems');
-const cartTotal=document.getElementById('cartTotal');
-const cartModal=document.getElementById('cartModal');
-const cartPanel=document.getElementById('cartPanel');
-
-const saveCart=()=>localStorage.setItem('ty-cart',JSON.stringify(cart));
-const badgeBump=()=>{cartCount.classList.remove('cart-bump');void cartCount.offsetWidth;cartCount.classList.add('cart-bump')};
-
-function flyToCart(emoji,from){
-  const iconBtn=document.getElementById('cartBtn').getBoundingClientRect();
-  const el=document.createElement('div');
-  el.className='fly';el.textContent=emoji;
-  el.style.left=from.left+'px';el.style.top=from.top+'px';
-  document.body.appendChild(el);
-  requestAnimationFrame(()=>{el.style.left=iconBtn.left+iconBtn.width/2-13+'px';el.style.top=iconBtn.top+iconBtn.height/2-13+'px';el.style.transform='scale(.4) rotate(180deg)';el.style.opacity='0.3';});
-  setTimeout(()=>el.remove(),850);
+function card(d,i){
+  return '<article class="panel glow overflow-hidden reveal">'
+    +'<div class="h-40 grid place-items-center text-6xl relative" style="background:'+d.grad+'">'+d.emoji
+    +'<span class="absolute top-3 right-3 badge">'+d.rate+'★</span></div>'
+    +'<div class="p-5"><span class="tag">'+d.cat+'</span>'
+    +'<h3 class="font-display font-bold text-lg mt-1">'+d.name+'</h3>'
+    +'<p class="text-xs opacity-60 mt-1 h-8">'+d.desc+'</p>'
+    +'<div class="flex items-center justify-between mt-4"><span class="font-display font-bold grad">'+APP.money(d.price,"so\'m")+'</span>'
+    +'<button class="burger" data-add="'+d.id+'" aria-label="Qo\'shish"><i data-lucide="plus" class="w-[18px] h-[18px]"></i></button></div></div></article>';
 }
-
-async function addToCart(id){
-  const product=products.find(p=>p.id===Number(id));
-  if(!product)return;
-  const existing=cart.find(i=>i.id===product.id);
-  if(existing)existing.qty+=1;else cart.push({...product,qty:1});
-  saveCart();renderCart();badgeBump();
-  toast(`${product.name} savatchaga qo'shildi`);
+function render(){
+  const list=cat==='all'?dishes:dishes.filter(d=>d.cat===cat);
+  $('products').innerHTML=list.map(card).join('');
+  lucide.createIcons();runReveals();
 }
-
-const renderCart=()=>{
-  const totalQty=cart.reduce((s,i)=>s+i.qty,0);
-  cartCount.textContent=totalQty;
+function renderCart(){
+  const qty=cart.reduce((s,i)=>s+i.qty,0);
   const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  cartTotal.textContent=money(total);
-  document.getElementById('orderBtn').disabled=cart.length===0;
-  if(!cart.length){
-    cartItemsBox.innerHTML=`<div class="h-full grid place-items-center text-center py-16">
-      <div><span class="text-6xl">🛒</span><p class="font-bold mt-4">Savatcha bo'sh</p><p class="text-sm opacity-60 mt-1">Menyudan taom qo'shing</p></div></div>`;
-    return;
-  }
-  cartItemsBox.innerHTML=cart.map(i=>`
-    <div class="glass rounded-2xl p-3 flex items-center gap-3">
-      <div class="w-14 h-14 rounded-xl bg-gradient-to-br ${i.grad} grid place-items-center text-3xl shrink-0">${i.emoji}</div>
-      <div class="flex-1 min-w-0">
-        <h4 class="font-bold text-sm truncate">${i.name}</h4>
-        <p class="text-brand-500 font-bold text-sm">${money(i.price)}</p>
-      </div>
-      <div class="flex items-center gap-1.5">
-        <button data-dec="${i.id}" class="qtyBtn w-7 h-7 rounded-lg glass grid place-items-center font-bold">−</button>
-        <span class="w-6 text-center font-bold text-sm">${i.qty}</span>
-        <button data-inc="${i.id}" class="qtyBtn w-7 h-7 rounded-lg bg-brand-500 text-white grid place-items-center font-bold">+</button>
-        <button data-del="${i.id}" class="qtyBtn w-7 h-7 rounded-lg grid place-items-center text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-      </div>
-    </div>`).join('');
+  $('cartTotal').textContent=APP.money(total,"so\'m");
+  $('orderBtn').disabled=!cart.length;
+  $('cartBtn').dataset.count=qty;
+  if(!qty){$('cartBtn').innerHTML='<i data-lucide="shopping-bag" class="w-[18px] h-[18px]"></i>';}
+  else{$('cartBtn').innerHTML='<i data-lucide="shopping-bag" class="w-[18px] h-[18px]"></i><span class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 grid place-items-center text-[10px] font-bold rounded-full" style="background:var(--c2);color:#06070c">'+qty+'</span>';}
   lucide.createIcons();
-};
-
-const openCart=()=>{cartModal.classList.remove('hidden');requestAnimationFrame(()=>cartPanel.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
-const closeCart=()=>{cartPanel.classList.add('translate-x-full');setTimeout(()=>{cartModal.classList.add('hidden');document.body.style.overflow='';},350);};
-
-async function placeOrder(btn){
-  btn.disabled=true;
-  const original=btn.textContent;
-  btn.innerHTML='<span class="inline-block w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin align-middle"></span> Buyurtma qabul qilinmoqda...';
-  await new Promise(r=>setTimeout(r,1600));
-  cart=[];saveCart();renderCart();
-  btn.textContent='Buyurtma qabul qilindi ✅';
-  await new Promise(r=>setTimeout(r,1800));
-  btn.textContent=original;btn.disabled=false;closeCart();
-  toast('Buyurtmangiz muvaffaqiyatli rasmiylashtirildi!');
+  if(!cart.length){$('cartItems').innerHTML='<div class="grid place-items-center py-14 text-center"><span class="text-6xl">🛒</span><p class="font-bold mt-4">Savatcha bo\'sh</p><p class="tag mt-1">Menyudan taom qo\'shing</p></div>';return;}
+  $('cartItems').innerHTML=cart.map(i=>'<div class="panel p-3 flex items-center gap-3">'
+    +'<div class="w-12 h-12 rounded-xl grid place-items-center text-2xl shrink-0" style="background:'+i.grad+'">'+i.emoji+'</div>'
+    +'<div class="flex-1 min-w-0"><h4 class="font-bold text-sm truncate">'+i.name+'</h4><p class="text-xs grad font-bold">'+APP.money(i.price,"so\'m")+'</p></div>'
+    +'<div class="flex items-center gap-1.5"><button class="w-7 h-7 rounded-lg panel font-bold" data-dec="'+i.id+'">−</button>'
+    +'<span class="w-6 text-center font-bold text-sm">'+i.qty+'</span>'
+    +'<button class="w-7 h-7 rounded-lg font-bold" style="background:var(--c2);color:#06070c" data-inc="'+i.id+'">+</button>'
+    +'<button class="w-7 h-7 grid place-items-center text-rose-400" data-del="'+i.id+'" aria-label="O\'chirish"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>').join('');
+  lucide.createIcons();
 }
-
-let toastTimer;
-function toast(msg){
-  const box=document.getElementById('toast');
-  document.getElementById('toastMsg').textContent=msg;
-  box.classList.remove('hidden');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>box.classList.add('hidden'),2200);
+function add(id,name,price,emoji,grad){
+  let item=cart.find(i=>i.id===id);
+  if(item)item.qty++;
+  else cart.push({id:id,name:name,price:price,emoji:emoji,grad:grad,qty:1});
+  save();renderCart();APP.toast(name+' savatchaga qo\'shildi');
 }
-
-document.getElementById('cartBtn').addEventListener('click',openCart);
-cartModal.addEventListener('click',e=>{if(e.target.hasAttribute('data-close'))closeCart();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCart();});
-
-productGrid.addEventListener('click',e=>{
-  const btn=e.target.closest('.addBtn');
-  if(!btn)return;
-  const p=products.find(x=>x.id===Number(btn.dataset.product));
-  flyToCart(p.emoji,btn.getBoundingClientRect());
-  addToCart(p.id);
-});
-
-cartItemsBox.addEventListener('click',e=>{
+function openCart(){$('cartModal').classList.add('on');document.body.style.overflow='hidden';}
+function closeCart(){$('cartModal').classList.remove('on');document.body.style.overflow='';}
+$('cartBtn').addEventListener('click',openCart);
+$('cartModal').addEventListener('click',e=>{
+  if(e.target.closest('[data-close]')||e.target.hasAttribute('data-close'))closeCart();
   const inc=e.target.closest('[data-inc]'),dec=e.target.closest('[data-dec]'),del=e.target.closest('[data-del]');
-  if(inc){const i=cart.find(c=>c.id===Number(inc.dataset.inc));i.qty++;saveCart();renderCart();}
-  if(dec){const id=Number(dec.dataset.dec);const i=cart.find(c=>c.id===id);if(i.qty>1)i.qty--;else cart=cart.filter(c=>c.id!==id);saveCart();renderCart();}
-  if(del){cart=cart.filter(c=>c.id!==Number(del.dataset.del));saveCart();renderCart();}
+  if(inc){cart.find(i=>i.id===+inc.dataset.inc).qty++;save();renderCart();}
+  if(dec){const id=+dec.dataset.dec,it=cart.find(i=>i.id===id);it.qty>1?it.qty--:cart=cart.filter(i=>i.id!==id);save();renderCart();}
+  if(del){cart=cart.filter(i=>i.id!==+del.dataset.del);save();renderCart();}
 });
-
-document.getElementById('orderBtn').addEventListener('click',e=>placeOrder(e.currentTarget));
-
-document.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',ev=>{
-  const name=b.dataset.add,price=Number(b.dataset.price),emoji=b.previousElementSibling?.textContent?.trim()||'🍽️';
-  const fake={id:900+Math.floor(Math.random()*1000),name,price,qty:1,emoji,grad:'from-brand-400 to-brand-600'};
-  flyToCart(emoji,b.getBoundingClientRect());
-  const exist=cart.find(c=>c.name===name);
-  if(exist)exist.qty++;else cart.push(fake);
-  saveCart();renderCart();badgeBump();toast(`${name} savatchaga qo'shildi`);
-}));
-
-document.getElementById('chips').addEventListener('click',e=>{
-  const chip=e.target.closest('.chip');if(!chip)return;
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
-  chip.classList.add('active');
-  activeCat=chip.dataset.cat;
-  renderProducts();
+$('products').addEventListener('click',e=>{
+  const b=e.target.closest('[data-add]');if(!b)return;
+  const d=dishes.find(x=>x.id===+b.dataset.add);
+  add(d.id,d.name,d.price,d.emoji,d.grad);
 });
-
-document.getElementById('reviewSlides').innerHTML=reviews.map(r=>`
-  <div class="swiper-slide px-2">
-    <div class="glass rounded-3xl p-8 h-full">
-      <div class="flex gap-1 text-amber-400 mb-4">${'<i data-lucide="star" class="w-4 h-4 fill-current"></i>'.repeat(5)}</div>
-      <p class="opacity-80 leading-relaxed">"${r.text}"</p>
-      <div class="flex items-center gap-3 mt-6">
-        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white grid place-items-center font-bold">${r.ava}</div>
-        <div><div class="font-bold text-sm">${r.name}</div><div class="text-xs opacity-60">${r.role}</div></div>
-      </div>
-    </div>
-  </div>`).join('');
-
-const nav=document.getElementById('nav');
-window.addEventListener('scroll',()=>nav.classList.toggle('shadow-2xl',window.scrollY>40));
-
-renderProducts();renderCart();syncThemeIcon();
-AOS.init({duration:800,once:true,easing:'ease-out-cubic'});
-new Swiper('.reviewSwiper',{slidesPerView:1,spaceBetween:24,loop:true,grabCursor:true,pagination:{el:'.swiper-pagination',clickable:true},autoplay:{delay:5000,disableOnInteraction:false},breakpoints:{768:{slidesPerView:2},1024:{slidesPerView:3}}});
-
-const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
-const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
-document.getElementById('menuBtn')?.addEventListener('click',openMM);
-document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
-document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
-
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-add][data-price]');
+  if(!b||!b.dataset.price)return;
+  add(b.dataset.add,b.dataset.add,+b.dataset.price,'🍽️','linear-gradient(135deg,var(--c1),var(--c2))');
+});
+$('chips').addEventListener('click',e=>{
+  const c=e.target.closest('.chip');if(!c)return;
+  $$('#chips .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');
+  cat=c.dataset.cat;render();
+});
+$('orderBtn').addEventListener('click',async()=>{
+  const b=$('orderBtn'),old=b.innerHTML;b.disabled=true;
+  b.innerHTML='<span class="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin"></span> Qabul qilinmoqda...';
+  await APP.sleep(1500);
+  cart=[];save();renderCart();
+  b.textContent='Buyurtma qabul qilindi';
+  await APP.sleep(1500);
+  b.innerHTML=old;b.disabled=false;closeCart();
+  APP.toast('Buyurtmangiz muvaffaqiyatli rasmiylashtirildi!');
+});
+$('revSlides').innerHTML=reviews.map(r=>'<div class="swiper-slide h-auto"><div class="panel p-7 h-full glow" data-tilt>'
+  +'<div class="text-2xl grad font-bold">★★★★★</div><p class="opacity-80 mt-4 leading-relaxed">"'+r.t+'"</p>'
+  +'<div class="flex items-center gap-3 mt-6"><div class="w-11 h-11 rounded-full grid place-items-center font-bold" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c">'+r.i+'</div>'
+  +'<div><div class="font-bold text-sm">'+r.n+'</div><div class="tag">'+r.r+'</div></div></div></div></div>').join('');
+render();renderCart();
+new Swiper('.revSwiper',{slidesPerView:1,spaceBetween:20,loop:true,grabCursor:true,pagination:{el:'.revSwiper .swiper-pagination',clickable:true},autoplay:{delay:5e3,disableOnInteraction:false},breakpoints:{768:{slidesPerView:2},1024:{slidesPerView:3}}});
 lucide.createIcons();
+
 </script>
 </body>
 </html>

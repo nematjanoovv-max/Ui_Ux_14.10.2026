@@ -1,397 +1,524 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" class="">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#100c08">
 <title>BlogNur — Blog platformasi</title>
+<meta name="description" content="Blog platformasi: maqolalar, kategoriyalar, qidiruv va qulay o'qish rejimi.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif'],serif:['"Playfair Display"','Georgia','serif']},colors:{ink:'#12100e'}}}}
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{display:['"Space Grotesk"','system-ui','sans-serif'],sans:['Inter','system-ui','sans-serif'],mono:['"JetBrains Mono"','monospace']},colors:{c1:'#ffd60a',c2:'#ff5c2b',c3:'#a3e635',ink:'#100c08'}}}}
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
-html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
-.glass{background:rgba(255,255,255,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.5)}
-.dark .glass{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.09)}
-.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.45;animation:float 11s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(26px,-32px)}}
-.reader{font-family:'Playfair Display',serif;font-size:1.21rem;line-height:1.95}
-.reader p{margin-bottom:1.6rem}
-.reader h3{font-family:'Inter',sans-serif;font-size:1.6rem;font-weight:800;margin:2.4rem 0 1rem}
-.reader blockquote{border-left:4px solid #f59e0b;padding:.4rem 0 .4rem 1.4rem;font-style:italic;margin:2rem 0;opacity:.85}
-.progress-read{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#f59e0b,#ef4444);z-index:60;width:0}
-::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#f59e0b;border-radius:99px}
-.card-img{transition:transform .6s cubic-bezier(.22,1,.36,1)}
-.group:hover .card-img{transform:scale(1.08)}
-::-moz-selection{background:#f59e0b;color:#fff}::selection{background:#f59e0b;color:#fff}
+:root{
+  --c1:#ffd60a;--c2:#ff5c2b;--c3:#a3e635;--ink:#100c08;
+  --line:color-mix(in srgb,var(--fg) 12%,transparent);
+  --panel:color-mix(in srgb,var(--fg) 5%,transparent);
+  --radius:20px;--ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:dark;
+}
+html.light{--panel:color-mix(in srgb,var(--fg) 7%,transparent);--line:color-mix(in srgb,var(--fg) 15%,transparent);color-scheme:light}
+*{-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,system-ui,sans-serif;background:var(--ink);color:var(--fg);
+  overflow-x:hidden;
+}
+.font-display{font-family:'Space Grotesk',system-ui,sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.display{font-weight:700;letter-spacing:-.03em;line-height:.95}
+.grad{background:linear-gradient(100deg,var(--c1),var(--c2) 55%,var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.outline-txt{color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 45%,transparent)}
+
+/* atmosfera qatlamlari */
+.noise,.scan,.gridbg{position:fixed;inset:0;pointer-events:none;z-index:1}
+.noise{opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:overlay}
+.gridbg{background-image:linear-gradient(color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(circle at 50% 30%,#000,transparent 78%)}
+.scan{background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.14) 3px 4px);opacity:.35}
+#three-bg{position:fixed;inset:0;z-index:0;opacity:.9}
+
+/* kursor */
+#cursor{position:fixed;left:0;top:0;z-index:9998;pointer-events:none;mix-blend-mode:difference}
+#cursor .ring{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border:1.5px solid #fff;border-radius:50%;transition:width .3s var(--ease),height .3s var(--ease),margin .3s var(--ease),opacity .3s}
+#cursor .dot{position:absolute;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:#fff;border-radius:50%}
+#cursor.hovering .ring{width:64px;height:64px;margin:-32px 0 0 -32px;opacity:.55}
+@media (hover:none),(pointer:coarse){#cursor{display:none}}
+
+/* preloader */
+#pre{position:fixed;inset:0;z-index:9999;background:var(--ink);display:grid;place-items:center;text-align:center}
+#pre .bar{width:min(320px,70vw);height:2px;background:color-mix(in srgb,var(--fg) 14%,transparent);margin:22px auto 0;overflow:hidden}
+#pre .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c1),var(--c2))}
+#pre .num{font-family:'JetBrains Mono',monospace;font-size:12px;opacity:.6;margin-top:12px;letter-spacing:.2em}
+#pre .name{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,64px);letter-spacing:-.03em}
+
+/* nav */
+.nav-blur{background:color-mix(in srgb,var(--ink) 62%,transparent);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.nav-link{position:relative}
+.nav-link::after{content:'';position:absolute;left:0;bottom:-4px;height:1.5px;width:0;background:linear-gradient(90deg,var(--c1),var(--c2));transition:width .35s var(--ease)}
+.nav-link:hover::after,.nav-link.active::after{width:100%}
+
+/* fullscreen menyu */
+#menu{position:fixed;inset:0;z-index:9990;background:color-mix(in srgb,var(--ink) 94%,transparent);backdrop-filter:blur(24px);
+  clip-path:circle(0% at calc(100% - 44px) 44px);transition:clip-path .8s var(--ease);display:flex;flex-direction:column;justify-content:center;padding:8vw}
+#menu.open{clip-path:circle(150% at calc(100% - 44px) 44px)}
+#menu a{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,72px);letter-spacing:-.03em;line-height:1.05;
+  color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 55%,transparent);transition:.4s var(--ease);display:block}
+#menu a:hover,#menu a:focus-visible{-webkit-text-stroke:1.4px var(--c2);color:var(--c2);transform:translateX(14px)}
+.burger{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.burger i{display:block;width:18px;height:1.6px;background:var(--fg);transition:.35s var(--ease)}
+.burger i+i{margin-top:5px}
+.burger.x i:first-child{transform:translateY(3.3px) rotate(45deg)}
+.burger.x i:last-child{transform:translateY(-3.3px) rotate(-45deg)}
+
+/* panellar */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(14px)}
+.glow{position:relative}
+.glow::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;
+  background:conic-gradient(from var(--a,0deg),transparent 0 55%,var(--c1) 70%,var(--c2) 85%,transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .4s;animation:spin 4s linear infinite}
+.glow:hover::before{opacity:1}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes spin{to{--a:360deg}}
+.tilt{transition:transform .5s var(--ease),box-shadow .5s;transform-style:preserve-3d;will-change:transform}
+.magnet{transition:transform .35s var(--ease)}
+.marquee{display:flex;width:max-content;animation:marq 26s linear infinite}
+@keyframes marq{to{transform:translateX(-50%)}}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:floaty 14s ease-in-out infinite;pointer-events:none}
+@keyframes floaty{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.12)}}
+.reveal{opacity:0;transform:translateY(34px)}
+.reveal-l{opacity:0;transform:translateX(-40px)}
+::-webkit-scrollbar{width:9px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--c1),var(--c2));border-radius:9px}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--c2);outline-offset:3px;border-radius:8px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.55rem;font-weight:700;
+  border-radius:999px;padding:.85rem 1.6rem;font-size:.92rem;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s;isolation:isolate}
+.btn::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,var(--c1),var(--c2));transition:filter .3s}
+.btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 14px 40px -12px var(--c1)}
+.btn-solid{color:#06070c}
+.btn-ghost{border:1px solid var(--line);background:var(--panel)}
+.btn-ghost::after{display:none}
+.btn-ghost:hover{border-color:var(--c2);color:var(--c2)}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:.5rem 1rem;font-size:.8rem;font-weight:600;transition:.3s}
+.chip:hover{border-color:var(--c2);color:var(--c2)}
+.chip.on{background:linear-gradient(100deg,var(--c1),var(--c2));color:#06070c;border-color:transparent}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;opacity:.62}
+.hairline{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+.toast-box{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:9997;opacity:0;transition:.4s var(--ease);pointer-events:none}
+.toast-box.on{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;z-index:9995;display:none}
+.modal.on{display:grid;place-items:center;padding:16px}
+.modal .veil{position:absolute;inset:0;background:rgba(2,3,8,.72);backdrop-filter:blur(8px)}
+.modal .card{position:relative;transform:scale(.94) translateY(14px);opacity:0;transition:.4s var(--ease)}
+.modal.on .card{transform:none;opacity:1}
+.badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;padding:.28rem .55rem;border-radius:6px;border:1px solid var(--line);background:var(--panel)}
+.glitch{position:relative}
+.glitch:hover::before,.glitch:hover::after{content:attr(data-t);position:absolute;inset:0;background:var(--ink)}
+.glitch:hover::before{color:var(--c1);transform:translate(-2px,-1px);clip-path:inset(0 0 62% 0)}
+.glitch:hover::after{color:var(--c2);transform:translate(2px,1px);clip-path:inset(58% 0 0 0)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}#three-bg{display:none}}
+
 </style>
 </head>
-<body class="bg-amber-50/60 text-stone-800 dark:bg-ink dark:text-stone-200 transition-colors duration-500 overflow-x-hidden">
+<body class="min-h-[100svh]">
+<div id="scrollProgress" class="fixed top-0 left-0 h-[3px] z-[70] pointer-events-none" style="background:linear-gradient(90deg,var(--c1),var(--c2));width:0" aria-hidden="true"></div>
+<div id="three-bg" aria-hidden="true"></div>
+<div class="gridbg" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true"></div>
+<div class="noise" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"><div class="ring"></div><div class="dot"></div></div>
+<div id="pre"><div><div class="name">BlogNur</div><div class="bar"><i id="preBar"></i></div><div class="num" id="preNum">0%</div></div></div>
 
-<div class="blob bg-amber-300 w-72 h-72 top-20 -left-20"></div>
-<div class="blob bg-rose-300 w-72 h-72 top-[50%] -right-24" style="animation-delay:2.5s"></div>
-<div id="readProgress" class="progress-read"></div>
-
-<header id="nav" class="fixed inset-x-0 top-0 z-50 glass transition-shadow">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
-    <a href="#" class="flex items-center gap-2 font-black text-xl"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 grid place-items-center text-white"><i data-lucide="feather"></i></span>Blog<span class="text-amber-500">Nur</span></a>
-    <nav class="hidden md:flex items-center gap-6 text-sm font-medium flex-1 ml-4">
-      <a class="hover:text-amber-500 transition" href="#latest">So'nggi</a>
-      <a class="hover:text-amber-500 transition" href="#categories">Kategoriyalar</a>
-      <a class="hover:text-amber-500 transition" href="#authors">Mualliflar</a>
-      <a class="hover:text-amber-500 transition" href="#newsletter">Obuna</a>
-    </nav>
-    <div class="hidden sm:flex items-center glass rounded-xl px-3 py-2 gap-2 w-52">
-      <i data-lucide="search" class="w-4 h-4 opacity-60"></i>
-      <input id="searchInput" class="bg-transparent outline-none text-sm w-full" placeholder="Maqola qidirish...">
+<header id="nav" class="fixed inset-x-0 top-0 z-[60] transition-all duration-500">
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 h-[68px] flex items-center gap-5">
+    <a href="#top" class="font-display font-bold text-lg tracking-tight flex items-center gap-2.5 shrink-0">
+      <span class="w-9 h-9 rounded-xl grid place-items-center" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c"><i data-lucide="feather" class="w-[18px] h-[18px]"></i></span>
+      BlogNur
+    </a>
+    <nav class="hidden lg:flex items-center gap-7 text-[13px] font-semibold ml-4"><a class="nav-link hover:opacity-70 transition" href="#latest">So'nggi</a><a class="nav-link hover:opacity-70 transition" href="#categories">Kategoriyalar</a><a class="nav-link hover:opacity-70 transition" href="#authors">Mualliflar</a><a class="nav-link hover:opacity-70 transition" href="#newsletter">Obuna</a></nav>
+    <div class="ml-auto flex items-center gap-2">
+      <button id="themeBtn" class="burger" aria-label="Kun/tun rejimi"><i data-lucide="sun" id="themeIcon" class="w-[18px] h-[18px]"></i></button>
+      <button id="subBtn" class="btn btn-solid magnet hidden sm:inline-flex">Obuna</button>
+      <button id="menuBtn" class="burger lg:hidden" aria-label="Menyu"><span class="block"><i></i><i></i></span></button>
     </div>
-    <button id="menuBtn" class="md:hidden w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
-    <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
-    <button id="subscribeBtn" class="hidden sm:block px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-bold hover:scale-105 transition">Obuna</button>
   </div>
-
 </header>
 
-<section class="pt-32 pb-16 px-5">
-  <div class="max-w-7xl mx-auto">
-    <div class="swiper heroSwiper rounded-[2rem] overflow-hidden">
+<div id="menu">
+  <div class="tag mb-6">Menyu</div>
+  <a href="#top">Bosh sahifa</a><a href="#latest">So'nggi</a><a href="#categories">Kategoriyalar</a><a href="#authors">Mualliflar</a><a href="#newsletter">Obuna</a>
+  <div class="mono text-xs opacity-45 mt-9">BlogNur · 2026</div>
+  <button id="menuClose" class="absolute top-5 right-5 burger" aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button>
+</div>
+
+<main id="top" class="relative z-10">
+
+
+<section class="relative px-4 sm:px-6 lg:px-10 pt-28 pb-10">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="swiper heroSwiper rounded-3xl overflow-hidden">
       <div class="swiper-wrapper" id="heroSlides"></div>
       <div class="swiper-pagination"></div>
     </div>
   </div>
 </section>
 
-<section id="categories" class="px-5 pb-10">
-  <div class="max-w-7xl mx-auto">
-    <h2 class="text-3xl font-black mb-7" data-aos="fade-up">Kategoriyalar</h2>
-    <div id="catRow" class="flex flex-wrap gap-3"></div>
+<section id="categories" class="relative px-4 sm:px-6 lg:px-10 pb-8">
+  <div class="max-w-[1400px] mx-auto">
+    <h2 class="display text-[clamp(26px,4vw,44px)] mb-6 reveal" data-split>Kategoriyalar</h2>
+    <div id="catRow" class="flex flex-wrap gap-2 reveal"></div>
   </div>
 </section>
 
-<section id="latest" class="px-5 py-10">
-  <div class="max-w-7xl mx-auto grid lg:grid-cols-[1fr,340px] gap-10">
+<section id="latest" class="relative px-4 sm:px-6 lg:px-10 py-8">
+  <div class="max-w-[1400px] mx-auto grid lg:grid-cols-[1fr_340px] gap-8">
     <div>
-      <div class="flex items-end justify-between mb-8" data-aos="fade-up">
-        <h2 class="text-3xl font-black">So'nggi <span class="text-amber-500">maqolalar</span></h2>
-        <span id="postCount" class="text-sm opacity-60"></span>
+      <div class="flex flex-wrap items-end justify-between gap-4 mb-7">
+        <h2 class="display text-[clamp(26px,4vw,44px)] reveal" data-split>So'nggi maqolalar</h2>
+        <div class="panel flex items-center gap-2 rounded-full px-4 py-2.5 reveal">
+          <i data-lucide="search" class="w-4 h-4 opacity-60"></i>
+          <input id="searchInput" class="bg-transparent outline-none text-sm w-40 sm:w-52" placeholder="Maqola qidirish...">
+        </div>
       </div>
-      <div id="postGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7"></div>
+      <div id="postCount" class="tag mb-5 reveal"></div>
+      <div id="postGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
-
-    <aside class="space-y-6">
-      <div class="glass rounded-3xl p-6" data-aos="fade-left">
-        <h3 class="font-black text-lg flex items-center gap-2"><i data-lucide="flame" class="text-orange-500"></i> Eng ko'p o'qilgan</h3>
+    <aside class="space-y-5 lg:sticky lg:top-24 self-start">
+      <div class="panel p-6 reveal glow">
+        <h3 class="font-display font-bold text-lg flex items-center gap-2"><i data-lucide="flame" style="color:var(--c2)"></i>Eng ko'p o'qilgan</h3>
         <ol id="trendingList" class="mt-5 space-y-5"></ol>
       </div>
-      <div class="glass rounded-3xl p-6" data-aos="fade-left" data-aos-delay="100">
-        <h3 class="font-black text-lg flex items-center gap-2"><i data-lucide="tag" class="text-amber-500"></i> Mashhur teglar</h3>
+      <div class="panel p-6 reveal glow" data-tilt>
+        <h3 class="font-display font-bold text-lg flex items-center gap-2"><i data-lucide="tag" style="color:var(--c1)"></i>Mashhur teglar</h3>
         <div id="tagCloud" class="flex flex-wrap gap-2 mt-4"></div>
       </div>
-      <div class="rounded-3xl p-6 bg-gradient-to-br from-amber-500 to-orange-600 text-white" data-aos="fade-left" data-aos-delay="200">
-        <i data-lucide="mail" class="w-8 h-8"></i>
-        <h3 class="font-black text-lg mt-3">Haftalik yangiliklar</h3>
-        <p class="text-sm text-white/85 mt-1">Eng yaxshi maqolalar bir marta, har dushanba.</p>
-        <button data-sub class="mt-4 w-full py-2.5 rounded-xl bg-white text-amber-600 font-bold text-sm hover:scale-105 transition">Obuna bo'lish</button>
+      <div class="rounded-3xl p-6 reveal glow relative overflow-hidden" style="background:linear-gradient(140deg,var(--c1),var(--c2))">
+        <i data-lucide="mail" class="w-8 h-8 text-[#06070c]"></i>
+        <h3 class="font-display font-bold text-lg mt-3 text-[#06070c]">Haftalik yangiliklar</h3>
+        <p class="text-sm text-[#06070c]/75 mt-1">Eng yaxshi maqolalar bir marta, har dushanba.</p>
+        <a href="#newsletter" class="btn btn-solid mt-4 w-full">Obuna bo'lish</a>
       </div>
     </aside>
   </div>
 </section>
 
-<section id="authors" class="px-5 py-14">
-  <div class="max-w-7xl mx-auto">
-    <h2 class="text-3xl font-black mb-10" data-aos="fade-up">Mualliflar</h2>
-    <div class="swiper authorSwiper pb-14">
-      <div class="swiper-wrapper" id="authorSlides"></div>
-      <div class="swiper-pagination"></div>
-    </div>
+<section id="authors" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1400px] mx-auto">
+    <h2 class="display text-[clamp(26px,4vw,44px)] mb-9 reveal" data-split>Mualliflar</h2>
+    <div class="swiper authorSwiper pb-12"><div class="swiper-wrapper" id="authorSlides"></div><div class="swiper-pagination"></div></div>
   </div>
 </section>
 
-<section id="newsletter" class="px-5 py-14">
-  <div class="max-w-4xl mx-auto glass rounded-[2rem] p-10 md:p-14 text-center relative overflow-hidden" data-aos="zoom-in">
-    <span class="text-xs font-bold tracking-[3px] text-amber-500">YANGILIKLAR</span>
-    <h2 class="text-4xl font-black mt-3">Hech narsani o'tkazib yubormang</h2>
+<section id="newsletter" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1000px] mx-auto panel rounded-3xl p-9 sm:p-14 text-center reveal glow relative overflow-hidden">
+    <div class="tag">Yangiliklar</div>
+    <h2 class="display text-[clamp(28px,4.5vw,52px)] mt-3">Hech narsani o'tkazib yubormang</h2>
     <p class="opacity-70 mt-3">12 000+ o'quvchi qatoriga qo'shiling</p>
     <form id="subForm" class="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-      <input type="email" required placeholder="E-pochta manzilingiz" class="flex-1 px-5 py-3.5 rounded-xl bg-white/70 dark:bg-white/10 border border-white/50 dark:border-white/10 outline-none focus:ring-2 ring-amber-500 transition">
-      <button class="px-7 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold hover:scale-105 transition whitespace-nowrap">Obuna</button>
+      <input type="email" required placeholder="E-pochta manzilingiz" class="flex-1 px-5 py-3.5 rounded-full outline-none text-sm" style="background:var(--panel);border:1px solid var(--line)">
+      <button class="btn btn-solid magnet whitespace-nowrap">Obuna</button>
     </form>
     <span class="absolute -left-6 -bottom-10 text-[9rem] opacity-10">✍️</span>
   </div>
 </section>
 
-<footer class="border-t border-black/5 dark:border-white/10 py-10 px-5">
-  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-    <div class="flex items-center gap-2 font-black"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 grid place-items-center text-white"><i data-lucide="feather" class="w-5 h-5"></i></span>BlogNur</div>
-    <p class="text-sm opacity-60">© 2026 BlogNur. G'oyalar bilan qoling.</p>
-    <div class="flex gap-2">
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-amber-500 transition"><i data-lucide="rss"></i></a>
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-amber-500 transition"><i data-lucide="twitter"></i></a>
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-amber-500 transition"><i data-lucide="instagram"></i></a>
+<div id="articleModal" class="modal"><div class="veil" data-close></div><div class="card panel w-full max-w-3xl max-h-[92vh] overflow-y-auto"><div id="articleBody"></div></div></div>
+</main>
+
+<footer class="relative z-10 mt-10">
+  <div class="overflow-hidden border-y" style="border-color:var(--line)">
+    <div class="marquee py-5 font-display font-bold text-[clamp(28px,5vw,58px)] tracking-tight opacity-25 whitespace-nowrap">
+      <span>G'OYALAR BILAN QOLING · BLOGNUR · </span><span>G'OYALAR BILAN QOLING · BLOGNUR · </span>
     </div>
+  </div>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-9 flex flex-col md:flex-row items-center justify-between gap-5 text-xs opacity-60">
+    <div class="font-display font-bold text-sm opacity-100">BlogNur</div>
+    <div>© 2026 · BlogNur — barcha huquqlar himoyalangan</div>
+    <div class="flex gap-2"><a href="#" class="burger" aria-label="RSS"><i data-lucide="rss" class="w-[18px] h-[18px]"></i></a><a href="#" class="burger" aria-label="Twitter"><i data-lucide="twitter" class="w-[18px] h-[18px]"></i></a></div>
   </div>
 </footer>
 
-<div id="articleModal" class="fixed inset-0 z-[70] hidden">
-  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-close></div>
-  <div id="articleScroll" class="absolute inset-0 overflow-y-auto bg-amber-50 dark:bg-ink">
-    <article id="articleBody" class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 scale-95 opacity-0 transition-all duration-300"></article>
-  </div>
-</div>
+<div id="toast" class="toast-box panel px-5 py-3 flex items-center gap-3 text-sm font-bold"><i data-lucide="check-circle-2" class="w-5 h-5" style="color:var(--c2)"></i><span id="toastMsg"></span></div>
 
-<div id="mobileMenu" class="md:hidden fixed inset-0 z-[60] hidden">
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
-  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
-      <span class="font-black text-lg">Menyu</span>
-      <button class="w-9 h-9 grid place-items-center rounded-xl bg-black/5 dark:bg-white/10" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
-    </div>
-    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#latest"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>So'nggi</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#categories"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Kategoriyalar</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#authors"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Mualliflar</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#newsletter"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Obuna</a>
-    </nav>
-    <div class="px-5 py-4 border-t border-black/10 dark:border-white/10 text-xs opacity-60">© 2026 — barcha huquqlar himoyalangan</div>
-  </aside>
-</div>
-
-<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] hidden">
-  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 shadow-xl font-semibold"><i data-lucide="check-circle-2" class="text-green-500"></i><span id="toastMsg"></span></div>
-</div>
-
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
-
-const root=document.documentElement;
-if(localStorage.getItem('bn-theme')==='dark'||(!localStorage.getItem('bn-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
-const themeIcon=document.getElementById('themeIcon');
-const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'sun':'moon');lucide.createIcons();};
-document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('bn-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
-
-const API=(()=>{
-  const posts=[
-    {id:1,title:"Sun'iy intellekt sahifalarini qanday o'zgartiryapti?",cat:'Texnologiya',emoji:'🤖',grad:'from-indigo-500 to-blue-600',read:8,date:'12 Oktyabr 2026',author:'Bobur Rashidov',views:'24.5k',tags:['AI','Kelajak','Texnologiya'],
-     lead:"AI allaqachon oddiy ikonkalardan tortib to'liq dizayn tizimlarigacha — hammasini o'zgartiryapti.",
-     body:"<p>Sun'iy intellekt so'nggi yillarda shunchaki vosita emas, balki to'liq ish jarayoniga aylandi. Dizaynerlar, dasturchilar va kontent mualliflari endi AI yordamchilari bilan birgalikda ishlashga o'rganishmoqda.</p><p>Bundan keyin nima bo'ladi? Ekspertlarning fikricha, kelgusi besh yil ichida veb-sahifalarning 60% gacha qismi AI tomonidan generatsiya qilinadi. Bu juda tez ishlab chiqish imkonini beradi-yu, ammo kontsepthuquq va xavfsizlik savollari ham ortib bormoqda.</p><blockquote>Texnologiya haqidagi eng muhim savol — \"buni qilish mumkinmi?\" emas, \"buni qilish kerakmi?\"</blockquote><h3>Nima o'rganish kerak?</h3><p>Zamonaviy mutaxassis uchun eng qimmatli ko'nikmalar: prompt muhandisligi, ma'lumotlar tahlili va axloqiy normalarni tushunish. Kod yozishdan ko'ra, to'g'ri savol berish ko'proq qiymatga ega bo'lmoqda.</p><p>Xulosa qilib aytganda: AI raqobatni yumshatmaydi — uni qobiliyatli bo'lganlar uchun juda kuchaytiradi.</p>"},
-    {id:2,title:'Minimalizm aslida nima degani? Dizaynda fazo ijtimoiyati',cat:'Dizayn',emoji:'🎨',grad:'from-rose-500 to-pink-600',read:6,date:'10 Oktyabr 2026',author:'Nilufar Saidova',views:'18.2k',tags:['Dizayn','Minimalizm','UI/UX'],
-     lead:"Yaxshi dizayn — ko'proq narsa qo'shish emas, keraksiz narsalarni olib tashlash san'ati.",
-     body:"<p>Minimalizmni ko'pchilik kamroq element degani deb o'ylaydi. Aslida esa u har bir elementni o'z o'rniga ega bo'lishi kerak degani.</p><p>Nega ba'zi sahifalar shunchalik tinch ko'rinadi? Chunki u yerda fazolar muvozanatli, tipografiya aniq va ranglar cheklangan. Minimalizm — bu intizom.</p><h3>Amaliy qoidalar</h3><p>1. Har element savolga javob berishi kerak: nima uchun bu shu yerda? 2. Bir sahifada ko'pi bilan ikkita aksent rang. 3. Logo tipografiyasini hech qachon kichraytirmang.</p><p>Cheklov — ijodkorning eng yaxshi do'sti.</p>"},
-    {id:3,title:"O'zbekistonda startap ekotizimasi: 2026 holat bo'yicha",cat:'Biznes',emoji:'📈',grad:'from-emerald-500 to-teal-600',read:11,date:'8 Oktyabr 2026',author:'Jahongir Karimov',views:'31.1k',tags:['Startap','Investitsiya'],
-     lead:"Yil boshidan beri mahalliy startaplar jahon bozorlariga chiqa boshladi.",
-     body:"<p>2026-yil O'zbekiston startap ekotizimida o'ziga xos burilish yili bo'ldi. Akseleratorlar soni ortib, fondlar ham faol ishlayapti.</p><blockquote>Eng muhim resurs — pul emas, to'g'ri jamoa.</blockquote><h3>Asosiy tendensiyalar</h3><p>EdTech va HealthTech sohalari keskin o'smoqda. Internetga ulanish tezligi ortgani sayin Qishloq xo'jaligi texnologiyalari ham rivojlanmoqda.</p><p>Yangi avlod tadbirkorlari bilan bog'liq eng katta farq — ular global bozorni boshidan hisobga oladi.</p>"},
-    {id:4,title:'Uxlash sifati: sekunda yetsa bo\'ladigan 6 ta odat',cat:'Salomatlik',emoji:'🌙',grad:'from-violet-500 to-purple-600',read:7,date:'6 Oktyabr 2026',author:'Kamola Yusupova',views:'42.7k',tags:['Salomatlik','Odatlar'],
-     lead:"Yaxshi uyqu — eng arzon va eng samarali \'shifokor\'.",
-     body:"<p>Kunduzgi energiya darajangiz asosan uyqu sifatingizga bog'liq. Yevropa tibbiyot jamiyatining ma'lumotiga ko'ra, kattalar uchun optimal uyqu 7-9 soat.</p><h3>Oddiy amaliyot</h3><p>Yotishdan bir soat oldin ekranni yoping. Xona haroratini 20°C atrofida ushlang. Kofeni soat 14:00 dan keyin ichmang.</p><p>Bir haftada farqini sezasiz.</p>"},
-    {id:5,title:'Nega mikroservislar hamma narsani hal qilmaydi?',cat:'Texnologiya',emoji:'⚙️',grad:'from-slate-600 to-gray-800',read:9,date:'4 Oktyabr 2026',author:'Sardor Ergashev',views:'15.3k',tags:['Arxitektura','DevOps'],
-     lead:"Mikroservislar kuchli, ammo... noqulayliklari ham bor.",
-     body:"<p>Har bir loyihaga mikroservis kerak emas. 5 kishilik jamoaga 40 xizmat — bu shunchaki qo'shimcha yuk.</p><p>Qoida oddiy: jamoa tarkibi va murakkablik bir-biriga mos bo'lishi kerak. Aks holda \"devops halqasi\" aylanib qoladi.</p><blockquote>Avval monolitni to'g'ri quring, keyin bo'ling.</blockquote>"},
-    {id:6,title:'Yevropada sayohat: hamyonbop 10 shahar',cat:'Sayohat',emoji:'✈️',grad:'from-sky-500 to-cyan-600',read:10,date:'2 Oktyabr 2026',author:'Nilufar Saidova',views:'27.8k',tags:['Sayohat','Yevropa'],
-     lead:"Chiroyli sharhlar, arzon kafe va boy tarix.",
-     body:"<p>Yevropa qimr degan fikr ko'pchilikda. Ammo Portuqaliyaning Porto shahridan tortib Polshaning Krakovigacha juda hamyonbop shaharlar ko'p.</p><p>Yagona maslahat: mavsumdan tashqari sayohat qiling — o'y kayfiyati ham yaxshiroq.</p>"},
-  ];
-  return {
-    getPosts:()=>new Promise(r=>setTimeout(()=>r(posts),600)),
-    getPost:id=>new Promise(r=>setTimeout(()=>r(posts.find(p=>p.id===id)),400)),
-  };
-})();
+const APP={
+  brand:'BlogNur',
+  theme:()=>document.documentElement.classList.contains('light')?'light':'dark',
+  toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('on');clearTimeout(this._t);this._t=setTimeout(()=>t.classList.remove('on'),2400);},
+  money(n,cur){return n.toLocaleString('ru-RU').replace(/,/g,' ')+(cur!==undefined?' '+cur:'');},
+  rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;},
+  sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+};
 const $=id=>document.getElementById(id);
+const $$=s=>[...document.querySelectorAll(s)];
 
-let posts=[],activeCat='Barchasi';
-const money=n=>n;
+/* Kun / tun rejimi */
+(function(){
+  const saved=localStorage.getItem('loyiha4-theme');
+  const sys=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  const mode=saved||sys;
+  document.documentElement.classList.toggle('light',mode==='light');
+  const sync=()=>{const l=document.documentElement.classList.contains('light');
+    $('themeIcon').setAttribute('data-lucide',l?'moon':'sun');document.documentElement.style.setProperty('--fg',l?'#0d1220':'#e9edf7');lucide.createIcons();};
+  setTimeout(sync,0);
+  $('themeBtn').addEventListener('click',()=>{
+    document.documentElement.classList.toggle('light');
+    localStorage.setItem('loyiha4-theme',document.documentElement.classList.contains('light')?'light':'dark');
+    sync();
+  });
+})();
 
-async function boot(){
-  $('postGrid').innerHTML='<div class="col-span-2 grid place-items-center py-24"><span class="w-12 h-12 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></span></div>';
-  posts=await API.getPosts();
-  renderCats();renderPosts();renderHero();renderSidebar();renderAuthors();
-}
-const catColors={'Texnologiya':'from-indigo-500 to-blue-500','Dizayn':'from-rose-500 to-pink-500','Biznes':'from-emerald-500 to-teal-500','Salomatlik':'from-violet-500 to-purple-500','Sayohat':'from-sky-500 to-cyan-500'};
+/* Fullscreen menyu */
+(function(){
+  const menu=$('menu'),btn=$('menuBtn');
+  const open=()=>{menu.classList.add('open');btn.classList.add('x');document.body.style.overflow='hidden';};
+  const close=()=>{menu.classList.remove('open');btn.classList.remove('x');document.body.style.overflow='';};
+  btn.addEventListener('click',()=>menu.classList.contains('open')?close():open());
+  $('menuClose').addEventListener('click',close);
+  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+  addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+})();
 
-function renderCats(){
-  const cats=['Barchasi',...new Set(posts.map(p=>p.cat))];
-  $('catRow').innerHTML=cats.map(c=>`
-    <button class="catBtn px-4 py-2.5 rounded-2xl font-semibold text-sm transition glass ${c===activeCat?'bg-amber-500 text-white border-amber-500':'hover:scale-105'}" data-cat="${c}">
-      ${c} ${c!=='Barchasi'?`<span class="opacity-60 text-xs">${posts.filter(p=>p.cat===c).length}</span>`:''}
-    </button>`).join('');
+/* Kursor */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  const c=$('cursor');
+  let x=innerWidth/2,y=innerHeight/2;
+  addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY;});
+  (function loop(){c.style.transform=`translate(${x}px,${y}px)`;requestAnimationFrame(loop);})();
+  document.addEventListener('mouseover',e=>{
+    if(e.target.closest('a,button,[data-cursor]'))c.classList.add('hovering');else c.classList.remove('hovering');
+  });
+})();
+
+/* Magnit tugmalar */
+(function(){
+  $$('.magnet').forEach(el=>{
+    el.addEventListener('mousemove',e=>{
+      const r=el.getBoundingClientRect();
+      el.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.22}px,${(e.clientY-r.top-r.height/2)*.22}px)`;
+    });
+    el.addEventListener('mouseleave',()=> el.style.transform='');
+  });
+})();
+
+/* 3D tilt kartochkalar */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  $$('[data-tilt]').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+      card.style.transform=`perspective(900px) rotateX(${(py-.5)*-9}deg) rotateY(${(px-.5)*11}deg)`;
+    });
+    card.addEventListener('mouseleave',()=> card.style.transform='');
+  });
+})();
+
+/* Preloader */
+(function(){
+  const bar=$('preBar'),num=$('preNum'),pre=$('pre');
+  let p=0;
+  const t=setInterval(()=>{
+    p=Math.min(100,p+Math.random()*13+4);
+    bar.style.width=p+'%';num.textContent=Math.floor(p)+'%';
+    if(p>=100){clearInterval(t);setTimeout(()=>{
+      pre.style.transition='opacity .6s var(--ease),clip-path .8s var(--ease)';
+      pre.style.clipPath='inset(0 0 100% 0)';pre.style.opacity='0';
+      setTimeout(()=>pre.remove(),700);
+      if(window.gsap)runReveals();
+    },220);}
+  },110);
+})();
+
+/* Scroll animatsiyalari (GSAP ScrollTrigger) */
+function runReveals(){
+  if(!window.gsap||!window.ScrollTrigger)return;
+  gsap.registerPlugin(ScrollTrigger);
+  $$('.reveal:not(.revealed)').forEach(el=>{
+    el.classList.add('revealed');
+    gsap.to(el,{opacity:1,y:0,x:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%'}});
+  });
+  $$('[data-parallax]').forEach(el=>{
+    gsap.to(el,{yPercent:+el.dataset.parallax,ease:'none',scrollTrigger:{trigger:el.closest('section')||el,start:'top bottom',end:'bottom top',scrub:true}});
+  });
+  $$('[data-count]').forEach(el=>{
+    const target=+el.dataset.count,suffix=el.dataset.suffix||'';
+    ScrollTrigger.create({trigger:el,start:'top 90%',once:true,onEnter(){
+      gsap.to({v:0},{v:target,duration:1.6,ease:'power2.out',onUpdate(){el.textContent=Math.floor(this.targets()[0].v)+suffix;}});
+    }});
+  });
+  $$('[data-split]').forEach(el=>{
+    const words=el.textContent.trim().split(/\s+/);
+    el.innerHTML=words.map(w=>`<span class="inline-block overflow-hidden align-bottom"><span class="inline-block" style="transform:translateY(110%)">${w}</span></span>`).join(' ');
+    gsap.to(el.querySelectorAll('span>span'),{y:0,duration:1.05,ease:'power4.out',stagger:.045,scrollTrigger:{trigger:el,start:'top 86%'}});
+  });
 }
-function renderPosts(){
-  const list=activeCat==='Barchasi'?posts:posts.filter(p=>p.cat===activeCat);
-  $('postCount').textContent=`${list.length} ta maqola`;
-  $('postGrid').innerHTML=list.map((p,i)=>`
-    <article class="group glass rounded-3xl overflow-hidden card-hover cursor-pointer" data-post="${p.id}" data-aos="fade-up" data-aos-delay="${i*70}" style="transition:transform .35s">
-      <div class="h-48 overflow-hidden relative">
-        <div class="card-img absolute inset-0 bg-gradient-to-br ${p.grad} grid place-items-center text-6xl">${p.emoji}</div>
-        <span class="absolute top-3 left-3 text-[11px] font-bold bg-white/90 text-stone-800 px-2.5 py-1 rounded-lg">${p.cat}</span>
-        <span class="absolute top-3 right-3 text-[11px] font-bold bg-black/40 text-white px-2.5 py-1 rounded-lg flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i>${p.read} daq</span>
-      </div>
-      <div class="p-6">
-        <h3 class="text-xl font-black leading-snug group-hover:text-amber-500 transition">${p.title}</h3>
-        <p class="text-sm opacity-70 mt-2 line-clamp-2">${p.lead}</p>
-        <div class="flex items-center justify-between mt-5 pt-4 border-t border-black/5 dark:border-white/10">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 grid place-items-center text-white text-xs font-bold">${p.author.split(' ').map(w=>w[0]).join('')}</div>
-            <div><div class="text-xs font-bold">${p.author}</div><div class="text-[11px] opacity-60">${p.date}</div></div>
-          </div>
-          <span class="inline-flex items-center gap-1 text-xs font-bold text-amber-500">O'qish <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i></span>
-        </div>
-      </div>
-    </article>`).join('');
-  lucide.createIcons();AOS.refresh();
-}
-function renderHero(){
-  const top=posts.slice(0,3);
-  $('heroSlides').innerHTML=top.map(p=>`
-    <div class="swiper-slide">
-      <div class="relative h-[420px] bg-gradient-to-br ${p.grad} text-white grid place-items-center text-center px-6 cursor-pointer" data-post="${p.id}">
-        <div class="max-w-xl">
-          <span class="text-xs font-bold bg-white/25 px-3 py-1 rounded-full">${p.cat} · TANLOV</span>
-          <h2 class="text-4xl md:text-5xl font-black mt-5 leading-tight">${p.title}</h2>
-          <p class="mt-4 text-white/85">${p.lead}</p>
-          <span class="inline-flex items-center gap-2 mt-6 bg-white text-stone-900 font-bold px-6 py-3 rounded-xl hover:scale-105 transition">O'qishni boshlash <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
-        </div>
-        <span class="absolute right-8 bottom-2 text-[9rem] opacity-25 select-none">${p.emoji}</span>
-      </div>
-    </div>`).join('');
-}
-function renderSidebar(){
-  const trend=[...posts].sort((a,b)=>parseFloat(b.views)-parseFloat(a.views)).slice(0,4);
-  $('trendingList').innerHTML=trend.map((p,i)=>`
-    <li class="flex gap-3 cursor-pointer group" data-post="${p.id}">
-      <span class="text-2xl font-black text-amber-500/40 group-hover:text-amber-500 transition">${i+1}</span>
-      <div>
-        <h4 class="text-sm font-bold leading-snug group-hover:text-amber-500 transition">${p.title}</h4>
-        <div class="flex items-center gap-3 text-[11px] opacity-60 mt-1"><span>${p.date}</span><span class="flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i>${p.views}</span></div>
-      </div>
-    </li>`).join('');
-  const tags=[...new Set(posts.flatMap(p=>p.tags))];
-  $('tagCloud').innerHTML=tags.map(t=>`<button data-tag="${t}" class="text-xs font-semibold px-3 py-1.5 rounded-xl glass hover:bg-amber-500 hover:text-white transition">#${t}</button>`).join('');
-}
+addEventListener('load',()=>{setTimeout(()=>{if(!$('pre'))runReveals();},1600);});
+addEventListener('scroll',()=>{
+  const s=scrollY/(document.body.scrollHeight-innerHeight)*100;
+  const sp=$('scrollProgress'); if(sp) sp.style.width=Math.min(s,100)+'%';
+},{passive:true});
+
+/* Three.js fon — jonli maydon */
+(async()=>{
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  try{
+    const THREE=await import('https://esm.sh/three@0.160.0');
+    const host=$('three-bg');if(!host)return;
+    const scene=new THREE.Scene();
+    const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);cam.position.z=8;
+    const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setSize(innerWidth,innerHeight);
+    host.appendChild(renderer.domElement);
+    const c1=new THREE.Color('#ffd60a'),c2=new THREE.Color('#ff5c2b'),c3=new THREE.Color('#a3e635');
+    const geo=new THREE.BufferGeometry();
+    const N=innerWidth<640?260:520,pos=new Float32Array(N*3),col=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      pos[i*3]=(Math.random()-.5)*26;pos[i*3+1]=(Math.random()-.5)*18;pos[i*3+2]=(Math.random()-.5)*12;
+      const c=[c1,c2,c3][i%3];col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
+    }
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    const mat=new THREE.PointsMaterial({size:.055,vertexColors:true,transparent:true,opacity:.85,depthWrite:false,blending:THREE.AdditiveBlending});
+    const pts=new THREE.Points(geo,mat);scene.add(pts);
+    const wire=new THREE.Mesh(new THREE.IcosahedronGeometry(2.6,1),
+      new THREE.MeshBasicMaterial({color:c1,wireframe:true,transparent:true,opacity:.12}));
+    scene.add(wire);
+    const wire2=new THREE.Mesh(new THREE.TorusGeometry(3.4,.008,3,90),
+      new THREE.MeshBasicMaterial({color:c2,transparent:true,opacity:.22}));
+    wire2.rotation.x=1.2;scene.add(wire2);
+    let mx=0,my=0;
+    addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-.5);my=(e.clientY/innerHeight-.5);});
+    addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+    (function tick(){
+      requestAnimationFrame(tick);
+      pts.rotation.y+=.0007;pts.rotation.x=my*.2;
+      wire.rotation.y+=.0016;wire.rotation.x+=.0007;
+      wire2.rotation.z+=.0012;
+      cam.position.x+=(mx*1.6-cam.position.x)*.05;
+      cam.position.y+=(-my*1.2-cam.position.y)*.05;
+      cam.lookAt(0,0,0);
+      renderer.render(scene,cam);
+    })();
+  }catch(e){/* fon animatsiyasi ishlamasa ham sayt ishlaydi */}
+})();
+
+
+let posts=[],cat='Barchasi',reading=null;
+const cats=['Texnologiya','Dizayn','Biznes','Salomatlik',"Sayohat"];
 const authors=[
-  {name:'Bobur Rashidov',role:'Texnologiya muharriri',ini:'BR',posts:'84',text:'AI va dasturlash haqida yozadi'},
-  {name:'Nilufar Saidova',role:'Dizayn muharriri',ini:'NS',posts:'56',text:'Minimalizm va UI/UX bo\'yicha'},
-  {name:'Jahongir Karimov',role:'Biznes kolumnisti',ini:'JK',posts:'41',text:'Startaplar va investitsiyalar'},
-  {name:'Sardor Ergashev',role:'DevOps kolumnisti',ini:'SE',posts:'33',text:'Arxitektura va bulutlar'},
+  {n:'Bobur Rashidov',r:'Texnologiya muharriri',i:'BR',p:'84',t:'AI va dasturlash haqida yozadi'},
+  {n:'Nilufar Saidova',r:'Dizayn muharriri',i:'NS',p:'56',t:"Minimalizm va UI/UX bo\'yicha"},
+  {n:'Jahongir Karimov',r:'Biznes kolumnisti',i:'JK',p:'41',t:'Startaplar va investitsiyalar'},
+  {n:'Sardor Ergashev',r:'DevOps kolumnisti',i:'SE',p:'33',t:'Arxitektura va bulutlar'}
 ];
-function renderAuthors(){
-  $('authorSlides').innerHTML=authors.map(a=>`
-    <div class="swiper-slide h-auto">
-      <div class="glass rounded-3xl p-7 h-full text-center">
-        <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-amber-400 to-orange-500 grid place-items-center text-white text-2xl font-black">${a.ini}</div>
-        <h4 class="font-black text-lg mt-4">${a.name}</h4>
-        <div class="text-xs font-semibold text-amber-500 mt-1">${a.role}</div>
-        <p class="text-sm opacity-70 mt-3">${a.text}</p>
-        <div class="mt-4 text-xs opacity-60">${a.posts} maqola</div>
-        <button class="mt-4 w-full py-2.5 rounded-xl glass font-bold text-sm hover:bg-amber-500 hover:text-white transition">Obuna bo'lish</button>
-      </div>
-    </div>`).join('');
+const makePost=(id,title,c,emoji,g,read,date,author,views,tags,lead,body)=>({id:id,title:title,cat:c,emoji:emoji,g:g,read:read,date:date,author:author,views:views,tags:tags,lead:lead,body:body});
+posts=[
+  makePost(1,"Sun\'iy intellekt sahifalarini qanday o\'zgartiryapti?",'Texnologiya','🤖','linear-gradient(140deg,#6366f1,#2563eb)',8,'12 Oktyabr 2026','Bobur Rashidov','24.5k',['AI','Kelajak'],"AI allaqachon oddiy ish jarayonidan tortib to\'liq dizayn tizimlarigacha — hammasini o\'zgartiryapti.",
+    "<p>Sun\'iy intellekt so\'nggi yillarda shunchaki vosita emas, balki to\'liq ish jarayoniga aylandi.</p><p>Bundan keyin nima bo\'ladi? Ekspertlarning fikricha, kelgusi besh yil ichida veb-sahifalarning 60% gacha qismi AI tomonidan generatsiya qilinadi.</p><blockquote>Texnologiya haqidagi eng muhim savol — buni qilish mumkinmi? emas, buni qilish kerakmi?</blockquote><h3>Nima o\'rganish kerak?</h3><p>Zamonaviy mutaxassis uchun eng qimmatli ko\'nikmalar: prompt muhandisligi, ma\'lumotlar tahlili va axloqiy normalarni tushunish.</p>"),
+  makePost(2,'Minimalizm aslida nima degani?','Dizayn','🎨','linear-gradient(140deg,#f43f5e,#db2777)',6,'10 Oktyabr 2026','Nilufar Saidova','18.2k',['Dizayn','UI/UX'],"Yaxshi dizayn — ko\'proq narsa qo\'shish emas, keraksiz narsalarni olib tashlash san\'ati.",
+    "<p>Minimalizmni ko\'pchilik kamroq element degani deb o\'ylaydi. Aslida esa u har bir elementni o\'z o\'rniga ega bo\'lishi kerak degani.</p><p>Nega ba\'zi sahifalar shunchalik tinch ko\'rinadi? Chunki u yerda fazolar muvozanatli, tipografiya aniq va ranglar cheklangan.</p><h3>Amaliy qoidalar</h3><p>1. Har element savolga javob berishi kerak: nima uchun bu shu yerda? 2. Bir sahifada ko\'pi bilan ikkita aksent rang. 3. Logo tipografiyasini hech qachon kichraytirmang.</p>"),
+  makePost(3,"O\'zbekistonda startap ekotizimasi: 2026",'Biznes','📈','linear-gradient(140deg,#10b981,#0d9488)',11,'8 Oktyabr 2026','Jahongir Karimov','31.1k',['Startap','Investitsiya'],"Yil boshidan beri mahalliy startaplar jahor bozorlariga chiqa boshladi.",
+    "<p>2026-yil O\'zbekiston startap ekotizimida o\'ziga xos burilish yili bo\'ldi. Akseleratorlar soni ortib, fondlar ham faol ishlayapti.</p><blockquote>Eng muhim resurs — pul emas, to\'g\'ri jamoa.</blockquote><h3>Asosiy tendensiyalar</h3><p>EdTech va HealthTech sohalari keskin o\'smoqda. Yangi avlod tadbirkorlari global bozorni boshidan hisobga oladi.</p>"),
+  makePost(4,"Uxlash sifati: yetarli 6 ta odat",'Salomatlik','🌙','linear-gradient(140deg,#7c3aed,#6d28d9)',7,'6 Oktyabr 2026','Kamola Yusupova','42.7k',['Salomatlik','Odatlar'],"Yaxshi uyqu — eng arzon va eng samarali shifokor.",
+    "<p>Kunduzgi energiya darajangiz asosan uyqu sifatingizga bog\'liq. Kattalar uchun optimal uyqu 7-9 soat.</p><h3>Oddiy amaliyot</h3><p>Yotishdan bir soat oldin ekranni yoping. Xona haroratini 20°C atrofida ushlang. Kofeni soat 14:00 dan keyin ichmang.</p>"),
+  makePost(5,'Nega mikroservislar hamma narsani hal qilmaydi?','Texnologiya','⚙️','linear-gradient(140deg,#64748b,#334155)',9,'4 Oktyabr 2026','Sardor Ergashev','15.3k',['Arxitektura','DevOps'],"Mikroservislar kuchli, ammo noqulayliklari ham bor.",
+    "<p>Har bir loyihaga mikroservis kerak emas. 5 kishilik jamoaga 40 xizmat — bu shunchaki qo\'shimcha yuk.</p><p>Qoida oddiy: jamoa tarkibi va murakkablik bir-biriga mos bo\'lishi kerak.</p><blockquote>Avval monolitni to\'g\'ri quring, keyin bo\'ling.</blockquote>"),
+  makePost(6,'Yevropada sayohat: hamyonbop 10 shahar',"Sayohat",'✈️','linear-gradient(140deg,#0ea5e9,#0891b2)',10,'2 Oktyabr 2026','Nilufar Saidova','27.8k',["Sayohat",'Yevropa'],"Chiroyli sharhlar, arzon kafe va boy tarix.",
+    "<p>Yevropa qimr degan fikr ko\'pchilikda. Ammo Portuqaliyaning Porto shahridan tortib Polshaning Krakovigacha juda hamyonbop shaharlar ko\'p.</p><p>Yagona maslahat: mavsumdan tashqari sayohat qiling.</p>")
+];
+function postCard(p,i){
+  return '<article class="panel overflow-hidden glow group cursor-pointer reveal" data-post="'+p.id+'">'
+    +'<div class="h-44 grid place-items-center text-6xl relative overflow-hidden" style="background:'+p.g+'">'+p.emoji
+    +'<span class="absolute top-3 left-3 badge" style="background:#06070c;color:#fff">'+p.cat+'</span>'
+    +'<span class="absolute top-3 right-3 badge">'+p.read+' daq</span></div>'
+    +'<div class="p-5"><h3 class="font-display font-bold text-lg leading-snug group-hover:opacity-80 transition">'+p.title+'</h3>'
+    +'<p class="text-sm opacity-65 mt-2 line-clamp-2">'+p.lead+'</p>'
+    +'<div class="flex items-center justify-between mt-5 pt-4" style="border-top:1px solid var(--line)">'
+    +'<div class="flex items-center gap-2"><div class="w-8 h-8 rounded-full grid place-items-center text-[10px] font-bold" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c">'+p.author.split(' ').map(w=>w[0]).join('')+'</div>'
+    +'<div><div class="text-xs font-bold">'+p.author+'</div><div class="tag">'+p.date+'</div></div></div>'
+    +'<span class="text-xs font-bold flex items-center gap-1" style="color:var(--c1)">O\'qish <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i></span></div></div></article>';
 }
-
-let readingPost=null;
-async function openArticle(id){
-  readingPost=posts.find(p=>p.id===id);
-  if(!readingPost)return;
-  const related=posts.filter(p=>p.cat===readingPost.cat&&p.id!==readingPost.id).slice(0,2);
-  $('articleBody').innerHTML=`
-    <button class="fixed top-5 left-5 z-10 w-11 h-11 rounded-2xl glass grid place-items-center hover:scale-110 transition" data-close><i data-lucide="arrow-left"></i></button>
-    <div class="pt-14">
-      <span class="text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500 text-white">${readingPost.cat}</span>
-      <h1 class="text-4xl md:text-5xl font-black mt-6 leading-tight">${readingPost.title}</h1>
-      <div class="flex flex-wrap items-center gap-5 mt-7 pb-8 border-b border-black/10 dark:border-white/10">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 grid place-items-center text-white font-bold">${readingPost.author.split(' ').map(w=>w[0]).join('')}</div>
-          <div><div class="font-bold text-sm">${readingPost.author}</div><div class="text-xs opacity-60">${readingPost.date} · ${readingPost.read} daqiqa o'qish</div></div>
-        </div>
-        <div class="flex gap-2 ml-auto">
-          <button class="fsBtn w-10 h-10 rounded-xl glass grid place-items-center hover:scale-110 transition" title="Kattalashtirish"><i data-lucide="zoom-in"></i></button>
-          <button class="fsBtn w-10 h-10 rounded-xl glass grid place-items-center hover:scale-110 transition" title="Kichiklashtirish"><i data-lucide="zoom-out"></i></button>
-          <button id="saveBtn" class="w-10 h-10 rounded-xl glass grid place-items-center hover:scale-110 transition" title="Saqlash"><i data-lucide="bookmark"></i></button>
-          <button class="w-10 h-10 rounded-xl glass grid place-items-center hover:scale-110 transition" title="Ulashish" data-share><i data-lucide="share-2"></i></button>
-        </div>
-      </div>
-      <div class="h-64 md:h-80 rounded-3xl bg-gradient-to-br ${readingPost.grad} grid place-items-center text-[8rem] my-9">${readingPost.emoji}</div>
-      <div id="readerBox" class="reader">${readingPost.body}</div>
-      <div class="flex flex-wrap gap-2 mt-10">${readingPost.tags.map(t=>`<span class="text-sm font-semibold px-3 py-1.5 rounded-xl glass">#${t}</span>`).join('')}</div>
-      ${related.length?`<div class="mt-14">
-        <h3 class="text-2xl font-black mb-6">O'xshash maqolalar</h3>
-        <div class="grid sm:grid-cols-2 gap-5">${related.map(r=>`
-          <div class="glass rounded-3xl overflow-hidden cursor-pointer group" data-post="${r.id}">
-            <div class="h-36 bg-gradient-to-br ${r.grad} grid place-items-center text-5xl">${r.emoji}</div>
-            <div class="p-5"><h4 class="font-bold leading-snug">${r.title}</h4><div class="text-xs opacity-60 mt-2">${r.read} daqiqa · ${r.date}</div></div>
-          </div>`).join('')}</div></div>`:''}
-    </div>`;
-  $('articleModal').classList.remove('hidden');
-  $('articleScroll').scrollTop=0;document.body.style.overflow='hidden';
-  requestAnimationFrame(()=>{$('articleBody').classList.remove('scale-95','opacity-0');});
-  lucide.createIcons();
+function renderPosts(q){
+  const list=posts.filter(p=>(cat==='Barchasi'||p.cat===cat)&&(!q||p.title.toLowerCase().includes(q.toLowerCase())));
+  $('postCount').textContent=list.length+' ta maqola';
+  $('postGrid').innerHTML=list.length?list.map(postCard).join(''):'<div class="col-span-full panel rounded-3xl grid place-items-center py-16 text-center"><span class="text-6xl">📭</span><p class="font-bold mt-3">Maqola topilmadi</p></div>';
+  lucide.createIcons();runReveals();
 }
-function closeArticle(){
-  $('articleBody').classList.add('scale-95','opacity-0');
-  setTimeout(()=>{$('articleModal').classList.add('hidden');$('articleBody').innerHTML='';document.body.style.overflow='';$('readProgress').style.width='0';},280);
+$('catRow').innerHTML=['Barchasi'].concat(cats).map(c=>'<button class="chip '+(c==='Barchasi'?'on':'')+'" data-cat="'+c+'">'+c+'</button>').join('');
+$('heroSlides').innerHTML=posts.slice(0,3).map(p=>'<div class="swiper-slide">'
+  +'<div class="relative h-[300px] sm:h-[380px] cursor-pointer" style="background:'+p.g+'" data-post="'+p.id+'">'
+  +'<div class="absolute inset-0 grid place-items-center text-center px-6"><div class="max-w-xl">'
+  +'<span class="badge" style="background:#06070c;color:#fff">'+p.cat+' · TANLOV</span>'
+  +'<h2 class="display text-[clamp(24px,4vw,44px)] mt-4 text-[#06070c]">'+p.title+'</h2>'
+  +'<p class="mt-3 text-sm text-[#06070c]/75">'+p.lead+'</p></div></div>'
+  +'<span class="absolute right-8 bottom-2 text-[8rem] opacity-25 select-none">'+p.emoji+'</span></div></div>').join('');
+$('trendingList').innerHTML=posts.slice().sort((a,b)=>parseFloat(b.views)-parseFloat(a.views)).slice(0,4).map((p,i)=>'<li class="flex gap-3 cursor-pointer group" data-post="'+p.id+'">'
+  +'<span class="font-display text-2xl font-bold" style="color:var(--line)">'+(i+1)+'</span><div>'
+  +'<h4 class="text-sm font-bold leading-snug">'+p.title+'</h4>'
+  +'<div class="tag mt-1 flex gap-3"><span>'+p.date+'</span><span>👁 '+p.views+'</span></div></div></li>').join('');
+$('tagCloud').innerHTML=[...new Set(posts.flatMap(p=>p.tags))].map(t=>'<button class="chip text-xs" data-tag="'+t+'">#'+t+'</button>').join('');
+$('authorSlides').innerHTML=authors.map(a=>'<div class="swiper-slide h-auto"><div class="panel p-7 h-full text-center glow" data-tilt>'
+  +'<div class="w-20 h-20 mx-auto rounded-full grid place-items-center font-display text-2xl font-bold" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c">'+a.i+'</div>'
+  +'<h4 class="font-display font-bold text-lg mt-4">'+a.n+'</h4><div class="tag mt-1" style="color:var(--c1)">'+a.r+'</div>'
+  +'<p class="text-sm opacity-70 mt-3">'+a.t+'</p><div class="tag mt-4">'+a.p+' maqola</div>'
+  +'<button class="btn btn-ghost mt-4 w-full">Obuna bo\'lish</button></div></div>').join('');
+function openArticle(id){
+  const p=posts.find(x=>x.id===+id);if(!p)return;
+  reading=p;
+  const related=posts.filter(x=>x.cat===p.cat&&x.id!==p.id).slice(0,2);
+  $('articleBody').innerHTML='<div class="relative h-44" style="background:'+p.g+'">'
+    +'<button class="absolute top-4 right-4 burger" data-close aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button>'
+    +'<div class="absolute inset-0 grid place-items-center text-7xl">'+p.emoji+'</div></div>'
+    +'<div class="p-7 sm:p-9"><span class="badge" style="background:'+p.g+'">'+p.cat+'</span>'
+    +'<h1 class="display text-[clamp(24px,4vw,40px)] mt-4">'+p.title+'</h1>'
+    +'<div class="flex flex-wrap items-center gap-4 mt-5 pb-6" style="border-bottom:1px solid var(--line)">'
+    +'<div class="flex items-center gap-3"><div class="w-11 h-11 rounded-full grid place-items-center text-xs font-bold" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c">'+p.author.split(' ').map(w=>w[0]).join('')+'</div>'
+    +'<div><div class="font-bold text-sm">'+p.author+'</div><div class="tag">'+p.date+' · '+p.read+' daqiqa</div></div></div>'
+    +'<div class="ml-auto flex gap-2"><button class="burger fsBtn" title="Kattalashtirish" data-fs="up"><i data-lucide="zoom-in" class="w-[18px] h-[18px]"></i></button>'
+    +'<button class="burger fsBtn" title="Kichiklashtirish" data-fs="down"><i data-lucide="zoom-out" class="w-[18px] h-[18px]"></i></button></div></div>'
+    +'<div id="readerBox" class="mt-7 leading-[1.9] text-[17px]">'+p.body+'</div>'
+    +'<div class="flex flex-wrap gap-2 mt-8">'+p.tags.map(t=>'<span class="badge">#'+t+'</span>').join('')+'</div>'
+    +(related.length?'<div class="mt-10"><h3 class="display text-xl font-bold mb-5">O\'xshash maqolalar</h3><div class="grid sm:grid-cols-2 gap-4">'
+    +related.map(r=>'<div class="panel overflow-hidden cursor-pointer group" data-post="'+r.id+'"><div class="h-28 grid place-items-center text-5xl" style="background:'+r.g+'">'+r.emoji+'</div>'
+    +'<div class="p-4"><h4 class="font-bold text-sm leading-snug">'+r.title+'</h4><div class="tag mt-2">'+r.read+' daq · '+r.date+'</div></div></div>').join('')+'</div></div>':'')
+    +'</div>';
+  $('articleModal').classList.add('on');document.body.style.overflow='hidden';lucide.createIcons();
 }
 $('articleModal').addEventListener('click',e=>{
-  if(e.target.closest('[data-close]')||e.target.hasAttribute('data-close'))closeArticle();
+  if(e.target.closest('[data-close]')){$('articleModal').classList.remove('on');document.body.style.overflow='';return;}
+  const fs=e.target.closest('[data-fs]');
+  if(fs){const box=$('readerBox');const cur=parseFloat(getComputedStyle(box).fontSize);box.style.fontSize=(fs.dataset.fs==='up'?Math.min(cur+2,26):Math.max(cur-2,16))+'px';return;}
   const p=e.target.closest('[data-post]');
-  if(p){closeArticle();setTimeout(()=>openArticle(p.dataset.post),300);}
-  const fs=e.target.closest('.fsBtn');
-  if(fs){const box=$('readerBox');const cur=parseFloat(getComputedStyle(box).fontSize);box.style.fontSize=fs.title==='Kattalashtirish'?Math.min(cur+2,26)+'px':Math.max(cur-2,16)+'px';}
-  if(e.target.closest('#saveBtn'))toast('Maqola saqlanganlar ro\'yxatiga qo\'shildi');
-  if(e.target.closest('[data-share]'))toast('Havola nusxalandi 📋');
+  if(p){openArticle(p.dataset.post);}
 });
-$('articleScroll').addEventListener('scroll',()=>{
-  const el=$('articleScroll'),p=el.scrollTop/(el.scrollHeight-el.clientHeight)*100;
-  $('readProgress').style.width=Math.min(p,100)+'%';
+document.addEventListener('click',e=>{
+  const c=e.target.closest('#catRow .chip');
+  if(c){$$('#catRow .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');cat=c.dataset.cat;renderPosts();}
+  const p=e.target.closest('[data-post]');
+  if(p&&$('articleModal').classList.contains('hidden')&&!e.target.closest('#catRow'))openArticle(p.dataset.post);
+  const t=e.target.closest('[data-tag]');
+  if(t)APP.toast('#'+t.dataset.tag+" bo\'yicha qidiruv...");
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('articleModal').classList.contains('hidden'))closeArticle();});
-
-document.addEventListener('click',async e=>{
-  const cat=e.target.closest('.catBtn');
-  if(cat){activeCat=cat.dataset.cat;renderCats();renderPosts();}
-  const post=e.target.closest('[data-post]');
-  if(post&&$('articleModal').classList.contains('hidden'))await openArticle(post.dataset.post);
-  const tag=e.target.closest('[data-tag]');
-  if(tag)toast(`#${tag.dataset.tag} bo'yicha qidiruv...`);
-  const sub=e.target.closest('[data-sub]');
-  if(sub){toast('Obuna bo\'ldingiz! 🎉');document.getElementById('newsletter').scrollIntoView({behavior:'smooth'});}
-});
-$('searchInput').addEventListener('input',e=>{
-  const q=e.target.value.toLowerCase();
-  const list=posts.filter(p=>p.title.toLowerCase().includes(q)||p.tags.some(t=>t.toLowerCase().includes(q)));
-  const source=list;
-  $('postCount').textContent=`${source.length} ta natija`;
-  $('postGrid').innerHTML=source.length?source.map((p,i)=>`
-    <article class="group glass rounded-3xl overflow-hidden cursor-pointer" data-post="${p.id}" data-aos="fade-up">
-      <div class="h-40 bg-gradient-to-br ${p.grad} grid place-items-center text-5xl">${p.emoji}</div>
-      <div class="p-5"><span class="text-[11px] font-bold text-amber-500">${p.cat}</span>
-      <h3 class="font-black leading-snug mt-1 group-hover:text-amber-500 transition">${p.title}</h3>
-      <div class="text-xs opacity-60 mt-2">${p.date} · ${p.read} daq</div></div>
-    </article>`).join(''):'<div class="col-span-2 text-center py-16 glass rounded-3xl"><span class="text-5xl">📭</span><p class="font-bold mt-3">Maqola topilmadi</p></div>';
-  lucide.createIcons();
-});
-$('subForm').addEventListener('submit',e=>{e.preventDefault();e.target.reset();toast('Tabriklaymiz, obuna bo\'ldingiz! 🎉');});
-$('subscribeBtn').addEventListener('click',()=>document.getElementById('newsletter').scrollIntoView({behavior:'smooth'}));
-window.addEventListener('scroll',()=>{
-  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
-  $('readProgress').style.width=Math.min(p,100)+'%';
-});
-
-let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2400);}
-
-const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
-const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
-document.getElementById('menuBtn')?.addEventListener('click',openMM);
-document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
-document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
-
-boot();
-AOS.init({duration:850,once:true});
+$('searchInput').addEventListener('input',e=>renderPosts(e.target.value));
+$('subForm').addEventListener('submit',e=>{e.preventDefault();e.target.reset();APP.toast("Tabriklaymiz, obuna bo\'ldingiz!");});
+$('subBtn').addEventListener('click',()=>document.getElementById('newsletter').scrollIntoView({behavior:'smooth'}));
+renderPosts();
 new Swiper('.heroSwiper',{loop:true,effect:'fade',autoplay:{delay:6500},pagination:{el:'.heroSwiper .swiper-pagination',clickable:true}});
 new Swiper('.authorSwiper',{slidesPerView:1,spaceBetween:20,loop:true,grabCursor:true,pagination:{el:'.authorSwiper .swiper-pagination',clickable:true},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:4}}});
 lucide.createIcons();
+
 </script>
 </body>
 </html>

@@ -1,386 +1,515 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" class="">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#04070f">
 <title>NovaTech — IT Kompaniya</title>
+<meta name="description" content="To'liq xizmat ko'rsatuvchi IT kompaniya: veb, mobil, bulut va AI yechimlar.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{ink:'#050816'}}}}
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{display:['"Space Grotesk"','system-ui','sans-serif'],sans:['Inter','system-ui','sans-serif'],mono:['"JetBrains Mono"','monospace']},colors:{c1:'#00e5ff',c2:'#7c5cff',c3:'#22d3ee',ink:'#04070f'}}}}
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
-html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
+:root{
+  --c1:#00e5ff;--c2:#7c5cff;--c3:#22d3ee;--ink:#04070f;
+  --line:color-mix(in srgb,var(--fg) 12%,transparent);
+  --panel:color-mix(in srgb,var(--fg) 5%,transparent);
+  --radius:20px;--ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:dark;
+}
+html.light{--panel:color-mix(in srgb,var(--fg) 7%,transparent);--line:color-mix(in srgb,var(--fg) 15%,transparent);color-scheme:light}
+*{-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,system-ui,sans-serif;background:var(--ink);color:var(--fg);
+  overflow-x:hidden;
+}
+.font-display{font-family:'Space Grotesk',system-ui,sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.display{font-weight:700;letter-spacing:-.03em;line-height:.95}
+.grad{background:linear-gradient(100deg,var(--c1),var(--c2) 55%,var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.outline-txt{color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 45%,transparent)}
 
-.glass{background:rgba(255,255,255,.07);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,.14);box-shadow:0 8px 32px rgba(0,0,0,.25)}
-.light-glass{background:rgba(255,255,255,.72);backdrop-filter:blur(18px) saturate(160%);border:1px solid rgba(255,255,255,.6);box-shadow:0 8px 32px rgba(31,38,135,.12)}
-.dark .glass{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)}
-.dark .light-glass{background:rgba(15,23,42,.55);border-color:rgba(255,255,255,.1)}
-.aurora{position:absolute;border-radius:50%;filter:blur(110px);opacity:.55;animation:drift 14s ease-in-out infinite}
-@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(60px,-40px) scale(1.15)}66%{transform:translate(-40px,30px) scale(.9)}}
-.hero-text{background:linear-gradient(120deg,#38bdf8,#818cf8,#e879f9);-webkit-background-clip:text;background-clip:text;color:transparent}
-.card3d{transform-style:preserve-3d;transition:transform .5s cubic-bezier(.22,1,.36,1)}
-.card3d:hover{transform:rotateX(6deg) rotateY(-6deg) translateZ(12px)}
-.card3d .glow-line{position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(120deg,rgba(56,189,248,.7),rgba(232,121,249,.2),transparent 60%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s}
-.card3d:hover .glow-line{opacity:1}
-::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:linear-gradient(#38bdf8,#818cf8);border-radius:99px}
-.bump{animation:bump .45s ease}@keyframes bump{0%,100%{transform:scale(1)}35%{transform:scale(1.3)}}
-.marquee{display:flex;gap:4rem;width:max-content;animation:marq 28s linear infinite}
+/* atmosfera qatlamlari */
+.noise,.scan,.gridbg{position:fixed;inset:0;pointer-events:none;z-index:1}
+.noise{opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:overlay}
+.gridbg{background-image:linear-gradient(color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--fg) 4%,transparent) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(circle at 50% 30%,#000,transparent 78%)}
+.scan{background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.14) 3px 4px);opacity:.35}
+#three-bg{position:fixed;inset:0;z-index:0;opacity:.9}
+
+/* kursor */
+#cursor{position:fixed;left:0;top:0;z-index:9998;pointer-events:none;mix-blend-mode:difference}
+#cursor .ring{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border:1.5px solid #fff;border-radius:50%;transition:width .3s var(--ease),height .3s var(--ease),margin .3s var(--ease),opacity .3s}
+#cursor .dot{position:absolute;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:#fff;border-radius:50%}
+#cursor.hovering .ring{width:64px;height:64px;margin:-32px 0 0 -32px;opacity:.55}
+@media (hover:none),(pointer:coarse){#cursor{display:none}}
+
+/* preloader */
+#pre{position:fixed;inset:0;z-index:9999;background:var(--ink);display:grid;place-items:center;text-align:center}
+#pre .bar{width:min(320px,70vw);height:2px;background:color-mix(in srgb,var(--fg) 14%,transparent);margin:22px auto 0;overflow:hidden}
+#pre .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c1),var(--c2))}
+#pre .num{font-family:'JetBrains Mono',monospace;font-size:12px;opacity:.6;margin-top:12px;letter-spacing:.2em}
+#pre .name{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,64px);letter-spacing:-.03em}
+
+/* nav */
+.nav-blur{background:color-mix(in srgb,var(--ink) 62%,transparent);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.nav-link{position:relative}
+.nav-link::after{content:'';position:absolute;left:0;bottom:-4px;height:1.5px;width:0;background:linear-gradient(90deg,var(--c1),var(--c2));transition:width .35s var(--ease)}
+.nav-link:hover::after,.nav-link.active::after{width:100%}
+
+/* fullscreen menyu */
+#menu{position:fixed;inset:0;z-index:9990;background:color-mix(in srgb,var(--ink) 94%,transparent);backdrop-filter:blur(24px);
+  clip-path:circle(0% at calc(100% - 44px) 44px);transition:clip-path .8s var(--ease);display:flex;flex-direction:column;justify-content:center;padding:8vw}
+#menu.open{clip-path:circle(150% at calc(100% - 44px) 44px)}
+#menu a{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,7vw,72px);letter-spacing:-.03em;line-height:1.05;
+  color:transparent;-webkit-text-stroke:1.4px color-mix(in srgb,var(--fg) 55%,transparent);transition:.4s var(--ease);display:block}
+#menu a:hover,#menu a:focus-visible{-webkit-text-stroke:1.4px var(--c2);color:var(--c2);transform:translateX(14px)}
+.burger{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.burger i{display:block;width:18px;height:1.6px;background:var(--fg);transition:.35s var(--ease)}
+.burger i+i{margin-top:5px}
+.burger.x i:first-child{transform:translateY(3.3px) rotate(45deg)}
+.burger.x i:last-child{transform:translateY(-3.3px) rotate(-45deg)}
+
+/* panellar */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(14px)}
+.glow{position:relative}
+.glow::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;
+  background:conic-gradient(from var(--a,0deg),transparent 0 55%,var(--c1) 70%,var(--c2) 85%,transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .4s;animation:spin 4s linear infinite}
+.glow:hover::before{opacity:1}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes spin{to{--a:360deg}}
+.tilt{transition:transform .5s var(--ease),box-shadow .5s;transform-style:preserve-3d;will-change:transform}
+.magnet{transition:transform .35s var(--ease)}
+.marquee{display:flex;width:max-content;animation:marq 26s linear infinite}
 @keyframes marq{to{transform:translateX(-50%)}}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:floaty 14s ease-in-out infinite;pointer-events:none}
+@keyframes floaty{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-40px) scale(1.12)}}
+.reveal{opacity:0;transform:translateY(34px)}
+.reveal-l{opacity:0;transform:translateX(-40px)}
+::-webkit-scrollbar{width:9px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--c1),var(--c2));border-radius:9px}
+::-webkit-scrollbar-track{background:transparent}
+:focus-visible{outline:2px solid var(--c2);outline-offset:3px;border-radius:8px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.55rem;font-weight:700;
+  border-radius:999px;padding:.85rem 1.6rem;font-size:.92rem;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s;isolation:isolate}
+.btn::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,var(--c1),var(--c2));transition:filter .3s}
+.btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 14px 40px -12px var(--c1)}
+.btn-solid{color:#06070c}
+.btn-ghost{border:1px solid var(--line);background:var(--panel)}
+.btn-ghost::after{display:none}
+.btn-ghost:hover{border-color:var(--c2);color:var(--c2)}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:.5rem 1rem;font-size:.8rem;font-weight:600;transition:.3s}
+.chip:hover{border-color:var(--c2);color:var(--c2)}
+.chip.on{background:linear-gradient(100deg,var(--c1),var(--c2));color:#06070c;border-color:transparent}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;opacity:.62}
+.hairline{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+.toast-box{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);z-index:9997;opacity:0;transition:.4s var(--ease);pointer-events:none}
+.toast-box.on{opacity:1;transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;z-index:9995;display:none}
+.modal.on{display:grid;place-items:center;padding:16px}
+.modal .veil{position:absolute;inset:0;background:rgba(2,3,8,.72);backdrop-filter:blur(8px)}
+.modal .card{position:relative;transform:scale(.94) translateY(14px);opacity:0;transition:.4s var(--ease)}
+.modal.on .card{transform:none;opacity:1}
+.badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;padding:.28rem .55rem;border-radius:6px;border:1px solid var(--line);background:var(--panel)}
+.glitch{position:relative}
+.glitch:hover::before,.glitch:hover::after{content:attr(data-t);position:absolute;inset:0;background:var(--ink)}
+.glitch:hover::before{color:var(--c1);transform:translate(-2px,-1px);clip-path:inset(0 0 62% 0)}
+.glitch:hover::after{color:var(--c2);transform:translate(2px,1px);clip-path:inset(58% 0 0 0)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}#three-bg{display:none}}
+
 </style>
 </head>
-<body class="bg-slate-100 text-slate-800 dark:bg-ink dark:text-slate-200 transition-colors duration-500 overflow-x-hidden">
+<body class="min-h-[100svh]">
+<div id="scrollProgress" class="fixed top-0 left-0 h-[3px] z-[70] pointer-events-none" style="background:linear-gradient(90deg,var(--c1),var(--c2));width:0" aria-hidden="true"></div>
+<div id="three-bg" aria-hidden="true"></div>
+<div class="gridbg" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true"></div>
+<div class="noise" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"><div class="ring"></div><div class="dot"></div></div>
+<div id="pre"><div><div class="name">NovaTech</div><div class="bar"><i id="preBar"></i></div><div class="num" id="preNum">0%</div></div></div>
 
-<div class="fixed inset-0 -z-10 overflow-hidden">
-  <div class="aurora w-[500px] h-[500px] bg-cyan-400 -top-32 -left-20"></div>
-  <div class="aurora w-[420px] h-[420px] bg-indigo-500 top-1/3 right-[-100px]" style="animation-delay:3s"></div>
-  <div class="aurora w-[380px] h-[380px] bg-fuchsia-500 bottom-[-80px] left-1/3" style="animation-delay:6s"></div>
-</div>
-
-<header id="nav" class="fixed inset-x-0 top-0 z-50 transition-all duration-300">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="mt-3 rounded-2xl glass px-5 py-3 flex items-center justify-between">
-      <a href="#" class="flex items-center gap-2.5 font-black text-xl"><span class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-500 grid place-items-center text-white shadow-lg"><i data-lucide="hexagon" class="w-5 h-5"></i></span>Nova<span class="text-cyan-500">Tech</span></a>
-      <nav class="hidden md:flex items-center gap-7 text-sm font-medium">
-        <a class="hover:text-cyan-500 transition" href="#services">Xizmatlar</a>
-        <a class="hover:text-cyan-500 transition" href="#process">Jarayon</a>
-        <a class="hover:text-cyan-500 transition" href="#stack">Texnologiyalar</a>
-        <a class="hover:text-cyan-500 transition" href="#team">Jamoa</a>
-        <a class="hover:text-cyan-500 transition" href="#faq">FAQ</a>
-      </nav>
-      <div class="flex items-center gap-2">
-        <button id="menuBtn" class="md:hidden w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
-        <button id="themeBtn" class="w-10 h-10 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
-        <button id="contactBtn" class="hidden sm:block px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 text-white text-sm font-bold hover:scale-105 transition shadow-lg">Bepul konsultatsiya</button>
-      </div>
+<header id="nav" class="fixed inset-x-0 top-0 z-[60] transition-all duration-500">
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 h-[68px] flex items-center gap-5">
+    <a href="#top" class="font-display font-bold text-lg tracking-tight flex items-center gap-2.5 shrink-0">
+      <span class="w-9 h-9 rounded-xl grid place-items-center" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c"><i data-lucide="hexagon" class="w-[18px] h-[18px]"></i></span>
+      NovaTech
+    </a>
+    <nav class="hidden lg:flex items-center gap-7 text-[13px] font-semibold ml-4"><a class="nav-link hover:opacity-70 transition" href="#services">Xizmatlar</a><a class="nav-link hover:opacity-70 transition" href="#process">Jarayon</a><a class="nav-link hover:opacity-70 transition" href="#stack">Texnologiyalar</a><a class="nav-link hover:opacity-70 transition" href="#team">Jamoa</a><a class="nav-link hover:opacity-70 transition" href="#faq">FAQ</a></nav>
+    <div class="ml-auto flex items-center gap-2">
+      <button id="themeBtn" class="burger" aria-label="Kun/tun rejimi"><i data-lucide="sun" id="themeIcon" class="w-[18px] h-[18px]"></i></button>
+      <a href="#lead" class="btn btn-solid magnet hidden sm:inline-flex">Bepul konsultatsiya</a>
+      <button id="menuBtn" class="burger lg:hidden" aria-label="Menyu"><span class="block"><i></i><i></i></span></button>
     </div>
-
   </div>
 </header>
 
-<section class="relative pt-40 pb-24 px-5">
-  <div class="max-w-7xl mx-auto grid lg:grid-cols-[1.15fr,1fr] gap-14 items-center">
-    <div>
-      <span class="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full glass mb-6" data-aos="fade-down"><span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> 2026-yil yangi loyihalar uchun joylar ochiq</span>
-      <h1 class="text-5xl lg:text-[4rem] font-black leading-[1.05]" data-aos="fade-up"> Biznesingizni <span class="hero-text">raqamli</span> darajaga olib chiqamiz</h1>
-      <p class="mt-6 text-lg text-slate-600 dark:text-slate-400 max-w-xl" data-aos="fade-up" data-aos-delay="100">NovaTech — veb-ilova, mobil ilova va bulutli infratuzilmalarni ishlab chiquvchi to'liq xizmat ko'rsatuvchi IT kompaniya.</p>
-      <div class="mt-9 flex flex-wrap gap-3" data-aos="fade-up" data-aos-delay="200">
-        <button id="startBtn" class="px-7 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 text-white font-bold hover:scale-105 transition shadow-lg">Loyihani boshlash</button>
-        <a href="#services" class="px-7 py-3.5 rounded-xl glass font-bold hover:scale-105 transition inline-flex items-center gap-2">Xizmatlarni ko'rish <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
-      </div>
-      <div class="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4" data-aos="fade-up" data-aos-delay="300">
-        <div><div class="text-3xl font-black text-cyan-500" data-count="180">0</div><div class="text-xs opacity-60 mt-1">Loyiha</div></div>
-        <div><div class="text-3xl font-black text-cyan-500" data-count="64">0</div><div class="text-xs opacity-60 mt-1">Mutaxassis</div></div>
-        <div><div class="text-3xl font-black text-cyan-500" data-count="12">0</div><div class="text-xs opacity-60 mt-1">Yil tajriba</div></div>
-        <div><div class="text-3xl font-black text-cyan-500" data-count="98">0</div><div class="text-xs opacity-60 mt-1">% qoniqish</div></div>
-      </div>
-    </div>
-
-    <div class="relative" data-aos="fade-left" data-aos-delay="200">
-      <div class="glass rounded-3xl p-6">
-        <div class="flex items-center gap-2 mb-5">
-          <span class="w-3 h-3 rounded-full bg-rose-400"></span><span class="w-3 h-3 rounded-full bg-amber-400"></span><span class="w-3 h-3 rounded-full bg-emerald-400"></span>
-          <span class="ml-auto text-xs opacity-50">novatech dashboard</span>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="rounded-2xl p-4 bg-gradient-to-br from-cyan-500/25 to-indigo-500/25 border border-white/15">
-            <i data-lucide="activity" class="text-cyan-500"></i>
-            <div class="text-2xl font-black mt-2">99.9%</div><div class="text-xs opacity-60">Uptime</div>
-          </div>
-          <div class="rounded-2xl p-4 bg-gradient-to-br from-fuchsia-500/25 to-purple-500/25 border border-white/15">
-            <i data-lucide="zap" class="text-fuchsia-500"></i>
-            <div class="text-2xl font-black mt-2">0.4s</div><div class="text-xs opacity-60">Yuklash</div>
-          </div>
-        </div>
-        <div class="mt-4 rounded-2xl p-4 border border-white/15 bg-white/40 dark:bg-white/5">
-          <div class="flex justify-between text-xs font-semibold mb-3"><span>Server yuklamasi</span><span class="text-cyan-500">62%</span></div>
-          <div class="h-2.5 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden"><div class="h-full w-[62%] rounded-full bg-gradient-to-r from-cyan-400 to-indigo-500"></div></div>
-          <div class="flex justify-between text-xs font-semibold mt-4 mb-3"><span>API so'rovlari</span><span class="text-fuchsia-500">84%</span></div>
-          <div class="h-2.5 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden"><div class="h-full w-[84%] rounded-full bg-gradient-to-r from-fuchsia-400 to-purple-500"></div></div>
-        </div>
-        <div class="mt-4 flex gap-2">
-          <span class="text-[11px] px-2.5 py-1 rounded-lg glass">TypeScript</span>
-          <span class="text-[11px] px-2.5 py-1 rounded-lg glass">Kubernetes</span>
-          <span class="text-[11px] px-2.5 py-1 rounded-lg glass">PostgreSQL</span>
-        </div>
-      </div>
-      <div class="absolute -bottom-4 -right-3 glass rounded-2xl px-4 py-3 flex items-center gap-2 text-sm font-bold" data-aos="zoom-in" data-aos-delay="500"><i data-lucide="badge-check" class="text-emerald-400"></i> ISO 27001 sertifikat</div>
-    </div>
-  </div>
-</section>
-
-<div class="py-8 overflow-hidden border-y border-white/15 glass">
-  <div class="marquee text-2xl font-black opacity-40">
-    <span>ACME</span><span>◆</span><span>TEXNOPARK</span><span>◆</span><span>UZUM DIGITAL</span><span>◆</span><span>PAYME</span><span>◆</span><span>ALOQABANK</span><span>◆</span><span>MYTAXI</span><span>◆</span>
-    <span>ACME</span><span>◆</span><span>TEXNOPARK</span><span>◆</span><span>UZUM DIGITAL</span><span>◆</span><span>PAYME</span><span>◆</span><span>ALOQABANK</span><span>◆</span><span>MYTAXI</span><span>◆</span>
-  </div>
+<div id="menu">
+  <div class="tag mb-6">Menyu</div>
+  <a href="#top">Bosh sahifa</a><a href="#services">Xizmatlar</a><a href="#process">Jarayon</a><a href="#stack">Texnologiyalar</a><a href="#team">Jamoa</a><a href="#faq">FAQ</a><a href="#lead">Aloqa</a>
+  <div class="mono text-xs opacity-45 mt-9">NovaTech · 2026</div>
+  <button id="menuClose" class="absolute top-5 right-5 burger" aria-label="Yopish"><i data-lucide="x" class="w-[18px] h-[18px]"></i></button>
 </div>
 
-<section id="services" class="py-24 px-5">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center max-w-2xl mx-auto mb-16" data-aos="fade-up">
-      <span class="text-xs font-bold tracking-[3px] text-cyan-500">XIZMATLAR</span>
-      <h2 class="text-4xl lg:text-5xl font-black mt-3">To'liq <span class="hero-text">xizmat</span> spektri</h2>
-      <p class="mt-4 text-slate-600 dark:text-slate-400">G'oyadan tortib ishga tushirish va qo'llab-quvvatlashgacha bo'lgan to'liq tsikl.</p>
-    </div>
-    <div id="serviceGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-  </div>
-</section>
+<main id="top" class="relative z-10">
 
-<section id="process" class="py-20 px-5">
-  <div class="max-w-6xl mx-auto">
-    <h2 class="text-4xl font-black text-center mb-16" data-aos="fade-up">Bizning <span class="hero-text">jarayon</span></h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="glass rounded-3xl p-7 card3d relative" data-aos="fade-up"><span class="glow-line"></span>
-        <div class="text-5xl font-black text-white/15">01</div>
-        <i data-lucide="search" class="w-8 h-8 text-cyan-400 mt-2"></i>
-        <h4 class="font-bold text-lg mt-4">Tahlil</h4><p class="text-sm opacity-70 mt-2">Biznes ehtiyojlarini o'rganamiz va texnik topshiriq tuzamiz</p>
-      </div>
-      <div class="glass rounded-3xl p-7 card3d relative" data-aos="fade-up" data-aos-delay="120"><span class="glow-line"></span>
-        <div class="text-5xl font-black text-white/15">02</div>
-        <i data-lucide="pen-tool" class="w-8 h-8 text-indigo-400 mt-2"></i>
-        <h4 class="font-bold text-lg mt-4">Dizayn</h4><p class="text-sm opacity-70 mt-2">UX tadqiqotlar va interfeys prototiplari</p>
-      </div>
-      <div class="glass rounded-3xl p-7 card3d relative" data-aos="fade-up" data-aos-delay="240"><span class="glow-line"></span>
-        <div class="text-5xl font-black text-white/15">03</div>
-        <i data-lucide="code-2" class="w-8 h-8 text-fuchsia-400 mt-2"></i>
-        <h4 class="font-bold text-lg mt-4">Ishlab chiqish</h4><p class="text-sm opacity-70 mt-2">Agile sprints, haftalik demo va sifat nazorati</p>
-      </div>
-      <div class="glass rounded-3xl p-7 card3d relative" data-aos="fade-up" data-aos-delay="360"><span class="glow-line"></span>
-        <div class="text-5xl font-black text-white/15">04</div>
-        <i data-lucide="rocket" class="w-8 h-8 text-emerald-400 mt-2"></i>
-        <h4 class="font-bold text-lg mt-4">Ishga tushirish</h4><p class="text-sm opacity-70 mt-2">CI/CD, monitoring va 24/7 qo'llab-quvvatlash</p>
-      </div>
-    </div>
-  </div>
-</section>
 
-<section id="stack" class="py-16 px-5">
-  <div class="max-w-6xl mx-auto">
-    <h2 class="text-4xl font-black text-center mb-12" data-aos="fade-up">Texnologiya <span class="hero-text">steki</span></h2>
-    <div id="stackGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"></div>
-  </div>
-</section>
-
-<section id="team" class="py-20 px-5">
-  <div class="max-w-6xl mx-auto">
-    <h2 class="text-4xl font-black text-center mb-14" data-aos="fade-up">Jamoa <span class="hero-text">a'zolari</span></h2>
-    <div class="swiper teamSwiper pb-14">
-      <div class="swiper-wrapper" id="teamSlides"></div>
-      <div class="swiper-pagination"></div>
-    </div>
-  </div>
-</section>
-
-<section id="faq" class="py-20 px-5">
-  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12">
+<section class="relative flex min-h-[100svh] items-center px-4 sm:px-6 lg:px-10 pt-28 pb-14">
+  <div class="blob w-[400px] h-[400px] -left-20 top-0" style="background:var(--c1)"></div>
+  <div class="blob w-[380px] h-[380px] right-0 bottom-10" style="background:var(--c2);animation-delay:3s"></div>
+  <div class="max-w-[1400px] mx-auto w-full grid lg:grid-cols-[1.15fr_.85fr] gap-10 items-center">
     <div>
-      <h2 class="text-4xl font-black" data-aos="fade-up">Ko'p beriladigan <span class="hero-text">savollar</span></h2>
-      <p class="mt-4 text-slate-600 dark:text-slate-400" data-aos="fade-up">Savolingiz javob topmadimi? Bizga yozing — 24 soat ichida javob beramiz.</p>
-      <div id="faqList" class="mt-8 space-y-3"></div>
+      <div class="tag reveal mb-5">2026-yil uchun joylar ochiq</div>
+      <h1 class="display text-[clamp(42px,7.5vw,96px)] reveal" data-split>Biznesingizni raqamli darajaga olib chiqamiz</h1>
+      <p class="mt-6 max-w-xl text-base sm:text-lg opacity-70 reveal">NovaTech — veb-ilova, mobil ilova va bulutli infratuzilmalarni ishlab chiquvchi to'liq xizmat ko'rsatuvchi IT kompaniya.</p>
+      <div class="mt-8 flex flex-wrap gap-3 reveal">
+        <a href="#lead" class="btn btn-solid magnet"><i data-lucide="rocket" class="w-[18px] h-[18px]"></i>Loyihani boshlash</a>
+        <a href="#services" class="btn btn-ghost magnet">Xizmatlar <i data-lucide="arrow-right" class="w-[18px] h-[18px]"></i></a>
+      </div>
+      <div class="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3 reveal">
+        <div><div class="font-display text-3xl font-bold grad" data-count="180" data-suffix="+">0</div><div class="tag mt-1">Loyiha</div></div>
+        <div><div class="font-display text-3xl font-bold grad" data-count="64">0</div><div class="tag mt-1">Mutaxassis</div></div>
+        <div><div class="font-display text-3xl font-bold grad" data-count="12">0</div><div class="tag mt-1">Yil tajriba</div></div>
+        <div><div class="font-display text-3xl font-bold grad" data-count="98" data-suffix="%">0</div><div class="tag mt-1">Qoniqish</div></div>
+      </div>
     </div>
-    <div class="glass rounded-3xl p-8 self-start" data-aos="zoom-in">
-      <h3 class="text-2xl font-black">Loyihani muhokama qilamiz</h3>
+    <div class="reveal" data-tilt>
+      <div class="panel glow p-6">
+        <div class="flex items-center gap-2 mb-5">
+          <span class="w-3 h-3 rounded-full bg-rose-400"></span><span class="w-3 h-3 rounded-full bg-amber-400"></span><span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+          <span class="ml-auto tag">novatech dashboard</span>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="rounded-2xl p-4" style="background:color-mix(in srgb,var(--c1) 18%,transparent)"><i data-lucide="activity" style="color:var(--c1)"></i><div class="font-display text-2xl font-bold mt-2">99.9%</div><div class="tag">Uptime</div></div>
+          <div class="rounded-2xl p-4" style="background:color-mix(in srgb,var(--c2) 18%,transparent)"><i data-lucide="zap" style="color:var(--c2)"></i><div class="font-display text-2xl font-bold mt-2">0.4s</div><div class="tag">Yuklash</div></div>
+        </div>
+        <div class="mt-4 rounded-2xl p-4" style="background:var(--panel)">
+          <div class="flex justify-between tag mb-3"><span>Server yuklamasi</span><span style="color:var(--c1)">62%</span></div>
+          <div class="h-2 rounded-full" style="background:var(--line)"><div class="h-full rounded-full" style="width:62%;background:linear-gradient(90deg,var(--c1),var(--c2))"></div></div>
+          <div class="flex justify-between tag mt-4 mb-3"><span>API so'rovlari</span><span style="color:var(--c2)">84%</span></div>
+          <div class="h-2 rounded-full" style="background:var(--line)"><div class="h-full rounded-full" style="width:84%;background:linear-gradient(90deg,var(--c2),var(--c3))"></div></div>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2"><span class="badge">TypeScript</span><span class="badge">Kubernetes</span><span class="badge">PostgreSQL</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="overflow-hidden border-y" style="border-color:var(--line)">
+  <div class="marquee py-5 mono text-sm opacity-40">
+    <span>ACME ◆ TEXNOPARK ◆ UZUM DIGITAL ◆ PAYME ◆ ALOQABANK ◆ MYTAXI ◆&nbsp;</span><span>ACME ◆ TEXNOPARK ◆ UZUM DIGITAL ◆ PAYME ◆ ALOQABANK ◆ MYTAXI ◆&nbsp;</span>
+  </div>
+</section>
+
+<section id="services" class="relative px-4 sm:px-6 lg:px-10 py-16">
+  <div class="max-w-[1400px] mx-auto">
+    <div class="max-w-2xl mb-12">
+      <div class="tag reveal">Xizmatlar</div>
+      <h2 class="display text-[clamp(30px,5vw,58px)] mt-3 reveal" data-split>To'liq xizmat spektri</h2>
+      <p class="mt-4 opacity-70 reveal">G'oyadan tortib ishga tushirish va qo'llab-quvvatlashgacha bo'lgan to'liq tsikl.</p>
+    </div>
+    <div id="serviceGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </div>
+</section>
+
+<section id="process" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1400px] mx-auto">
+    <h2 class="display text-[clamp(30px,5vw,58px)] text-center mb-12 reveal" data-split>Bizning jarayon</h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="panel p-7 reveal glow" data-tilt><div class="font-display text-5xl font-bold" style="color:var(--line)">01</div><i data-lucide="search" class="w-8 h-8 mt-2" style="color:var(--c1)"></i><h4 class="font-display font-bold text-lg mt-4">Tahlil</h4><p class="text-sm opacity-70 mt-2">Biznes ehtiyojlarini o'rganamiz va texnik topshiriq tuzamiz</p></div>
+      <div class="panel p-7 reveal glow" data-tilt><div class="font-display text-5xl font-bold" style="color:var(--line)">02</div><i data-lucide="pen-tool" class="w-8 h-8 mt-2" style="color:var(--c2)"></i><h4 class="font-display font-bold text-lg mt-4">Dizayn</h4><p class="text-sm opacity-70 mt-2">UX tadqiqotlar va interfeys prototiplari</p></div>
+      <div class="panel p-7 reveal glow" data-tilt><div class="font-display text-5xl font-bold" style="color:var(--line)">03</div><i data-lucide="code-2" class="w-8 h-8 mt-2" style="color:var(--c3)"></i><h4 class="font-display font-bold text-lg mt-4">Ishlab chiqish</h4><p class="text-sm opacity-70 mt-2">Agile sprints, haftalik demo va sifat nazorati</p></div>
+      <div class="panel p-7 reveal glow" data-tilt><div class="font-display text-5xl font-bold" style="color:var(--line)">04</div><i data-lucide="rocket" class="w-8 h-8 mt-2" style="color:var(--c1)"></i><h4 class="font-display font-bold text-lg mt-4">Ishga tushirish</h4><p class="text-sm opacity-70 mt-2">CI/CD, monitoring va 24/7 qo'llab-quvvatlash</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="stack" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1400px] mx-auto">
+    <h2 class="display text-[clamp(30px,5vw,58px)] text-center mb-10 reveal" data-split>Texnologiya steki</h2>
+    <div id="stackGrid" class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3"></div>
+  </div>
+</section>
+
+<section id="team" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1400px] mx-auto">
+    <h2 class="display text-[clamp(30px,5vw,58px)] text-center mb-10 reveal" data-split>Jamoa a'zolari</h2>
+    <div class="swiper teamSwiper pb-12"><div class="swiper-wrapper" id="teamSlides"></div><div class="swiper-pagination"></div></div>
+  </div>
+</section>
+
+<section id="faq" class="relative px-4 sm:px-6 lg:px-10 py-14">
+  <div class="max-w-[1200px] mx-auto grid lg:grid-cols-2 gap-8">
+    <div>
+      <h2 class="display text-[clamp(28px,4.5vw,50px)] reveal" data-split>Ko'p beriladigan savollar</h2>
+      <p class="mt-4 opacity-70 reveal">Savolingiz javob topmadimi? Bizga yozing — 24 soat ichida javob beramiz.</p>
+      <div id="faqList" class="mt-7 space-y-3"></div>
+    </div>
+    <div id="lead" class="panel p-8 reveal self-start glow">
+      <h3 class="display text-2xl font-bold">Loyihani muhokama qilamiz</h3>
       <p class="text-sm opacity-70 mt-2">Formani to'ldiring — mutaxassisimiz 30 daqiqada bog'lanadi.</p>
-      <form id="leadForm" class="mt-6 space-y-4">
-        <input required placeholder="Ism va familiyangiz" class="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-white/5 border border-white/30 dark:border-white/10 outline-none focus:ring-2 ring-cyan-500 transition">
-        <input required type="tel" placeholder="+998 __ ___ __ __" class="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-white/5 border border-white/30 dark:border-white/10 outline-none focus:ring-2 ring-cyan-500 transition">
-        <select class="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-white/5 border border-white/30 dark:border-white/10 outline-none focus:ring-2 ring-cyan-500 transition">
-          <option>Veb-sayt</option><option>Mobil ilova</option><option>CRM / ERP</option><option>Bulut infratuzilma</option><option>Boshqa</option>
-        </select>
-        <textarea rows="3" placeholder="Loyiha haqida qisqacha..." class="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-white/5 border border-white/30 dark:border-white/10 outline-none focus:ring-2 ring-cyan-500 transition"></textarea>
-        <button class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 text-white font-bold hover:scale-[1.02] transition shadow-lg">So'rov yuborish</button>
+      <form id="leadForm" class="mt-6 space-y-3">
+        <input required placeholder="Ism va familiyangiz" class="w-full px-4 py-3 rounded-2xl outline-none text-sm" style="background:var(--panel);border:1px solid var(--line)">
+        <input required type="tel" placeholder="+998 __ ___ __ __" class="w-full px-4 py-3 rounded-2xl outline-none text-sm" style="background:var(--panel);border:1px solid var(--line)">
+        <select class="w-full px-4 py-3 rounded-2xl outline-none text-sm" style="background:var(--panel);border:1px solid var(--line)"><option>Veb-sayt</option><option>Mobil ilova</option><option>CRM / ERP</option><option>Bulut infratuzilma</option><option>Boshqa</option></select>
+        <textarea rows="3" placeholder="Loyiha haqida qisqacha..." class="w-full px-4 py-3 rounded-2xl outline-none text-sm resize-none" style="background:var(--panel);border:1px solid var(--line)"></textarea>
+        <button class="btn btn-solid w-full magnet">So'rov yuborish</button>
       </form>
     </div>
   </div>
 </section>
+</main>
 
-<footer class="border-t border-white/15 py-10 px-5">
-  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-    <div class="flex items-center gap-2 font-black"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-500 grid place-items-center text-white"><i data-lucide="hexagon" class="w-5 h-5"></i></span>NovaTech</div>
-    <p class="text-sm opacity-60">© 2026 NovaTech IT Company. Toshkent, O'zbekiston.</p>
-    <div class="flex gap-2">
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-cyan-400 transition"><i data-lucide="github"></i></a>
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-cyan-400 transition"><i data-lucide="linkedin"></i></a>
-      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-cyan-400 transition"><i data-lucide="twitter"></i></a>
+<footer class="relative z-10 mt-10">
+  <div class="overflow-hidden border-y" style="border-color:var(--line)">
+    <div class="marquee py-5 font-display font-bold text-[clamp(28px,5vw,58px)] tracking-tight opacity-25 whitespace-nowrap">
+      <span>NOVATECH · RAQAMLI KELAJAK · ISO 27001 · </span><span>NOVATECH · RAQAMLI KELAJAK · ISO 27001 · </span>
     </div>
+  </div>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-9 flex flex-col md:flex-row items-center justify-between gap-5 text-xs opacity-60">
+    <div class="font-display font-bold text-sm opacity-100">NovaTech</div>
+    <div>© 2026 · NovaTech — barcha huquqlar himoyalangan</div>
+    <div class="flex gap-2"><a href="#" class="burger" aria-label="GitHub"><i data-lucide="github" class="w-[18px] h-[18px]"></i></a><a href="#" class="burger" aria-label="LinkedIn"><i data-lucide="linkedin" class="w-[18px] h-[18px]"></i></a></div>
   </div>
 </footer>
 
-<div id="leadModal" class="fixed inset-0 z-[70] hidden">
-  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-close></div>
-  <div class="absolute inset-0 grid place-items-center p-4 pointer-events-none">
-    <div id="leadCard" class="pointer-events-auto w-full max-w-md glass rounded-3xl p-8 scale-90 opacity-0 transition-all duration-300">
-      <div class="text-center">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-cyan-400 to-indigo-500 grid place-items-center text-white"><i data-lucide="calendar-check" class="w-8 h-8"></i></div>
-        <h3 class="text-2xl font-black mt-5">Bepul konsultatsiya</h3>
-        <p class="text-sm opacity-70 mt-2">Quyidagi raqamga qo'ng'iroq qiling yoki so'rov qoldiring — biz bog'lanamiz.</p>
-        <div class="mt-5 glass rounded-2xl py-4">
-          <div class="text-2xl font-black text-cyan-500">+998 71 200 12 12</div>
-          <div class="text-xs opacity-60 mt-1">Har kuni 09:00 – 20:00</div>
-        </div>
-        <button class="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 text-white font-bold hover:scale-105 transition" data-close>Yopish</button>
-      </div>
-    </div>
-  </div>
-</div>
+<div id="toast" class="toast-box panel px-5 py-3 flex items-center gap-3 text-sm font-bold"><i data-lucide="check-circle-2" class="w-5 h-5" style="color:var(--c2)"></i><span id="toastMsg"></span></div>
 
-<div id="mobileMenu" class="md:hidden fixed inset-0 z-[60] hidden">
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
-  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
-      <span class="font-black text-lg">Menyu</span>
-      <button class="w-9 h-9 grid place-items-center rounded-xl bg-black/5 dark:bg-white/10" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
-    </div>
-    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#services"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Xizmatlar</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#process"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Jarayon</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#stack"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Texnologiyalar</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#team"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Jamoa</a>
-      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#faq"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>FAQ</a>
-    </nav>
-    <div class="px-5 py-4 border-t border-black/10 dark:border-white/10 text-xs opacity-60">© 2026 — barcha huquqlar himoyalangan</div>
-  </aside>
-</div>
-
-<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] hidden">
-  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-semibold"><i data-lucide="check-circle-2" class="text-green-400"></i><span id="toastMsg"></span></div>
-</div>
-
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
+const APP={
+  brand:'NovaTech',
+  theme:()=>document.documentElement.classList.contains('light')?'light':'dark',
+  toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('on');clearTimeout(this._t);this._t=setTimeout(()=>t.classList.remove('on'),2400);},
+  money(n,cur){return n.toLocaleString('ru-RU').replace(/,/g,' ')+(cur!==undefined?' '+cur:'');},
+  rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;},
+  sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+};
+const $=id=>document.getElementById(id);
+const $$=s=>[...document.querySelectorAll(s)];
 
-const root=document.documentElement;
-if(localStorage.getItem('nt-theme')==='dark'||(!localStorage.getItem('nt-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
-const themeIcon=document.getElementById('themeIcon');
-const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'sun':'moon');lucide.createIcons();};
-document.getElementById('themeBtn').addEventListener('click',()=>{
-  root.classList.toggle('dark');
-  localStorage.setItem('nt-theme',root.classList.contains('dark')?'dark':'light');
-  syncTheme();
-});
+/* Kun / tun rejimi */
+(function(){
+  const saved=localStorage.getItem('loyiha3-theme');
+  const sys=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+  const mode=saved||sys;
+  document.documentElement.classList.toggle('light',mode==='light');
+  const sync=()=>{const l=document.documentElement.classList.contains('light');
+    $('themeIcon').setAttribute('data-lucide',l?'moon':'sun');document.documentElement.style.setProperty('--fg',l?'#0d1220':'#e9edf7');lucide.createIcons();};
+  setTimeout(sync,0);
+  $('themeBtn').addEventListener('click',()=>{
+    document.documentElement.classList.toggle('light');
+    localStorage.setItem('loyiha3-theme',document.documentElement.classList.contains('light')?'light':'dark');
+    sync();
+  });
+})();
+
+/* Fullscreen menyu */
+(function(){
+  const menu=$('menu'),btn=$('menuBtn');
+  const open=()=>{menu.classList.add('open');btn.classList.add('x');document.body.style.overflow='hidden';};
+  const close=()=>{menu.classList.remove('open');btn.classList.remove('x');document.body.style.overflow='';};
+  btn.addEventListener('click',()=>menu.classList.contains('open')?close():open());
+  $('menuClose').addEventListener('click',close);
+  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+  addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+})();
+
+/* Kursor */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  const c=$('cursor');
+  let x=innerWidth/2,y=innerHeight/2;
+  addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY;});
+  (function loop(){c.style.transform=`translate(${x}px,${y}px)`;requestAnimationFrame(loop);})();
+  document.addEventListener('mouseover',e=>{
+    if(e.target.closest('a,button,[data-cursor]'))c.classList.add('hovering');else c.classList.remove('hovering');
+  });
+})();
+
+/* Magnit tugmalar */
+(function(){
+  $$('.magnet').forEach(el=>{
+    el.addEventListener('mousemove',e=>{
+      const r=el.getBoundingClientRect();
+      el.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.22}px,${(e.clientY-r.top-r.height/2)*.22}px)`;
+    });
+    el.addEventListener('mouseleave',()=> el.style.transform='');
+  });
+})();
+
+/* 3D tilt kartochkalar */
+(function(){
+  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
+  $$('[data-tilt]').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+      card.style.transform=`perspective(900px) rotateX(${(py-.5)*-9}deg) rotateY(${(px-.5)*11}deg)`;
+    });
+    card.addEventListener('mouseleave',()=> card.style.transform='');
+  });
+})();
+
+/* Preloader */
+(function(){
+  const bar=$('preBar'),num=$('preNum'),pre=$('pre');
+  let p=0;
+  const t=setInterval(()=>{
+    p=Math.min(100,p+Math.random()*13+4);
+    bar.style.width=p+'%';num.textContent=Math.floor(p)+'%';
+    if(p>=100){clearInterval(t);setTimeout(()=>{
+      pre.style.transition='opacity .6s var(--ease),clip-path .8s var(--ease)';
+      pre.style.clipPath='inset(0 0 100% 0)';pre.style.opacity='0';
+      setTimeout(()=>pre.remove(),700);
+      if(window.gsap)runReveals();
+    },220);}
+  },110);
+})();
+
+/* Scroll animatsiyalari (GSAP ScrollTrigger) */
+function runReveals(){
+  if(!window.gsap||!window.ScrollTrigger)return;
+  gsap.registerPlugin(ScrollTrigger);
+  $$('.reveal:not(.revealed)').forEach(el=>{
+    el.classList.add('revealed');
+    gsap.to(el,{opacity:1,y:0,x:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%'}});
+  });
+  $$('[data-parallax]').forEach(el=>{
+    gsap.to(el,{yPercent:+el.dataset.parallax,ease:'none',scrollTrigger:{trigger:el.closest('section')||el,start:'top bottom',end:'bottom top',scrub:true}});
+  });
+  $$('[data-count]').forEach(el=>{
+    const target=+el.dataset.count,suffix=el.dataset.suffix||'';
+    ScrollTrigger.create({trigger:el,start:'top 90%',once:true,onEnter(){
+      gsap.to({v:0},{v:target,duration:1.6,ease:'power2.out',onUpdate(){el.textContent=Math.floor(this.targets()[0].v)+suffix;}});
+    }});
+  });
+  $$('[data-split]').forEach(el=>{
+    const words=el.textContent.trim().split(/\s+/);
+    el.innerHTML=words.map(w=>`<span class="inline-block overflow-hidden align-bottom"><span class="inline-block" style="transform:translateY(110%)">${w}</span></span>`).join(' ');
+    gsap.to(el.querySelectorAll('span>span'),{y:0,duration:1.05,ease:'power4.out',stagger:.045,scrollTrigger:{trigger:el,start:'top 86%'}});
+  });
+}
+addEventListener('load',()=>{setTimeout(()=>{if(!$('pre'))runReveals();},1600);});
+addEventListener('scroll',()=>{
+  const s=scrollY/(document.body.scrollHeight-innerHeight)*100;
+  const sp=$('scrollProgress'); if(sp) sp.style.width=Math.min(s,100)+'%';
+},{passive:true});
+
+/* Three.js fon — jonli maydon */
+(async()=>{
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  try{
+    const THREE=await import('https://esm.sh/three@0.160.0');
+    const host=$('three-bg');if(!host)return;
+    const scene=new THREE.Scene();
+    const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);cam.position.z=8;
+    const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setSize(innerWidth,innerHeight);
+    host.appendChild(renderer.domElement);
+    const c1=new THREE.Color('#00e5ff'),c2=new THREE.Color('#7c5cff'),c3=new THREE.Color('#22d3ee');
+    const geo=new THREE.BufferGeometry();
+    const N=innerWidth<640?260:520,pos=new Float32Array(N*3),col=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      pos[i*3]=(Math.random()-.5)*26;pos[i*3+1]=(Math.random()-.5)*18;pos[i*3+2]=(Math.random()-.5)*12;
+      const c=[c1,c2,c3][i%3];col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
+    }
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    const mat=new THREE.PointsMaterial({size:.055,vertexColors:true,transparent:true,opacity:.85,depthWrite:false,blending:THREE.AdditiveBlending});
+    const pts=new THREE.Points(geo,mat);scene.add(pts);
+    const wire=new THREE.Mesh(new THREE.IcosahedronGeometry(2.6,1),
+      new THREE.MeshBasicMaterial({color:c1,wireframe:true,transparent:true,opacity:.12}));
+    scene.add(wire);
+    const wire2=new THREE.Mesh(new THREE.TorusGeometry(3.4,.008,3,90),
+      new THREE.MeshBasicMaterial({color:c2,transparent:true,opacity:.22}));
+    wire2.rotation.x=1.2;scene.add(wire2);
+    let mx=0,my=0;
+    addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-.5);my=(e.clientY/innerHeight-.5);});
+    addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+    (function tick(){
+      requestAnimationFrame(tick);
+      pts.rotation.y+=.0007;pts.rotation.x=my*.2;
+      wire.rotation.y+=.0016;wire.rotation.x+=.0007;
+      wire2.rotation.z+=.0012;
+      cam.position.x+=(mx*1.6-cam.position.x)*.05;
+      cam.position.y+=(-my*1.2-cam.position.y)*.05;
+      cam.lookAt(0,0,0);
+      renderer.render(scene,cam);
+    })();
+  }catch(e){/* fon animatsiyasi ishlamasa ham sayt ishlaydi */}
+})();
+
 
 const services=[
-  {icon:'globe',title:'Veb-dasturlash',desc:"React, Next.js va Vue asosidagi yuqori yuklamali veb-ilovalar. SEO va Core Web Vitals optimizatsiyasi.",tags:['React','Next.js','Node.js'],grad:'from-cyan-400 to-blue-500'},
-  {icon:'smartphone',title:'Mobil ilovalar',desc:"iOS va Android uchun native hamda cross-platform ilovalar — Flutter va React Native.",tags:['Flutter','Swift','Kotlin'],grad:'from-indigo-400 to-violet-500'},
-  {icon:'database',title:'CRM va ERP',desc:"Biznes jarayonlarni avtomatlashtiruvchi maxsus boshqaruv tizimlari va analitika panellari.",tags:['PostgreSQL','Redis'],grad:'from-fuchsia-400 to-pink-500'},
-  {icon:'cloud',title:'Bulut infratuzilma',desc:"AWS/Azure arxitektura, Kubernetes orkestratsiya, CI/CD va monitoring tizimlari.",tags:['AWS','Docker','K8s'],grad:'from-emerald-400 to-teal-500'},
-  {icon:'brain',title:'AI yechimlar',desc:"Sun'iy intellekt va machine learning modellari, chatbotlar va ma'lumotlar tahlili.",tags:['Python','PyTorch'],grad:'from-amber-400 to-orange-500'},
-  {icon:'shield-check',title:'Kiberhavfsizlik',desc:"Penetratsion testlar, xavfsizlik auditi va ma'lumotlarni shifrlash yechimlari.",tags:['OWASP','SIEM'],grad:'from-rose-400 to-red-500'},
+  {icon:'globe',t:'Veb-dasturlash',d:"React, Next.js va Vue asosidagi yuqori yuklamali veb-ilovalar. SEO va Core Web Vitals optimizatsiyasi.",tags:['React','Next.js','Node.js'],g:'linear-gradient(135deg,var(--c1),#2563eb)'},
+  {icon:'smartphone',t:'Mobil ilovalar',d:"iOS va Android uchun native hamda cross-platform ilovalar — Flutter va React Native.",tags:['Flutter','Swift','Kotlin'],g:'linear-gradient(135deg,var(--c2),#7c3aed)'},
+  {icon:'database',t:'CRM va ERP',d:"Biznes jarayonlarni avtomatlashtiruvchi maxsus boshqaruv tizimlari va analitika panellari.",tags:['PostgreSQL','Redis'],g:'linear-gradient(135deg,var(--c3),#0ea5e9)'},
+  {icon:'cloud',t:'Bulut infratuzilma',d:"AWS/Azure arxitektura, Kubernetes orkestratsiya, CI/CD va monitoring tizimlari.",tags:['AWS','Docker','K8s'],g:'linear-gradient(135deg,#10b981,#0d9488)'},
+  {icon:'brain',t:'AI yechimlar',d:"Sun\'iy intellekt va machine learning modellari, chatbotlar va ma\'lumotlar tahlili.",tags:['Python','PyTorch'],g:'linear-gradient(135deg,#f59e0b,#ea580c)'},
+  {icon:'shield-check',t:'Kiberxavfsizlik',d:"Penetratsion testlar, xavfsizlik auditi va ma\'lumotlarni shifrlash yechimlari.",tags:['OWASP','SIEM'],g:'linear-gradient(135deg,#f43f5e,#e11d48)'}
 ];
-const stack=[{n:'React',e:'⚛️'},{n:'TypeScript',e:'📘'},{n:'Node.js',e:'🟩'},{n:'Python',e:'🐍'},{n:'Flutter',e:'💙'},{n:'PostgreSQL',e:'🐘'},{n:'Docker',e:'🐳'},{n:'Kubernetes',e:'☸️'},{n:'AWS',e:'☁️'},{n:'Figma',e:'🎨'},{n:'Vue',e:'💚'},{n:'GraphQL',e:'🔺'}];
+const stack=['⚛️ React','📘 TypeScript','🟩 Node.js','🐍 Python','💙 Flutter','🐘 PostgreSQL','🐳 Docker','☸️ Kubernetes','☁️ AWS','🎨 Figma','💚 Vue','🔺 GraphQL'];
 const team=[
-  {name:'Bobur Rashidov',role:'CTO / Lead Architect',ini:'BR',text:'12 yil tajriba, 40+ loyiha arxitekturasi'},
-  {name:'Nilufar Saidova',role:'Head of Design',ini:'NS',text:'UI/UX, dizayn tizimlari va brending'},
-  {name:'Jahongir Karimov',role:'Senior Backend Dev',ini:'JK',text:'Mikroservislar va yuqori yuklamalar'},
-  {name:'Kamola Yusupova',role:'Project Manager',ini:'KY',text:'Agile, Scrum va mijozlar bilan ishlash'},
-  {name:'Sardor Ergashev',role:'DevOps Engineer',ini:'SE',text:'CI/CD, monitoring va bulut arxitektura'},
+  {n:'Bobur Rashidov',r:'CTO / Lead Architect',i:'BR',t:'12 yil tajriba, 40+ loyiha arxitekturasi'},
+  {n:'Nilufar Saidova',r:'Head of Design',i:'NS',t:'UI/UX, dizayn tizimlari va brending'},
+  {n:'Jahongir Karimov',r:'Senior Backend Dev',i:'JK',t:'Mikroservislar va yuqori yuklamalar'},
+  {n:'Kamola Yusupova',r:'Project Manager',i:'KY',t:'Agile, Scrum va mijozlar bilan ishlash'},
+  {n:'Sardor Ergashev',r:'DevOps Engineer',i:'SE',t:'CI/CD, monitoring va bulut arxitektura'}
 ];
 const faqs=[
-  {q:'Loyiha qancha vaqtda tayyor bo\'ladi?',a:'Oddiy veb-sayt 2-3 hafta, murakkab platformalar 2-4 oy. Baholash bepul konsultatsiyadan keyin aniq belgilanadi.'},
-  {q:'Narxlar qanday shakllanadi?',a:'Ish hajmi, jamoa tarkibi va muddatga qarab. Boshlang\'ich to\'lov 30%, qolgani bosqichma-bosqich.'},
-  {q:'Ishlab chiquvchilar qayerda ishlaydi?',a:'Barcha mutaxassislar Toshkentdagi ofisda. Masofavib rejim hamda qo\'shimcha komandalar mumkin.'},
-  {q:'Loyiha topshirilgandan keyin nima bo\'ladi?',a:'3 oy bepul qo\'ab-quvvatlash beramiz, so\'ng yillik shartnoma asosida SLA bilan xizmat koʻrsatamiz.'},
+  {q:"Loyiha qancha vaqtda tayyor bo\'ladi?",a:"Oddiy veb-sayt 2-3 hafta, murakkab platformalar 2-4 oy. Baholash bepul konsultatsiyadan keyin aniq belgilanadi."},
+  {q:'Narxlar qanday shakllanadi?',a:"Ish hajmi, jamoa tarkibi va muddatga qarab. Boshlang\'ich to\'lov 30%, qolgani bosqichma-bosqich."},
+  {q:"Ishlab chiquvchilar qayerda ishlaydi?",a:"Barcha mutaxassislar Toshkentdagi ofisda. Masofaviy rejim hamda qo\'shimcha komandalar mumkin."},
+  {q:"Loyiha topshirilgandan keyin nima bo\'ladi?",a:"3 oy bepul qo\'llab-quvvatlash beramiz, so\'ng yillik shartnoma asosida SLA bilan xizmat ko\'rsatamiz."}
 ];
-
-const $=id=>document.getElementById(id);
-$('serviceGrid').innerHTML=services.map((s,i)=>`
-  <article class="glass rounded-3xl p-7 card3d relative overflow-hidden group" data-aos="fade-up" data-aos-delay="${i*70}">
-    <span class="glow-line"></span>
-    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${s.grad} grid place-items-center text-white shadow-lg group-hover:scale-110 transition"><i data-lucide="${s.icon}" class="w-7 h-7"></i></div>
-    <h3 class="text-xl font-bold mt-5">${s.title}</h3>
-    <p class="text-sm opacity-70 mt-3 leading-relaxed">${s.desc}</p>
-    <div class="flex flex-wrap gap-2 mt-5">${s.tags.map(t=>`<span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-white/40 dark:bg-white/10 border border-white/30 dark:border-white/10">${t}</span>`).join('')}</div>
-    <a href="#leadForm" class="inline-flex items-center gap-1.5 text-sm font-bold text-cyan-500 mt-6 hover:gap-3 transition-all">Batafsil <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
-  </article>`).join('');
-
-$('stackGrid').innerHTML=stack.map((s,i)=>`
-  <div class="glass rounded-2xl p-5 text-center card-hover" data-aos="zoom-in" data-aos-delay="${i*40}" style="transition:transform .3s">
-    <div class="text-3xl">${s.e}</div><div class="text-xs font-semibold mt-2 opacity-75">${s.n}</div>
-  </div>`).join('');
-
-$('teamSlides').innerHTML=team.map(m=>`
-  <div class="swiper-slide h-auto">
-    <div class="glass rounded-3xl p-7 h-full text-center card-hover">
-      <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-cyan-400 to-indigo-500 grid place-items-center text-white text-2xl font-black">${m.ini}</div>
-      <h4 class="font-bold text-lg mt-4">${m.name}</h4>
-      <div class="text-xs text-cyan-500 font-semibold mt-1">${m.role}</div>
-      <p class="text-sm opacity-70 mt-3">${m.text}</p>
-      <div class="flex justify-center gap-2 mt-5">
-        <a href="#" class="w-8 h-8 grid place-items-center rounded-lg bg-white/40 dark:bg-white/10 hover:text-cyan-400 transition"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
-        <a href="#" class="w-8 h-8 grid place-items-center rounded-lg bg-white/40 dark:bg-white/10 hover:text-cyan-400 transition"><i data-lucide="github" class="w-4 h-4"></i></a>
-      </div>
-    </div>
-  </div>`).join('');
-
-$('faqList').innerHTML=faqs.map((f,i)=>`
-  <div class="glass rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="${i*60}">
-    <button class="faqBtn w-full flex items-center justify-between gap-4 px-5 py-4 text-left font-bold" data-i="${i}">
-      <span>${f.q}</span><i data-lucide="plus" class="w-5 h-5 shrink-0 text-cyan-500 transition-transform duration-300"></i>
-    </button>
-    <div class="faqBody grid transition-all duration-300" style="grid-template-rows:0fr" data-body="${i}">
-      <div class="overflow-hidden"><p class="px-5 pb-4 text-sm opacity-70 leading-relaxed">${f.a}</p></div>
-    </div>
-  </div>`).join('');
-
-document.querySelectorAll('.faqBtn').forEach(btn=>btn.addEventListener('click',()=>{
-  const body=document.querySelector(`[data-body="${btn.dataset.i}"]`);
+$('serviceGrid').innerHTML=services.map((s,i)=>'<article class="panel p-7 reveal glow group" data-tilt>'
+  +'<div class="w-14 h-14 rounded-2xl grid place-items-center text-white shadow-lg group-hover:scale-110 transition" style="background:'+s.g+'"><i data-lucide="'+s.icon+'" class="w-7 h-7"></i></div>'
+  +'<h3 class="font-display text-xl font-bold mt-5">'+s.t+'</h3>'
+  +'<p class="text-sm opacity-70 mt-3 leading-relaxed">'+s.d+'</p>'
+  +'<div class="flex flex-wrap gap-2 mt-5">'+s.tags.map(t=>'<span class="badge">'+t+'</span>').join('')+'</div>'
+  +'<a href="#lead" class="inline-flex items-center gap-1.5 text-sm font-bold mt-6 hover:gap-3 transition-all" style="color:var(--c2)">Batafsil <i data-lucide="arrow-right" class="w-4 h-4"></i></a></article>').join('');
+$('stackGrid').innerHTML=stack.map(s=>'<div class="panel p-4 text-center reveal glow" data-tilt><div class="text-2xl">'+s.split(' ')[0]+'</div><div class="tag mt-2">'+s.split(' ')[1]+'</div></div>').join('');
+$('teamSlides').innerHTML=team.map(m=>'<div class="swiper-slide h-auto"><div class="panel p-7 h-full text-center glow" data-tilt>'
+  +'<div class="w-20 h-20 mx-auto rounded-full grid place-items-center text-white font-display text-2xl font-bold" style="background:linear-gradient(135deg,var(--c1),var(--c2));color:#06070c">'+m.i+'</div>'
+  +'<h4 class="font-display font-bold text-lg mt-4">'+m.n+'</h4><div class="tag mt-1" style="color:var(--c1)">'+m.r+'</div>'
+  +'<p class="text-sm opacity-70 mt-3">'+m.t+'</p>'
+  +'<div class="flex justify-center gap-2 mt-5"><a href="#" class="burger" aria-label="LinkedIn"><i data-lucide="linkedin" class="w-[18px] h-[18px]"></i></a>'
+  +'<a href="#" class="burger" aria-label="GitHub"><i data-lucide="github" class="w-[18px] h-[18px]"></i></a></div></div></div>').join('');
+$('faqList').innerHTML=faqs.map((f,i)=>'<div class="panel overflow-hidden reveal">'
+  +'<button class="faqBtn w-full flex items-center justify-between gap-4 px-5 py-4 text-left font-bold text-sm" data-i="'+i+'"><span>'+f.q+'</span>'
+  +'<i data-lucide="plus" class="w-5 h-5 shrink-0 transition-transform duration-300" style="color:var(--c2)"></i></button>'
+  +'<div class="faqBody grid transition-all duration-300" data-b="'+i+'" style="grid-template-rows:0fr"><div class="overflow-hidden"><p class="px-5 pb-4 text-sm opacity-70 leading-relaxed">'+f.a+'</p></div></div></div>').join('');
+$$('.faqBtn').forEach(b=>b.addEventListener('click',()=>{
+  const body=document.querySelector('[data-b="'+b.dataset.i+'"]');
   const open=body.style.gridTemplateRows==='1fr';
-  document.querySelectorAll('.faqBody').forEach(b=>b.style.gridTemplateRows='0fr');
-  document.querySelectorAll('.faqBtn i').forEach(ic=>ic.style.transform='');
-  if(!open){body.style.gridTemplateRows='1fr';btn.querySelector('i').style.transform='rotate(45deg)';}
+  $$('.faqBody').forEach(x=>x.style.gridTemplateRows='0fr');
+  $$('.faqBtn i').forEach(x=>x.style.transform='');
+  if(!open){body.style.gridTemplateRows='1fr';b.querySelector('i').style.transform='rotate(45deg)';}
 }));
-
-const animateCounters=()=>{
-  document.querySelectorAll('[data-count]').forEach(el=>{
-    const target=+el.dataset.count;let cur=0;
-    const step=Math.ceil(target/60);
-    const t=setInterval(()=>{cur+=step;if(cur>=target){cur=target;clearInterval(t);}el.textContent=cur+(el.dataset.count==='98'?'%':'+');},20);
-  });
-};
-
 $('leadForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  const btn=e.target.querySelector('button');
-  const old=btn.textContent;btn.disabled=true;
-  btn.innerHTML='<span class="inline-block w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin align-middle"></span> Yuborilmoqda...';
-  await new Promise(r=>setTimeout(r,1500));
-  btn.textContent='Yuborildi ✅';
-  toast('So\'rovingiz qabul qilindi, tez orada bog\'lanamiz!');
+  const btn=e.target.querySelector('button'),old=btn.innerHTML;btn.disabled=true;
+  btn.innerHTML='<span class="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin"></span> Yuborilmoqda...';
+  await APP.sleep(1500);
+  btn.textContent="Yuborildi";
+  APP.toast("So\'rovingiz qabul qilindi, tez orada bog\'lanamiz!");
   e.target.reset();
-  await new Promise(r=>setTimeout(r,1800));
-  btn.textContent=old;btn.disabled=false;
+  await APP.sleep(1700);
+  btn.innerHTML=old;btn.disabled=false;
 });
-
-const openLead=()=>{$('leadModal').classList.remove('hidden');requestAnimationFrame(()=>$('leadCard').classList.remove('scale-90','opacity-0'));};
-const closeLead=()=>{$('leadCard').classList.add('scale-90','opacity-0');setTimeout(()=>$('leadModal').classList.add('hidden'),280);};
-$('contactBtn').addEventListener('click',openLead);
-$('startBtn').addEventListener('click',()=>{document.getElementById('leadForm').scrollIntoView({behavior:'smooth'});toast('Formani to\'ldiring — konsultatsiya BEPUL');});
-$('leadModal').addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeLead();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLead();});
-
-let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2400);}
-
-window.addEventListener('scroll',()=>{
-  const nav=$('nav');
-  nav.classList.toggle('py-1',window.scrollY>40);
-});
-window.addEventListener('load',animateCounters);
-
-const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
-const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
-document.getElementById('menuBtn')?.addEventListener('click',openMM);
-document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
-document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
-
-AOS.init({duration:900,once:true,easing:'ease-out-cubic'});
-new Swiper('.teamSwiper',{slidesPerView:1,spaceBetween:20,loop:true,grabCursor:true,pagination:{el:'.teamSwiper .swiper-pagination',clickable:true},autoplay:{delay:4500,disableOnInteraction:false},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:3}}});
+new Swiper('.teamSwiper',{slidesPerView:1,spaceBetween:20,loop:true,grabCursor:true,pagination:{el:'.teamSwiper .swiper-pagination',clickable:true},autoplay:{delay:4500},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:3}}});
 lucide.createIcons();
+
 </script>
 </body>
 </html>
