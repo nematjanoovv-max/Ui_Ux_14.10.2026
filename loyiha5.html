@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ObHavo Live — Zamonaviy ob-havo ilovasi</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']}}}}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
+.glass{background:rgba(255,255,255,.14);backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);border:1px solid rgba(255,255,255,.25)}
+.light-glass{background:rgba(255,255,255,.55);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.6)}
+.dark .light-glass{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12)}
+/* Zamonaviy gradient fonlar */
+.sky-day{background:linear-gradient(160deg,#4facfe 0%,#00f2fe 55%,#a8ff78 100%)}
+.sky-night{background:linear-gradient(160deg,#0f2027 0%,#203a43 50%,#2c5364 100%)}
+.sky-rain{background:linear-gradient(160deg,#373b44 0%,#4286f4 100%)}
+.sky-cloud{background:linear-gradient(160deg,#89f7fe 0%,#66a6ff 100%)}
+.micro{transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
+.micro:hover{transform:translateY(-4px) scale(1.03)}
+.micro:active{transform:scale(.94)}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.5);border-radius:99px}
+.rain-drops{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.drop{position:absolute;width:2px;height:16px;background:linear-gradient(transparent,rgba(255,255,255,.7));animation:fall linear infinite}
+@keyframes fall{from{transform:translateY(-20px)}to{transform:translateY(105vh)}}
+.sun-ray{position:absolute;border-radius:50%;filter:blur(70px);animation:pulse 7s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.25);opacity:.85}}
+.cloud{position:absolute;background:rgba(255,255,255,.6);border-radius:999px;filter:blur(24px);animation:drift 40s linear infinite}
+@keyframes drift{from{transform:translateX(-25vw)}to{transform:translateX(125vw)}}
+.bar-fill{transition:height 1s cubic-bezier(.22,1,.36,1)}
+.searching input{caret-color:#fff}
+</style>
+</head>
+<body class="text-white dark:text-white transition-all duration-700 overflow-x-hidden" id="sky">
+
+<!-- animated sky background -->
+<div id="skyBg" class="fixed inset-0 -z-10 sky-day transition-all duration-1000">
+  <div id="fx" class="absolute inset-0 overflow-hidden"></div>
+</div>
+
+<!-- APP -->
+<div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+
+  <!-- TOP BAR -->
+  <header class="flex items-center justify-between py-6 gap-4">
+    <div class="flex items-center gap-2.5 font-black text-xl">
+      <span class="w-10 h-10 rounded-2xl glass grid place-items-center"><i data-lucide="cloud-sun" class="w-5 h-5"></i></span>ObHavo<span class="opacity-70">Live</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-7 text-sm font-bold flex-1 px-6">
+      <a class="hover:opacity-70 transition" href="#current">Bugun</a>
+      <a class="hover:opacity-70 transition" href="#hourly">Soat bo'yicha</a>
+      <a class="hover:opacity-70 transition" href="#daily">7 kunlik</a>
+      <a class="hover:opacity-70 transition" href="#stats">Statistika</a>
+      <a class="hover:opacity-70 transition" href="#cities">Shaharlar</a>
+    </nav>
+    <div class="flex items-center gap-2">
+      <button id="menuBtn" class="md:hidden w-10 h-10 grid place-items-center rounded-2xl glass micro" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
+      <button id="unitBtn" class="glass micro px-4 py-2.5 rounded-2xl text-sm font-bold" title="Birlikni o'zgartirish">°C</button>
+      <button id="themeBtn" class="glass micro w-10 h-10 rounded-2xl grid place-items-center" title="Rejim"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
+    </div>
+  </header>
+
+  <!-- SEARCH -->
+  <div class="searching glass rounded-3xl p-2 flex items-center gap-2 mb-8" data-aos="fade-down">
+    <i data-lucide="map-pin" class="w-5 h-5 ml-3 opacity-80"></i>
+    <input id="cityInput" list="cityList" class="bg-transparent outline-none flex-1 py-3 placeholder-white/70 font-medium" placeholder="Shahar nomini kiriting (masalan: Toshkent)...">
+    <datalist id="cityList">
+      <option value="Toshkent"></option><option value="Samarqand"></option><option value="Buxoro"></option>
+      <option value="Andijon"></option><option value="Farg'ona"></option><option value="Namangan"></option>
+      <option value="Nukus"></option><option value="Xiva"></option><option value="Qarshi"></option>
+      <option value="Termiz"></option><option value="Guliston"></option><option value="Jizzax"></option>
+    </datalist>
+    <button id="searchBtn" class="bg-white/90 text-slate-800 font-bold px-6 py-3 rounded-2xl micro hover:bg-white">Aniqlash</button>
+  </div>
+
+  <!-- MAIN WEATHER CARD -->
+  <section id="current" class="grid lg:grid-cols-[1.1fr,1fr] gap-6 mb-8">
+    <div class="glass rounded-[2rem] p-8 relative overflow-hidden" data-aos="zoom-in">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 text-sm font-semibold opacity-90"><i data-lucide="map-pin" class="w-4 h-4"></i><span id="cityName">Toshkent</span>, <span id="regionName">O'zbekiston</span></div>
+          <div class="text-sm opacity-75 mt-1" id="dateLabel">—</div>
+        </div>
+        <div class="text-6xl" id="mainIcon">☀️</div>
+      </div>
+      <div class="flex items-end gap-3 mt-6">
+        <div class="text-[7rem] leading-none font-black tracking-tighter" id="temp">24°</div>
+        <div class="pb-5">
+          <div class="text-xl font-bold" id="condText">Ochiq osmon</div>
+          <div class="text-sm opacity-80" id="feelsLike">Hiss qilinadi 26°</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-3 mt-8">
+        <div class="rounded-2xl bg-white/15 p-4 micro"><i data-lucide="droplets" class="w-5 h-5 opacity-80"></i><div class="text-2xl font-black mt-2" id="humidity">42%</div><div class="text-xs opacity-75">Namlik</div></div>
+        <div class="rounded-2xl bg-white/15 p-4 micro"><i data-lucide="wind" class="w-5 h-5 opacity-80"></i><div class="text-2xl font-black mt-2" id="wind">12 <span class="text-sm">km/s</span></div><div class="text-xs opacity-75">Shamol</div></div>
+        <div class="rounded-2xl bg-white/15 p-4 micro"><i data-lucide="eye" class="w-5 h-5 opacity-80"></i><div class="text-2xl font-black mt-2" id="uv">5</div><div class="text-xs opacity-75">UV indeks</div></div>
+      </div>
+      <div class="flex gap-3 mt-4">
+        <button id="refreshBtn" class="flex-1 rounded-2xl bg-white/90 text-slate-800 font-bold py-3.5 micro hover:bg-white inline-flex items-center justify-center gap-2">
+          <i data-lucide="refresh-cw" class="w-4 h-4" id="refreshIcon"></i><span id="refreshTxt">Yangilash</span>
+        </button>
+        <button id="likeBtn" class="w-14 rounded-2xl bg-white/15 grid place-items-center micro" title="Sevimli shahar"><i data-lucide="heart" class="w-5 h-5" id="heartIcon"></i></button>
+      </div>
+      <span class="absolute -right-8 -bottom-10 text-[11rem] opacity-20 select-none pointer-events-none" id="bgIcon">☀️</span>
+    </div>
+
+    <!-- HOURLY -->
+    <div id="hourly" class="glass rounded-[2rem] p-7 flex flex-col" data-aos="zoom-in" data-aos-delay="120">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-black text-lg">Bugun soat bo'yicha</h3>
+        <span class="text-xs opacity-75" id="hourRange"></span>
+      </div>
+      <div class="swiper hourlySwiper flex-1">
+        <div class="swiper-wrapper" id="hourlySlides"></div>
+      </div>
+      <div class="mt-4 grid grid-cols-2 gap-3">
+        <div class="rounded-2xl bg-white/15 p-4"><div class="text-xs opacity-75">Quyosh chiqishi</div><div class="font-black text-lg mt-1 flex items-center gap-2"><i data-lucide="sunrise" class="w-5 h-5"></i><span id="sunrise">06:12</span></div></div>
+        <div class="rounded-2xl bg-white/15 p-4"><div class="text-xs opacity-75">Quyosh botishi</div><div class="font-black text-lg mt-1 flex items-center gap-2"><i data-lucide="sunset" class="w-5 h-5"></i><span id="sunset">17:48</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 DAYS -->
+  <section id="daily" class="glass rounded-[2rem] p-7 mb-8" data-aos="fade-up">
+    <h3 class="font-black text-lg mb-5">7 kunlik prognoz</h3>
+    <div id="dailyList" class="space-y-2"></div>
+  </section>
+
+  <!-- STATS GRID -->
+  <section id="stats" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="glass rounded-3xl p-6 micro" data-aos="fade-up"><div class="flex items-center justify-between"><span class="text-sm opacity-80">Bosim</span><i data-lucide="gauge" class="w-5 h-5"></i></div><div class="text-3xl font-black mt-3" id="pressure">1013</div><div class="text-xs opacity-75">hPa — normal</div></div>
+    <div class="glass rounded-3xl p-6 micro" data-aos="fade-up" data-aos-delay="80"><div class="flex items-center justify-between"><span class="text-sm opacity-80">Ko'rinish</span><i data-lucide="visibility" class="w-5 h-5"></i></div><div class="text-3xl font-black mt-3" id="visibility">10</div><div class="text-xs opacity-75">kilometr</div></div>
+    <div class="glass rounded-3xl p-6 micro" data-aos="fade-up" data-aos-delay="160"><div class="flex items-center justify-between"><span class="text-sm opacity-80">Yog'ingarchilik</span><i data-lucide="umbrella" class="w-5 h-5"></i></div><div class="text-3xl font-black mt-3" id="precip">10%</div><div class="text-xs opacity-75">bugun</div></div>
+    <div class="glass rounded-3xl p-6 micro" data-aos="fade-up" data-aos-delay="240"><div class="flex items-center justify-between"><span class="text-sm opacity-80">Havo sifati</span><i data-lucide="leaf" class="w-5 h-5"></i></div><div class="text-3xl font-black mt-3" id="aqi">32</div><div class="text-xs opacity-75">AQI — yaxshi</div></div>
+  </section>
+
+  <!-- POPULAR CITIES -->
+  <section id="cities" data-aos="fade-up">
+    <div class="flex items-end justify-between mb-4">
+      <h3 class="font-black text-lg">Mashhur shaharlar</h3>
+      <span class="text-xs opacity-75">Bosib tez ko'ring</span>
+    </div>
+    <div id="cityChips" class="flex flex-wrap gap-3"></div>
+  </section>
+
+</div>
+
+
+<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
+<div id="mobileMenu" class="md:hidden fixed inset-0 z-[60] hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
+  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-white/20">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-white/20">
+      <span class="font-black text-lg">Menyu</span>
+      <button class="w-9 h-9 grid place-items-center rounded-xl bg-white/20" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-white/15 transition" href="#current">Bugungi ob-havo</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-white/15 transition" href="#hourly">Soat bo'yicha</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-white/15 transition" href="#daily">7 kunlik prognoz</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-white/15 transition" href="#stats">Statistika</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-white/15 transition" href="#cities">Mashhur shaharlar</a>
+    </nav>
+    <div class="px-5 py-4 border-t border-white/20 text-xs opacity-70">© 2026 ObHavo Live</div>
+  </aside>
+</div>
+
+
+<!-- TOAST (bildirishnoma) -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] hidden">
+  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold"><i data-lucide="check-circle-2" class="text-green-300"></i><span id="toastMsg"></span></div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+/* ============ THEME (tungi/kunduzgi fon ham o'zgaradi) ============ */
+const root=document.documentElement;
+if(localStorage.getItem('oh-theme')==='dark')root.classList.add('dark');
+const themeIcon=document.getElementById('themeIcon');
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  root.classList.toggle('dark');
+  localStorage.setItem('oh-theme',root.classList.contains('dark')?'dark':'light');
+  syncTheme();
+});
+function syncTheme(){
+  themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'moon':'sun');
+  lucide.createIcons();renderBackground();
+}
+
+/* ============ FAKE WEATHER API (async/await) ============ */
+const conditions=[
+  {key:'sunny',icon:'☀️',text:'Ochiq osmon',sky:'sky-day',night:'sky-night'},
+  {key:'cloudy',icon:'⛅',text:'Qismi bulutli',sky:'sky-cloud',night:'sky-night'},
+  {key:'rain',icon:'🌧️',text:'Yomg\'irli',sky:'sky-rain',night:'sky-night'},
+  {key:'snow',icon:'❄️',text:'Qorli',sky:'sky-cloud',night:'sky-night'},
+];
+const rnd=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
+const fakeWeather=city=>new Promise(res=>setTimeout(()=>{
+  const c=conditions[rnd(0,3)];
+  res({
+    city, region:"O'zbekiston",
+    temp:rnd(-4,38), cond:c,
+    feels:rnd(-5,41), humidity:rnd(20,95), wind:rnd(2,40),
+    uv:rnd(0,11), pressure:rnd(985,1035), visibility:rnd(4,15),
+    precip:rnd(0,100), aqi:rnd(10,120),
+    sunrise:'06:'+String(rnd(0,59)).padStart(2,'0'),
+    sunset:'17:'+String(rnd(0,59)).padStart(2,'0'),
+    hours:Array.from({length:24},(_,i)=>({h:i,temp:rnd(12,34),icon:conditions[rnd(0,3)].icon})),
+    days:Array.from({length:7},(_,i)=>({d:['Yak','Dush','Sesh','Chor','Pay','Jum','Shan'][(new Date().getDay()+i)%7],
+      tMax:rnd(20,38),tMin:rnd(4,22),icon:conditions[rnd(0,3)].icon}))
+  });
+},700));
+
+let unit='C', favs=JSON.parse(localStorage.getItem('oh-favs')||'[]');
+const cities=[{n:"Toshkent",ic:'🏛️'},{n:"Samarqand",ic:'🕌'},{n:"Buxoro",ic:'🏰'},{n:"Xiva",ic:'🧱'},{n:"Andijon",ic:'🌾'},{n:"Farg'ona",ic:'🍑'},{n:"Namangan",ic:'🌳'},{n:"Nukus",ic:'🏜️'},{n:"Termiz",ic:'🔥'},{n:"Jizzax",ic:'⛰️'}];
+const $=id=>document.getElementById(id);
+
+/* ============ RENDER ============ */
+function renderBackground(){
+  const w=window.current;
+  const cond=w?w.cond:conditions[0];
+  const isNight=root.classList.contains('dark');
+  const bg=$('skyBg');
+  bg.className='fixed inset-0 -z-10 transition-all duration-1000 '+(isNight?cond.night:cond.sky);
+  const fx=$('fx');
+  fx.innerHTML='';
+  const make=(cls,styles,html='')=>{const d=document.createElement('div');d.className=cls;Object.assign(d.style,styles);d.innerHTML=html;fx.appendChild(d);};
+  if(isNight){
+    for(let i=0;i<40;i++)make('',{position:'absolute',width:'2px',height:'2px',background:'#fff',borderRadius:'50%',left:rnd(0,100)+'%',top:rnd(0,100)+'%',opacity:rnd(3,9)/10});
+    make('sun-ray',{width:'260px',height:'260px',background:'rgba(255,255,255,.28)',top:'-60px',right:'-40px'});
+  }else{
+    for(let i=0;i<4;i++)make('cloud',{width:rnd(180,420)+'px',height:rnd(70,140)+'px',top:rnd(5,60)+'%',left:'-30%',opacity:.35,animationDuration:rnd(30,60)+'s',animationDelay:i*6+'s'});
+    make('sun-ray',{width:'320px',height:'320px',background:'radial-gradient(circle,rgba(255,255,120,.85),transparent 70%)',top:'-80px',right:'-60px'});
+  }
+  if(w&&w.cond.key==='rain'){
+    for(let i=0;i<60;i++)make('drop',{left:rnd(0,100)+'%',top:'-20px',animationDuration:rnd(6,14)/10+'s',animationDelay:rnd(0,20)/10+'s',opacity:rnd(3,8)/10});
+  }
+}
+function renderWeather(w){
+  window.current=w;
+  const conv=t=>unit==='C'?t+'°':Math.round(t*9/5+32)+'°';
+  $('cityName').textContent=w.city;$('regionName').textContent=w.region;
+  $('dateLabel').textContent=new Date().toLocaleDateString('uz-UZ',{weekday:'long',day:'numeric',month:'long'});
+  $('temp').textContent=conv(w.temp).replace('°','°');
+  $('condText').textContent=w.cond.text;
+  $('feelsLike').textContent='Hiss qilinadi '+Math.abs(conv(w.feels).replace('°',''))+'°';
+  $('humidity').textContent=w.humidity+'%';
+  $('wind').innerHTML=w.wind+' <span class="text-sm">km/s</span>';
+  $('uv').textContent=w.uv;
+  $('pressure').textContent=w.pressure;$('visibility').textContent=w.visibility;
+  $('precip').textContent=w.precip+'%';$('aqi').textContent=w.aqi;
+  $('sunrise').textContent=w.sunrise;$('sunset').textContent=w.sunset;
+  $('mainIcon').textContent=w.cond.icon;$('bgIcon').textContent=w.cond.icon;
+  $('unitBtn').textContent='°'+unit;
+  $('hourRange').textContent='00:00 — 23:00';
+  $('heartIcon').setAttribute('data-lucide',favs.includes(w.city)?'heart':'heart');
+  $('heartIcon').classList.toggle('fill-rose-400',favs.includes(w.city));
+  $('heartIcon').classList.toggle('text-rose-400',favs.includes(w.city));
+  /* hourly swiper */
+  $('hourlySlides').innerHTML=w.hours.map(h=>`
+    <div class="swiper-slide">
+      <div class="rounded-2xl bg-white/15 p-4 text-center micro">
+        <div class="text-xs opacity-80">${String(h.h).padStart(2,'0')}:00</div>
+        <div class="text-3xl my-2">${h.icon}</div>
+        <div class="font-black">${conv(h.temp)}</div>
+      </div>
+    </div>`).join('');
+  hourlySwiper.update?.();
+  /* daily */
+  $('dailyList').innerHTML=w.days.map(d=>`
+    <div class="flex items-center gap-4 rounded-2xl bg-white/10 px-5 py-3.5 micro">
+      <div class="w-10 font-bold text-sm">${d.d}</div>
+      <div class="text-2xl">${d.icon}</div>
+      <div class="flex-1 flex items-center gap-3">
+        <span class="text-sm opacity-70 w-10 text-right">${conv(d.tMin)}</span>
+        <div class="flex-1 h-2 rounded-full bg-white/20 relative overflow-hidden">
+          <div class="absolute inset-y-0 rounded-full bg-gradient-to-r from-sky-200 to-amber-300" style="left:${(d.tMin/45*100)}%;width:${Math.max((d.tMax-d.tMin)/45*100,8)}%"></div>
+        </div>
+        <span class="text-sm font-black w-10">${conv(d.tMax)}</span>
+      </div>
+    </div>`).join('');
+  renderBackground();lucide.createIcons();
+}
+let hourlySwiper;
+async function load(city='Toshkent'){
+  const btn=$('refreshBtn');
+  $('refreshIcon').classList.add('animate-spin');
+  $('refreshTxt').textContent='Aniqlanmoqda...';
+  const data=await fakeWeather(city);  // async/await
+  renderWeather(data);
+  $('refreshIcon').classList.remove('animate-spin');
+  $('refreshTxt').textContent='Yangilash';
+  toast(`${city} uchun ob-havo yangilandi`);
+}
+$('cityChips').innerHTML=cities.map(c=>`<button class="cityChip glass micro rounded-2xl px-5 py-3 font-bold text-sm" data-city="${c.n}">${c.ic} ${c.n}</button>`).join('');
+document.addEventListener('click',async e=>{
+  const chip=e.target.closest('.cityChip');
+  if(chip)await load(chip.dataset.city);
+});
+$('searchBtn').addEventListener('click',async()=>{
+  const v=$('cityInput').value.trim();
+  if(!v){toast('Shahar nomini kiriting');return;}
+  await load(v);
+});
+$('cityInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('searchBtn').click();});
+$('refreshBtn').addEventListener('click',async()=>{
+  await new Promise(r=>setTimeout(r,50));
+  await load($('cityName').textContent);
+});
+$('unitBtn').addEventListener('click',()=>{unit=unit==='C'?'F':'C';renderWeather(window.current);});
+$('likeBtn').addEventListener('click',()=>{
+  const c=$('cityName').textContent;
+  if(favs.includes(c)){favs=favs.filter(x=>x!==c);toast('Sevimlilardan o\'chirildi');}
+  else{favs.push(c);toast('Sevimli shaharga qo\'shildi ❤️');}
+  localStorage.setItem('oh-favs',JSON.stringify(favs));
+  renderWeather(window.current);
+});
+let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2300);}
+
+/* ===== MOBILE DRAWER ===== */
+const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
+const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
+document.getElementById('menuBtn')?.addEventListener('click',openMM);
+document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
+document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
+
+/* INIT */
+AOS.init({duration:850,once:true});
+load('Toshkent').then(()=>{
+  hourlySwiper=new Swiper('.hourlySwiper',{slidesPerView:1,spaceBetween:12,grabCursor:true,breakpoints:{380:{slidesPerView:2},640:{slidesPerView:3},1024:{slidesPerView:4}}});
+});
+</script>
+</body>
+</html>

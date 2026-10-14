@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TezYetkaz — Oziq-ovqat yetkazib berish</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{brand:{50:'#fff7ed',100:'#ffedd5',200:'#fed7aa',300:'#fdba74',400:'#fb923c',500:'#f97316',600:'#ea580c',700:'#c2410c'},ink:'#0b1020'},boxShadow:{glass:'0 8px 32px rgba(31,38,135,.15)',glow:'0 0 40px rgba(249,115,22,.35)'}}}}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif}
+.glass{background:rgba(255,255,255,.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.35)}
+.dark .glass{background:rgba(17,24,39,.55);border:1px solid rgba(255,255,255,.08)}
+.blob{position:absolute;border-radius:9999px;filter:blur(80px);opacity:.55;z-index:-1;animation:float 9s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-30px) scale(1.08)}}
+.card-hover{transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
+.card-hover:hover{transform:translateY(-8px)}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#fb923c;border-radius:99px}
+.cart-bump{animation:bump .4s ease}
+@keyframes bump{0%,100%{transform:scale(1)}30%{transform:scale(1.35)}}
+.fly{position:fixed;z-index:9999;font-size:26px;pointer-events:none;transition:all .8s cubic-bezier(.22,1,.36,1)}
+.chip.active{background:#f97316;color:#fff;border-color:#f97316}
+</style>
+</head>
+<body class="bg-orange-50 text-slate-800 dark:bg-ink dark:text-slate-200 transition-colors duration-500 overflow-x-hidden">
+
+<div class="blob bg-orange-400 w-72 h-72 top-10 left-[-60px]"></div>
+<div class="blob bg-pink-400 w-80 h-80 top-[40%] right-[-80px]" style="animation-delay:1.5s"></div>
+
+<!-- NAVBAR -->
+<header id="nav" class="fixed top-0 inset-x-0 z-50 glass shadow-glass transition-all duration-300">
+  <nav class="max-w-7xl mx-auto flex items-center justify-between px-5 py-3">
+    <a href="#" class="flex items-center gap-2 font-extrabold text-xl">
+      <span class="w-10 h-10 grid place-items-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-glow"><i data-lucide="utensils-crossed"></i></span>
+      Tez<span class="text-brand-500">Yetkaz</span>
+    </a>
+    <ul class="hidden md:flex items-center gap-7 text-sm font-medium">
+      <li><a class="hover:text-brand-500 transition" href="#bento">Bento menyu</a></li>
+      <li><a class="hover:text-brand-500 transition" href="#menu">Menyu</a></li>
+      <li><a class="hover:text-brand-500 transition" href="#how">Qanday ishlaydi</a></li>
+      <li><a class="hover:text-brand-500 transition" href="#reviews">Sharhlar</a></li>
+    </ul>
+    <div class="flex items-center gap-2">
+      <button id="menuBtn" class="md:hidden w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
+      <button id="themeBtn" aria-label="Rejim" class="w-10 h-10 grid place-items-center rounded-xl glass hover:scale-110 transition"><i data-lucide="sun-moon" class="w-5 h-5"></i></button>
+      <button id="cartBtn" class="relative w-10 h-10 grid place-items-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white hover:scale-110 transition shadow-glow">
+        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+        <span id="cartCount" class="absolute -top-1 -right-1 min-w-5 h-5 px-1 grid place-items-center text-[11px] font-bold bg-white text-brand-600 rounded-full">0</span>
+      </button>
+    </div>
+  </nav>
+  
+</header>
+
+<!-- HERO -->
+<section class="relative pt-32 pb-20 px-5">
+  <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+    <div data-aos="fade-up">
+      <span class="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full glass mb-5"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> 30 daqiqada bepul yetkazish</span>
+      <h1 class="text-5xl lg:text-6xl font-black leading-tight">Eng mazali <span class="bg-gradient-to-r from-brand-500 to-pink-500 bg-clip-text text-transparent">taomlar</span> eshigingizgacha</h1>
+      <p class="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-lg">500+ restoran, minglab taom. Bento menyudan bir bosishda tanlang — savatchangiz o'zi hisoblab boradi.</p>
+      <div class="mt-8 flex flex-col sm:flex-row gap-3">
+        <div class="glass rounded-2xl flex items-center px-4 py-3 flex-1 gap-3">
+          <i data-lucide="map-pin" class="text-brand-500"></i>
+          <input id="addressInput" class="bg-transparent outline-none w-full text-sm" placeholder="Yetkazib berish manzilini kiriting...">
+        </div>
+        <a href="#menu" class="px-7 py-3 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 text-white font-bold shadow-glow hover:scale-105 transition text-center">Buyurtma berish</a>
+      </div>
+      <div class="mt-10 grid grid-cols-3 gap-4 max-w-md">
+        <div class="glass rounded-2xl p-4 text-center" data-aos="zoom-in" data-aos-delay="100"><div class="text-2xl font-black text-brand-500">500+</div><div class="text-xs opacity-70">Restoran</div></div>
+        <div class="glass rounded-2xl p-4 text-center" data-aos="zoom-in" data-aos-delay="200"><div class="text-2xl font-black text-brand-500">25 daq</div><div class="text-xs opacity-70">O'rtacha vaqt</div></div>
+        <div class="glass rounded-2xl p-4 text-center" data-aos="zoom-in" data-aos-delay="300"><div class="text-2xl font-black text-brand-500">4.9★</div><div class="text-xs opacity-70">Reyting</div></div>
+      </div>
+    </div>
+    <div class="relative" data-aos="fade-left" data-aos-delay="200">
+      <div class="glass rounded-[2rem] p-6 shadow-glass">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="col-span-2 rounded-2xl h-44 bg-gradient-to-br from-amber-300 to-orange-500 grid place-items-center text-7xl card-hover shadow-lg">🍔</div>
+          <div class="rounded-2xl h-32 bg-gradient-to-br from-rose-300 to-pink-500 grid place-items-center text-5xl card-hover shadow-lg">🍕</div>
+          <div class="rounded-2xl h-32 bg-gradient-to-br from-emerald-300 to-teal-500 grid place-items-center text-5xl card-hover shadow-lg">🥗</div>
+          <div class="rounded-2xl h-32 bg-gradient-to-br from-violet-300 to-purple-500 grid place-items-center text-5xl card-hover shadow-lg">🥤</div>
+          <div class="rounded-2xl h-32 bg-gradient-to-br from-yellow-200 to-amber-400 grid place-items-center text-5xl card-hover shadow-lg">🍰</div>
+        </div>
+      </div>
+      <div class="absolute -bottom-5 -left-5 glass rounded-2xl px-4 py-3 flex items-center gap-3 shadow-glass" data-aos="fade-up" data-aos-delay="500">
+        <span class="w-9 h-9 rounded-xl bg-green-500/20 text-green-500 grid place-items-center"><i data-lucide="bike"></i></span>
+        <div><div class="text-sm font-bold">Kuryer yo'lda</div><div class="text-xs opacity-60">2 daqiqada yetib boradi</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENTO GRID -->
+<section id="bento" class="py-20 px-5">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-14" data-aos="fade-up">
+      <h2 class="text-4xl font-black">Bento <span class="text-brand-500">menyu</span></h2>
+      <p class="mt-3 text-slate-600 dark:text-slate-400">Kategoriyalarni zamonaviy kartochkalardan tanlang</p>
+    </div>
+    <div class="grid md:grid-cols-4 auto-rows-[190px] gap-4">
+      <div class="md:col-span-2 md:row-span-2 rounded-3xl p-7 bg-gradient-to-br from-brand-500 to-pink-500 text-white relative overflow-hidden card-hover shadow-glow" data-aos="zoom-in">
+        <div class="relative z-10">
+          <span class="text-xs font-bold bg-white/25 px-3 py-1 rounded-full">🔥 Eng mashhur</span>
+          <h3 class="text-3xl font-black mt-4">Burger & Sendvich</h3>
+          <p class="text-white/80 mt-2 text-sm max-w-[220px]">Mol go'shtli klassik burgerlar, xrustal sous bilan</p>
+          <button data-add="Burger" data-price="38000" class="mt-6 bg-white text-brand-600 font-bold px-5 py-2.5 rounded-xl hover:scale-105 transition inline-flex items-center gap-2">Savatchaga <i data-lucide="plus" class="w-4 h-4"></i></button>
+        </div>
+        <span class="absolute -right-4 -bottom-6 text-[9rem] opacity-30 select-none">🍔</span>
+      </div>
+      <div class="rounded-3xl p-6 glass card-hover" data-aos="fade-up" data-aos-delay="100">
+        <span class="text-4xl">🍕</span><h4 class="font-bold mt-3">Pitsa</h4><p class="text-xs opacity-60 mt-1">32 xil</p>
+        <button data-add="Pitsa" data-price="65000" class="mt-3 text-brand-500 text-sm font-bold hover:underline">Qo'shish +</button>
+      </div>
+      <div class="rounded-3xl p-6 glass card-hover" data-aos="fade-up" data-aos-delay="200">
+        <span class="text-4xl">🥗</span><h4 class="font-bold mt-3">Salatlar</h4><p class="text-xs opacity-60 mt-1">18 xil</p>
+        <button data-add="Salat" data-price="29000" class="mt-3 text-brand-500 text-sm font-bold hover:underline">Qo'shish +</button>
+      </div>
+      <div class="rounded-3xl p-6 bg-gradient-to-br from-emerald-400 to-teal-500 text-white card-hover" data-aos="fade-up" data-aos-delay="300">
+        <span class="text-4xl">🥗</span><h4 class="font-bold mt-3">Sog'lom</h4><p class="text-xs text-white/80 mt-1">Kaloriya hisobi bilan</p>
+      </div>
+      <div class="rounded-3xl p-6 bg-gradient-to-br from-violet-500 to-purple-600 text-white card-hover" data-aos="fade-up" data-aos-delay="400">
+        <span class="text-4xl">🥤</span><h4 class="font-bold mt-3">Ichimliklar</h4><p class="text-xs text-white/80 mt-1">Sovuq va issiq</p>
+        <button data-add="Kola" data-price="12000" class="mt-3 text-white text-sm font-bold bg-white/20 px-3 py-1 rounded-lg hover:bg-white/30 transition">+ Qo'shish</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MENYU -->
+<section id="menu" class="py-16 px-5">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex flex-wrap items-end justify-between gap-6 mb-10" data-aos="fade-up">
+      <div>
+        <h2 class="text-4xl font-black">Bugungi <span class="text-brand-500">menyu</span></h2>
+        <p class="mt-2 text-slate-600 dark:text-slate-400">Kategoriya bo'yicha filtrlash</p>
+      </div>
+      <div id="chips" class="flex flex-wrap gap-2">
+        <button class="chip active px-4 py-2 rounded-full border text-sm font-semibold transition" data-cat="all">Barchasi</button>
+        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-cat="fast">Fast-food</button>
+        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-cat="salad">Salatlar</button>
+        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-cat="drink">Ichimliklar</button>
+        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-cat="desert">Desertlar</button>
+      </div>
+    </div>
+    <div id="products" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="py-20 px-5">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-4xl font-black text-center mb-14" data-aos="fade-up">Qanday <span class="text-brand-500">ishlaydi</span></h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="glass rounded-3xl p-8 text-center card-hover" data-aos="fade-up"><div class="w-14 h-14 mx-auto rounded-2xl bg-brand-500 text-white grid place-items-center text-2xl font-black">1</div><h4 class="font-bold text-lg mt-5">Tanlang</h4><p class="text-sm opacity-70 mt-2">Bento menyudan sevimli taomingizni bir bosishda qo'shing</p></div>
+      <div class="glass rounded-3xl p-8 text-center card-hover" data-aos="fade-up" data-aos-delay="150"><div class="w-14 h-14 mx-auto rounded-2xl bg-brand-500 text-white grid place-items-center text-2xl font-black">2</div><h4 class="font-bold text-lg mt-5">To'lang</h4><p class="text-sm opacity-70 mt-2">Click, Payme yoki naqd — savatchada darhol hisob</p></div>
+      <div class="glass rounded-3xl p-8 text-center card-hover" data-aos="fade-up" data-aos-delay="300"><div class="w-14 h-14 mx-auto rounded-2xl bg-brand-500 text-white grid place-items-center text-2xl font-black">3</div><h4 class="font-bold text-lg mt-5">Yetkazamiz</h4><p class="text-sm opacity-70 mt-2">30 daqiqada issiq holda eshigingizgacha</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews" class="py-16 px-5">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-4xl font-black text-center mb-10" data-aos="fade-up">Mijozlar <span class="text-brand-500">fikri</span></h2>
+    <div class="swiper reviewSwiper pb-14">
+      <div class="swiper-wrapper" id="reviewSlides"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-black/5 dark:border-white/10 py-10 px-5 mt-10">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+    <div class="flex items-center gap-2 font-extrabold text-lg"><span class="w-9 h-9 grid place-items-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white"><i data-lucide="utensils-crossed" class="w-5 h-5"></i></span>TezYetkaz</div>
+    <p class="text-sm opacity-60">© 2026 TezYetkaz. Barcha huquqlar himoyalangan.</p>
+    <div class="flex gap-3">
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-brand-500 transition"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-brand-500 transition"><i data-lucide="send" class="w-4 h-4"></i></a>
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-brand-500 transition"><i data-lucide="phone" class="w-4 h-4"></i></a>
+    </div>
+  </div>
+</footer>
+
+<!-- CART MODAL -->
+<div id="cartModal" class="fixed inset-0 z-[60] hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
+  <aside class="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl flex flex-col translate-x-full transition-transform duration-400" id="cartPanel">
+    <header class="flex items-center justify-between px-6 py-5 border-b border-black/5 dark:border-white/10">
+      <h3 class="font-black text-xl flex items-center gap-2"><i data-lucide="shopping-bag" class="text-brand-500"></i> Savatcha</h3>
+      <button class="w-9 h-9 grid place-items-center rounded-xl glass" data-close><i data-lucide="x"></i></button>
+    </header>
+    <div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
+    <footer class="border-t border-black/5 dark:border-white/10 p-6 space-y-3">
+      <div class="flex justify-between text-sm"><span class="opacity-60">Yetkazish</span><span class="font-semibold">Bepul</span></div>
+      <div class="flex justify-between text-lg font-black"><span>Jami</span><span id="cartTotal" class="text-brand-500">0 so'm</span></div>
+      <button id="orderBtn" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 text-white font-bold shadow-glow hover:scale-[1.02] transition disabled:opacity-50">Buyurtma berish</button>
+    </footer>
+  </aside>
+</div>
+
+<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
+<div id="mobileMenu" class="md:hidden fixed inset-0 z-[60] hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
+  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
+      <span class="font-black text-lg">Menyu</span>
+      <button class="w-9 h-9 grid place-items-center rounded-xl bg-black/5 dark:bg-white/10" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#bento"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Bento menyu</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#menu"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Menyu</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#how"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Qanday ishlaydi</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#reviews"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Sharhlar</a>
+    </nav>
+    <div class="px-5 py-4 border-t border-black/10 dark:border-white/10 text-xs opacity-60">© 2026 — barcha huquqlar himoyalangan</div>
+  </aside>
+</div>
+
+<!-- TOAST (bildirishnoma) -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] hidden">
+  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 shadow-glass font-semibold"><i data-lucide="check-circle-2" class="text-green-500"></i><span id="toastMsg"></span></div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+/* ================= DARK / LIGHT MODE ================= */
+const root=document.documentElement;
+const savedTheme=localStorage.getItem('ty-theme');
+if(savedTheme==='dark'||(!savedTheme&&window.matchMedia('(prefers-color-scheme: dark)').matches))root.classList.add('dark');
+const themeBtn=document.getElementById('themeBtn');
+const syncThemeIcon=()=>{themeBtn.innerHTML=`<i data-lucide="${root.classList.contains('dark')?'sun':'moon'}" class="w-5 h-5"></i>`;lucide.createIcons()};
+themeBtn.addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('ty-theme',root.classList.contains('dark')?'dark':'light');syncThemeIcon();});
+
+/* ================= DATA ================= */
+const products=[
+  {id:1,name:'Klassik Burger',cat:'fast',price:38000,emoji:'🍔',desc:'Mol go\'shti, cheddar, maxsus sous',rate:4.9,grad:'from-amber-300 to-orange-500'},
+  {id:2,name:'Pepperoni Pitsa',cat:'fast',price:65000,emoji:'🍕',desc:'32 sm, ikki marta pechonoz',rate:4.8,grad:'from-rose-300 to-pink-500'},
+  {id:3,name:'Sezar Salat',cat:'salad',price:29000,emoji:'🥗',desc:'Tovuq, kruton, parmezan',rate:4.7,grad:'from-emerald-300 to-teal-500'},
+  {id:4,name:'Moxito',cat:'drink',price:18000,emoji:'🍹',desc:'Yashil choy va limon',rate:4.6,grad:'from-lime-300 to-green-500'},
+  {id:5,name:'Tiramisu',cat:'desert',price:32000,emoji:'🍰',desc:'Italiya klassikasi',rate:5.0,grad:'from-yellow-200 to-amber-400'},
+  {id:6,name:'Lavash',cat:'fast',price:34000,emoji:'🌯',desc:'Tovuq go\'shti va sabzavotlar',rate:4.8,grad:'from-orange-300 to-red-500'},
+  {id:7,name:'Greek Salat',cat:'salad',price:27000,emoji:'🥙',desc:'Feta va zaytun',rate:4.5,grad:'from-teal-300 to-cyan-500'},
+  {id:8,name:'Amerikano',cat:'drink',price:15000,emoji:'☕',desc:'Ikki portion espresso',rate:4.7,grad:'from-stone-300 to-amber-700'},
+  {id:9,name:'Cheesecake',cat:'desert',price:30000,emoji:'🧁',desc:'Yumshoq va sutli',rate:4.9,grad:'from-pink-200 to-rose-400'},
+  {id:10,name:'Hot-Dog',cat:'fast',price:22000,emoji:'🌭',desc:'Ikki sosiska va sous',rate:4.4,grad:'from-amber-200 to-yellow-500'},
+  {id:11,name:'Fanta',cat:'drink',price:12000,emoji:'🥤',desc:'0.5L sovuq',rate:4.3,grad:'from-orange-200 to-orange-500'},
+  {id:12,name:'Medovik',cat:'desert',price:35000,emoji:'🍮',desc:'Ballar bilan',rate:4.8,grad:'from-amber-200 to-orange-400'},
+];
+const reviews=[
+  {name:'Dilnoza Karimova',role:'Mijoz',text:'Buyurtmim 20 daqiqada keldi, hammasi issiq edi. Bento menyu juda qulay!',ava:'DK'},
+  {name:'Jasur Aliyev',role:'Blogger',text:'Ilovadagi eng tez yetkazib berish xizmati. Narxlar ham arzon.',ava:'JA'},
+  {name:'Malika Tosheva',role:'O\'qituvchi',text:'Salatlar juda yangi va mazzali. Har hafta buyurtma qilaman.',ava:'MT'},
+  {name:'Sardor Umarov',role:'Dasturchi',text:'Savatcha logikasi juda sodda, bir bosishda buyurtma berdim.',ava:'SU'},
+];
+
+/* ================= STATE ================= */
+let cart=JSON.parse(localStorage.getItem('ty-cart')||'[]');
+let activeCat='all';
+const money=n=>n.toLocaleString('uz-UZ')+" so'm";
+
+/* ================= RENDER PRODUCTS ================= */
+const productGrid=document.getElementById('products');
+const renderProducts=()=>{
+  const list=activeCat==='all'?products:products.filter(p=>p.cat===activeCat);
+  productGrid.innerHTML=list.map((p,i)=>`
+    <article class="glass rounded-3xl overflow-hidden card-hover group" data-aos="fade-up" data-aos-delay="${i*60}">
+      <div class="h-40 bg-gradient-to-br ${p.grad} grid place-items-center text-6xl relative">
+        ${p.emoji}
+        <span class="absolute top-3 right-3 text-xs font-bold bg-white/90 text-slate-800 px-2 py-1 rounded-lg flex items-center gap-1"><i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i>${p.rate}</span>
+      </div>
+      <div class="p-5">
+        <h3 class="font-bold text-lg">${p.name}</h3>
+        <p class="text-xs opacity-60 mt-1 h-8">${p.desc}</p>
+        <div class="flex items-center justify-between mt-4">
+          <span class="font-black text-brand-500">${money(p.price)}</span>
+          <button data-product="${p.id}" class="addBtn w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-white grid place-items-center hover:scale-110 active:scale-95 transition shadow-glow"><i data-lucide="plus"></i></button>
+        </div>
+      </div>
+    </article>`).join('');
+  lucide.createIcons();AOS.refresh();
+};
+
+/* ================= CART ================= */
+const cartCount=document.getElementById('cartCount');
+const cartItemsBox=document.getElementById('cartItems');
+const cartTotal=document.getElementById('cartTotal');
+const cartModal=document.getElementById('cartModal');
+const cartPanel=document.getElementById('cartPanel');
+
+const saveCart=()=>localStorage.setItem('ty-cart',JSON.stringify(cart));
+const badgeBump=()=>{cartCount.classList.remove('cart-bump');void cartCount.offsetWidth;cartCount.classList.add('cart-bump')};
+
+function flyToCart(emoji,from){
+  const iconBtn=document.getElementById('cartBtn').getBoundingClientRect();
+  const el=document.createElement('div');
+  el.className='fly';el.textContent=emoji;
+  el.style.left=from.left+'px';el.style.top=from.top+'px';
+  document.body.appendChild(el);
+  requestAnimationFrame(()=>{el.style.left=iconBtn.left+iconBtn.width/2-13+'px';el.style.top=iconBtn.top+iconBtn.height/2-13+'px';el.style.transform='scale(.4) rotate(180deg)';el.style.opacity='0.3';});
+  setTimeout(()=>el.remove(),850);
+}
+
+async function addToCart(id){
+  const product=products.find(p=>p.id===Number(id));
+  if(!product)return;
+  const existing=cart.find(i=>i.id===product.id);
+  if(existing)existing.qty+=1;else cart.push({...product,qty:1});
+  saveCart();renderCart();badgeBump();
+  toast(`${product.name} savatchaga qo'shildi`);
+}
+
+const renderCart=()=>{
+  const totalQty=cart.reduce((s,i)=>s+i.qty,0);
+  cartCount.textContent=totalQty;
+  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  cartTotal.textContent=money(total);
+  document.getElementById('orderBtn').disabled=cart.length===0;
+  if(!cart.length){
+    cartItemsBox.innerHTML=`<div class="h-full grid place-items-center text-center py-16">
+      <div><span class="text-6xl">🛒</span><p class="font-bold mt-4">Savatcha bo'sh</p><p class="text-sm opacity-60 mt-1">Menyudan taom qo'shing</p></div></div>`;
+    return;
+  }
+  cartItemsBox.innerHTML=cart.map(i=>`
+    <div class="glass rounded-2xl p-3 flex items-center gap-3">
+      <div class="w-14 h-14 rounded-xl bg-gradient-to-br ${i.grad} grid place-items-center text-3xl shrink-0">${i.emoji}</div>
+      <div class="flex-1 min-w-0">
+        <h4 class="font-bold text-sm truncate">${i.name}</h4>
+        <p class="text-brand-500 font-bold text-sm">${money(i.price)}</p>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button data-dec="${i.id}" class="qtyBtn w-7 h-7 rounded-lg glass grid place-items-center font-bold">−</button>
+        <span class="w-6 text-center font-bold text-sm">${i.qty}</span>
+        <button data-inc="${i.id}" class="qtyBtn w-7 h-7 rounded-lg bg-brand-500 text-white grid place-items-center font-bold">+</button>
+        <button data-del="${i.id}" class="qtyBtn w-7 h-7 rounded-lg grid place-items-center text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+      </div>
+    </div>`).join('');
+  lucide.createIcons();
+};
+
+const openCart=()=>{cartModal.classList.remove('hidden');requestAnimationFrame(()=>cartPanel.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
+const closeCart=()=>{cartPanel.classList.add('translate-x-full');setTimeout(()=>{cartModal.classList.add('hidden');document.body.style.overflow='';},350);};
+
+async function placeOrder(btn){
+  btn.disabled=true;
+  const original=btn.textContent;
+  btn.innerHTML='<span class="inline-block w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin align-middle"></span> Buyurtma qabul qilinmoqda...';
+  await new Promise(r=>setTimeout(r,1600)); // serverga so'rov simulyatsiyasi
+  cart=[];saveCart();renderCart();
+  btn.textContent='Buyurtma qabul qilindi ✅';
+  await new Promise(r=>setTimeout(r,1800));
+  btn.textContent=original;btn.disabled=false;closeCart();
+  toast('Buyurtmangiz muvaffaqiyatli rasmiylashtirildi!');
+}
+
+/* ================= TOAST ================= */
+let toastTimer;
+function toast(msg){
+  const box=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  box.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>box.classList.add('hidden'),2200);
+}
+
+/* ================= EVENTS ================= */
+document.getElementById('cartBtn').addEventListener('click',openCart);
+cartModal.addEventListener('click',e=>{if(e.target.hasAttribute('data-close'))closeCart();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCart();});
+
+productGrid.addEventListener('click',e=>{
+  const btn=e.target.closest('.addBtn');
+  if(!btn)return;
+  const p=products.find(x=>x.id===Number(btn.dataset.product));
+  flyToCart(p.emoji,btn.getBoundingClientRect());
+  addToCart(p.id);
+});
+
+cartItemsBox.addEventListener('click',e=>{
+  const inc=e.target.closest('[data-inc]'),dec=e.target.closest('[data-dec]'),del=e.target.closest('[data-del]');
+  if(inc){const i=cart.find(c=>c.id===Number(inc.dataset.inc));i.qty++;saveCart();renderCart();}
+  if(dec){const id=Number(dec.dataset.dec);const i=cart.find(c=>c.id===id);if(i.qty>1)i.qty--;else cart=cart.filter(c=>c.id!==id);saveCart();renderCart();}
+  if(del){cart=cart.filter(c=>c.id!==Number(del.dataset.del));saveCart();renderCart();}
+});
+
+document.getElementById('orderBtn').addEventListener('click',e=>placeOrder(e.currentTarget));
+
+/* Bento quick add */
+document.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',ev=>{
+  const name=b.dataset.add,price=Number(b.dataset.price),emoji=b.previousElementSibling?.textContent?.trim()||'🍽️';
+  const fake={id:900+Math.floor(Math.random()*1000),name,price,qty:1,emoji,grad:'from-brand-400 to-brand-600'};
+  flyToCart(emoji,b.getBoundingClientRect());
+  const exist=cart.find(c=>c.name===name);
+  if(exist)exist.qty++;else cart.push(fake);
+  saveCart();renderCart();badgeBump();toast(`${name} savatchaga qo'shildi`);
+}));
+
+/* Category chips */
+document.getElementById('chips').addEventListener('click',e=>{
+  const chip=e.target.closest('.chip');if(!chip)return;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  activeCat=chip.dataset.cat;
+  renderProducts();
+});
+
+/* Reviews */
+document.getElementById('reviewSlides').innerHTML=reviews.map(r=>`
+  <div class="swiper-slide px-2">
+    <div class="glass rounded-3xl p-8 h-full">
+      <div class="flex gap-1 text-amber-400 mb-4">${'<i data-lucide="star" class="w-4 h-4 fill-current"></i>'.repeat(5)}</div>
+      <p class="opacity-80 leading-relaxed">"${r.text}"</p>
+      <div class="flex items-center gap-3 mt-6">
+        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-white grid place-items-center font-bold">${r.ava}</div>
+        <div><div class="font-bold text-sm">${r.name}</div><div class="text-xs opacity-60">${r.role}</div></div>
+      </div>
+    </div>
+  </div>`).join('');
+
+/* Mobile menu */
+
+/* Navbar scroll effect */
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('shadow-2xl',window.scrollY>40));
+
+/* INIT */
+renderProducts();renderCart();syncThemeIcon();
+AOS.init({duration:800,once:true,easing:'ease-out-cubic'});
+new Swiper('.reviewSwiper',{slidesPerView:1,spaceBetween:24,loop:true,grabCursor:true,pagination:{el:'.swiper-pagination',clickable:true},autoplay:{delay:5000,disableOnInteraction:false},breakpoints:{768:{slidesPerView:2},1024:{slidesPerView:3}}});
+/* ===== MOBILE DRAWER (yon ochiluvchi menyu) ===== */
+const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
+const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
+document.getElementById('menuBtn')?.addEventListener('click',openMM);
+document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
+document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
+
+lucide.createIcons();
+</script>
+</body>
+</html>

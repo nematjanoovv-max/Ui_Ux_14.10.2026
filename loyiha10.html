@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PowerFit — Fitnes zal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{ink:'#0c0a09'}}}}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
+.glass{background:rgba(255,255,255,.06);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12)}
+.l-glass{background:rgba(255,255,255,.72);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.7)}
+.dark .l-glass{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)}
+.blob{position:absolute;border-radius:50%;filter:blur(110px);opacity:.5;animation:float 12s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(34px,-46px)}}
+/* Narx kartalari AOS bilan chiqib keladi, hover'da 3D */
+.price-card{transition:transform .45s cubic-bezier(.22,1,.36,1),box-shadow .45s}
+.price-card:hover{transform:translateY(-12px) scale(1.02);box-shadow:0 40px 80px -20px rgba(249,115,22,.5)}
+.price-card.popular{box-shadow:0 0 0 2px #f97316,0 30px 60px -20px rgba(249,115,22,.5)}
+/* Jadval */
+.row-hover{transition:background .3s,transform .3s}
+.row-hover:hover{transform:translateX(6px)}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#f97316;border-radius:99px}
+.stat-num{font-variant-numeric:tabular-nums}
+.bar-fill{width:0;transition:width 1.3s cubic-bezier(.22,1,.36,1)}
+.timer{font-variant-numeric:tabular-nums}
+.pulse-ring{position:absolute;inset:0;border-radius:inherit;border:2px solid #f97316;animation:ring 2s ease-out infinite}
+@keyframes ring{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.4);opacity:0}}
+</style>
+</head>
+<body class="bg-stone-100 text-stone-900 dark:bg-ink dark:text-stone-100 transition-colors duration-500 overflow-x-hidden">
+
+<div class="blob bg-orange-500 w-96 h-96 -top-32 -left-24"></div>
+<div class="blob bg-rose-600 w-80 h-80 top-[42%] -right-32" style="animation-delay:3s"></div>
+<div class="blob bg-amber-500 w-64 h-64 bottom-0 left-1/3" style="animation-delay:6s"></div>
+
+<!-- NAV -->
+<header id="nav" class="sticky top-0 z-50 l-glass transition-shadow">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
+    <a href="#" class="flex items-center gap-2 font-black text-xl"><span class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-rose-600 grid place-items-center text-white shadow-lg"><i data-lucide="dumbbell"></i></span>Power<span class="text-orange-500">Fit</span></a>
+    <nav class="hidden lg:flex items-center gap-6 text-sm font-bold flex-1">
+      <a class="hover:text-orange-500 transition" href="#programs">Dasturlar</a>
+      <a class="hover:text-orange-500 transition" href="#schedule">Jadval</a>
+      <a class="hover:text-orange-500 transition" href="#pricing">Narxlar</a>
+      <a class="hover:text-orange-500 transition" href="#coaches">Murabbiylar</a>
+    </nav>
+    <div class="hidden sm:flex items-center gap-2 text-xs font-bold glass px-3 py-2 rounded-xl"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>Hozir ochiq — 24/7</div>
+    <button id="menuBtn" class="lg:hidden w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
+    <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
+    <button id="joinBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-rose-600 text-white text-sm font-bold hover:scale-105 transition shadow-lg">Bepul kun</button>
+  </div>
+  
+</header>
+
+<!-- HERO -->
+<section class="pt-14 pb-12 px-5">
+  <div class="max-w-7xl mx-auto grid lg:grid-cols-[1.1fr,1fr] gap-12 items-center">
+    <div>
+      <span class="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full glass mb-5" data-aos="fade-down"><i data-lucide="flame" class="w-3.5 h-3.5 text-orange-500"></i> Yerning har nuqtasidan kirish — PowerApp bilan</span>
+      <h1 class="text-5xl lg:text-[4.2rem] font-black leading-[1.03] uppercase" data-aos="fade-up">Kuchingizni <span class="text-orange-500">kashf et</span></h1>
+      <p class="mt-5 text-lg text-slate-600 dark:text-slate-400 max-w-lg" data-aos="fade-up" data-aos-delay="100">Zamonaviy jihozlar, professional murabbiylar va shaxsiy dastur. Birinchi kun BEPUL — kartasiz.</p>
+      <div class="mt-8 flex flex-wrap gap-3" data-aos="fade-up" data-aos-delay="200">
+        <a href="#pricing" class="px-7 py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-rose-600 text-white font-bold shadow-lg hover:scale-105 transition">A'zolikni tanlash</a>
+        <button id="videoBtn" class="px-7 py-3.5 rounded-2xl glass font-bold hover:scale-105 transition inline-flex items-center gap-2"><i data-lucide="play" class="w-4 h-4 fill-current"></i>Virtual tur</button>
+      </div>
+      <div class="grid grid-cols-3 gap-4 mt-11" data-aos="fade-up" data-aos-delay="300">
+        <div class="glass rounded-2xl p-4"><div class="text-3xl font-black text-orange-500 stat-num" data-count="1200">0</div><div class="text-xs opacity-60 mt-1">A'zo</div></div>
+        <div class="glass rounded-2xl p-4"><div class="text-3xl font-black text-orange-500 stat-num" data-count="38">0</div><div class="text-xs opacity-60 mt-1">Murabbiy</div></div>
+        <div class="glass rounded-2xl p-4"><div class="text-3xl font-black text-orange-500 stat-num" data-count="95">0</div><div class="text-xs opacity-60 mt-1">Jihozlar</div></div>
+      </div>
+    </div>
+    <!-- BMI kalkulyator kartasi -->
+    <div class="glass rounded-[2rem] p-7 relative" data-aos="fade-left" data-aos-delay="200">
+      <h3 class="font-black text-xl flex items-center gap-2"><i data-lucide="calculator" class="text-orange-500"></i>Tezkor BMI hisoblash</h3>
+      <p class="text-sm opacity-70 mt-1">O'zingizning natijangizni bilib oling</p>
+      <div class="grid grid-cols-2 gap-3 mt-5">
+        <label class="rounded-2xl bg-white/40 dark:bg-white/5 px-4 py-3.5 block"><span class="text-[11px] font-bold opacity-60">BO'Y (sm)</span><input id="bmiH" type="number" value="175" class="bg-transparent outline-none w-full font-black text-lg"></label>
+        <label class="rounded-2xl bg-white/40 dark:bg-white/5 px-4 py-3.5 block"><span class="text-[11px] font-bold opacity-60">VAZN (kg)</span><input id="bmiW" type="number" value="74" class="bg-transparent outline-none w-full font-black text-lg"></label>
+      </div>
+      <div class="mt-5 flex items-center gap-5">
+        <div class="relative w-24 h-24 shrink-0">
+          <svg class="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" class="text-black/10 dark:text-white/10" stroke-width="10"/>
+            <circle id="bmiRing" cx="50" cy="50" r="42" fill="none" stroke="#f97316" stroke-width="10" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" style="transition:stroke-dashoffset 1s"/>
+          </svg>
+          <div class="absolute inset-0 grid place-items-center font-black text-lg" id="bmiVal">24</div>
+        </div>
+        <div class="flex-1">
+          <div class="text-sm font-bold" id="bmiText">Normal vazn</div>
+          <p class="text-xs opacity-70 mt-1" id="bmiAdv">Ajoyib! Bu ko'rsatkich ideal diapazonda.</p>
+        </div>
+      </div>
+      <div class="h-2.5 rounded-full bg-gradient-to-r from-sky-400 via-emerald-400 to-rose-500 mt-5 relative">
+        <div id="bmiMarker" class="absolute -top-1 w-4 h-4 rounded-full bg-white shadow-lg border-2 border-stone-900 dark:border-white transition-all duration-500" style="left:45%"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMS -->
+<section id="programs" class="py-14 px-5">
+  <div class="max-w-7xl mx-auto">
+    <h2 class="text-4xl font-black mb-3 uppercase" data-aos="fade-up">Dasturlar</h2>
+    <p class="text-slate-600 dark:text-slate-400 mb-9" data-aos="fade-up">Har bir maqsad uchun maxsus ish rejimi</p>
+    <div id="progGrid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section id="schedule" class="py-14 px-5">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-4xl font-black mb-8 uppercase" data-aos="fade-up">Haftalik <span class="text-orange-500">jadval</span></h2>
+    <div class="glass rounded-3xl overflow-hidden">
+      <div class="grid grid-cols-[80px_repeat(6,1fr)] text-xs font-black border-b border-white/10">
+        <div class="p-4 opacity-50">VAQT</div>
+        <div class="p-4 text-center">DUSH</div><div class="p-4 text-center">SESH</div><div class="p-4 text-center">CHOR</div><div class="p-4 text-center">PAY</div><div class="p-4 text-center">JUMA</div><div class="p-4 text-center">SHAN</div>
+      </div>
+      <div id="schedRows"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING (AOS orqali chiqib keluvchi narxlar) -->
+<section id="pricing" class="py-16 px-5">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-12" data-aos="fade-up">
+      <h2 class="text-4xl font-black uppercase">A'zolik <span class="text-orange-500">narxlari</span></h2>
+      <p class="mt-3 text-slate-600 dark:text-slate-400">Yashirin to'lovlar yo'q — hammasi narxda</p>
+      <div class="inline-flex glass rounded-2xl p-1 mt-6 font-bold text-sm">
+        <button id="monthlyBtn" class="px-6 py-2.5 rounded-xl bg-orange-500 text-white transition">Oylik</button>
+        <button id="yearlyBtn" class="px-6 py-2.5 rounded-xl transition">Yillik <span class="text-orange-500">-20%</span></button>
+      </div>
+    </div>
+    <div id="priceGrid" class="grid md:grid-cols-3 gap-7"></div>
+    <p class="text-center text-sm opacity-60 mt-8">Barcha narxlar QQS bilan. To'lovni istalgan vaqtda bekor qilish mumkin.</p>
+  </div>
+</section>
+
+<!-- COACHES -->
+<section id="coaches" class="py-14 px-5">
+  <div class="max-w-7xl mx-auto">
+    <h2 class="text-4xl font-black mb-9 uppercase" data-aos="fade-up">Murabbiylar</h2>
+    <div class="swiper coachSwiper pb-14">
+      <div class="swiper-wrapper" id="coachSlides"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA / TIMER -->
+<section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+  <div class="rounded-[2rem] p-10 md:p-14 bg-gradient-to-br from-orange-500 to-rose-600 text-white text-center relative overflow-hidden" data-aos="zoom-in">
+    <span class="text-xs font-black tracking-[3px] bg-white/20 px-3 py-1.5 rounded-full">BUGUNGI TAKLIF</span>
+    <h2 class="text-4xl md:text-5xl font-black mt-5">Birinchi hafta BEPUL</h2>
+    <p class="text-white/85 mt-4">Chegirma tugashiga qoldi:</p>
+    <div class="flex justify-center gap-3 mt-6 timer" id="timerBox">
+      <div class="glass rounded-2xl px-5 py-4 min-w-[76px]"><div class="text-3xl font-black" id="tH">00</div><div class="text-[11px] opacity-80">soat</div></div>
+      <div class="glass rounded-2xl px-5 py-4 min-w-[76px]"><div class="text-3xl font-black" id="tM">14</div><div class="text-[11px] opacity-80">daqiqa</div></div>
+      <div class="glass rounded-2xl px-5 py-4 min-w-[76px]"><div class="text-3xl font-black" id="tS">59</div><div class="text-[11px] opacity-80">soniya</div></div>
+    </div>
+    <button id="ctaBtn" class="mt-8 bg-white text-orange-600 font-bold px-8 py-4 rounded-2xl hover:scale-105 transition">Hoziroq boshlash</button>
+    <span class="absolute -right-6 -bottom-10 text-[11rem] opacity-20">💪</span>
+  </div>
+</section>
+
+<footer class="border-t border-black/10 dark:border-white/10 py-10 px-5">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
+    <div class="flex items-center gap-2 font-black"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-rose-600 grid place-items-center text-white"><i data-lucide="dumbbell" class="w-5 h-5"></i></span>PowerFit</div>
+    <p class="text-sm opacity-60">© 2026 PowerFit Club. Toshkent, O'zbekiston.</p>
+    <div class="flex gap-2">
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-orange-500 transition"><i data-lucide="instagram"></i></a>
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-orange-500 transition"><i data-lucide="telegram"></i></a>
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-orange-500 transition"><i data-lucide="phone"></i></a>
+    </div>
+  </div>
+</footer>
+
+<!-- JOIN MODAL -->
+<div id="joinModal" class="fixed inset-0 z-[70] hidden">
+  <div class="absolute inset-0 bg-black/65 backdrop-blur-sm" data-close></div>
+  <div class="absolute inset-0 grid place-items-center p-4">
+    <div id="joinCard" class="w-full max-w-md bg-white dark:bg-stone-900 rounded-3xl overflow-hidden shadow-2xl scale-90 opacity-0 transition-all duration-300">
+      <div class="h-28 bg-gradient-to-br from-orange-500 to-rose-600 grid place-items-center relative">
+        <span class="text-5xl">🏋️</span>
+        <button class="absolute top-4 right-4 w-9 h-9 rounded-xl bg-black/30 text-white grid place-items-center" data-close><i data-lucide="x"></i></button>
+      </div>
+      <form id="joinForm" class="p-7 space-y-4">
+        <h3 class="text-2xl font-black">Bepul sinov kuni</h3>
+        <p class="text-sm opacity-70 -mt-2">Formani to'ldiring — 15:00 dan keyin murabbiy sizni kutadi</p>
+        <input required placeholder="Ism va familiya" class="w-full px-4 py-3.5 rounded-2xl bg-black/5 dark:bg-white/5 outline-none focus:ring-2 ring-orange-500 transition text-sm font-semibold">
+        <input required type="tel" placeholder="+998 __ ___ __ __" class="w-full px-4 py-3.5 rounded-2xl bg-black/5 dark:bg-white/5 outline-none focus:ring-2 ring-orange-500 transition text-sm font-semibold">
+        <select class="w-full px-4 py-3.5 rounded-2xl bg-black/5 dark:bg-white/5 outline-none focus:ring-2 ring-orange-500 transition text-sm font-semibold">
+          <option>Kunduzgi (09:00-14:00)</option><option>Kechki (17:00-22:00)</option><option>Hafta oxiri</option>
+        </select>
+        <button class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-rose-600 text-white font-bold hover:scale-[1.02] transition">Band qilish</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
+<div id="mobileMenu" class="lg:hidden fixed inset-0 z-[60] hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
+  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
+      <span class="font-black text-lg">Menyu</span>
+      <button class="w-9 h-9 grid place-items-center rounded-xl bg-black/5 dark:bg-white/10" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#programs"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Dasturlar</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#schedule"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Jadval</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#pricing"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Narxlar</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#coaches"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Murabbiylar</a>
+    </nav>
+    <div class="px-5 py-4 border-t border-black/10 dark:border-white/10 text-xs opacity-60">© 2026 — barcha huquqlar himoyalangan</div>
+  </aside>
+</div>
+
+<!-- TOAST (bildirishnoma) -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] hidden">
+  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold shadow-xl"><i data-lucide="check-circle-2" class="text-orange-500"></i><span id="toastMsg"></span></div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+/* ===== THEME ===== */
+const root=document.documentElement;
+if(localStorage.getItem('pf-theme')==='dark'||(!localStorage.getItem('pf-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
+const themeIcon=document.getElementById('themeIcon');
+const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'moon':'sun');lucide.createIcons();};
+document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('pf-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
+
+const $=id=>document.getElementById(id);
+const money=n=>n.toLocaleString('uz-UZ');
+
+/* ===== DATA ===== */
+const PROGRAMS=[
+ {n:'Kuch mashqlari',i:'dumbbell',c:'from-orange-500 to-red-600',d:'Og\'irliklar, mashq bilan kuch va massa',t:'60 daq'},
+ {n:'Kardio HIIT',i:'heart-pulse',c:'from-rose-500 to-pink-600',d:'Yonminchi yog\' uchun yuqori intensivlik',t:'45 daq'},
+ {n:'Yoga va fleks',i:'stretch-horizontal',c:'from-emerald-500 to-teal-600',d:'Moslashuvchanlik va ichki tinchlik',t:'75 daq'},
+ {n:'Boks',i:'swords',c:'from-amber-500 to-orange-600',d:'Reaksiya, tezlik va himoya texnikasi',t:'50 daq'},
+];
+const PLANS=[
+ {id:'basic',name:'Boshlang\'ich',m:299000,y:2870000,desc:'Zaldagi barcha jihozlarga kirish',feats:[' Bepul kirish 06:00-22:00',' Guruh darslari: 2 tasi',' Shkaf (locker)',' WiFi'],pop:false},
+ {id:'pro',name:'Professional',m:549000,y:5270000,desc:'To\'liq kirish + guruh darslari',feats:['24/7 kirish','Cheksiz guruh darslari','BMI va dastur tahlili','1 shaxsiy mashg\'ulot','Sovg\'a kinetoterapiya'],pop:true},
+ {id:'elite',name:'Elite',m:949000,y:9110000,desc:'Shaxsiy murabbiy + hammasi',feats:['Hamkor restoranlarda -15%','Shaxsiy murabbiy (8 dars)','Spa va sauna','Oziq-ovqat rejasi',' VIP kirish'],pop:false},
+];
+const SCHEDULE=[
+ {t:'07:00',a:['Kuch','Kardio','','Kuch','Yoga','Boks']},
+ {t:'09:00',a:['Yoga','','Kuch','','HIIT','']},
+ {t:'12:00',a:['Boks','Kuch','Yoga','','','Stretching']},
+ {t:'18:00',a:['HIIT','Boks','Kuch','HIIT','Yoga','Kuch']},
+ {t:'20:00',a:['','Yoga','Boks','Kuch','','Zumba']},
+];
+const COACHES=[
+ {n:'Javohir Sobirov',r:'Kuch treneri',i:'JS',s:'5 yil · 320 a\'zo',e:'🏋️'},
+ {n:'Dilnoza Karimova',r:'Yoga instruktori',i:'DK',s:'7 yil · 210 a\'zo',e:'🧘'},
+ {n:'Sardor Aliyev',r:'Boks treneri',i:'SA',s:'9 yil · 145 a\'zo',e:'🥊'},
+ {n:'Kamola Tosheva',r:'Kardio & HIIT',i:'KT',s:'4 yil · 260 a\'zo',e:'🏃'},
+ {n:'Bobur Yusupov',r:'Nutritsiolog',i:'BY',s:'6 yil · 400+ dastur',e:'🥗'},
+];
+const $2=null;
+
+/* ===== RENDER PROGRAMS ===== */
+$('progGrid').innerHTML=PROGRAMS.map((p,i)=>`
+  <div class="glass rounded-3xl p-6 card-hover relative overflow-hidden group" data-aos="fade-up" data-aos-delay="${i*80}" style="transition:transform .4s,box-shadow .4s" onmouseover="this.style.transform='translateY(-8px)'" onmouseout="this.style.transform=''">
+    <span class="absolute -right-6 -bottom-6 text-[6rem] opacity-10 group-hover:opacity-20 transition">${['🏋️','🔥','🧘','🥊'][i]}</span>
+    <span class="w-13 h-13 p-3.5 rounded-2xl bg-gradient-to-br ${p.c} grid place-items-center text-white shadow-lg"><i data-lucide="${p.i}" class="w-6 h-6"></i></span>
+    <h3 class="font-black text-lg mt-5">${p.n}</h3>
+    <p class="text-sm opacity-70 mt-2">${p.d}</p>
+    <div class="flex items-center justify-between mt-5 pt-4 border-t border-black/10 dark:border-white/10">
+      <span class="text-xs font-bold opacity-70">${p.t}</span>
+      <button data-prog="${p.n}" class="text-xs font-black text-orange-500 hover:underline">Yozilish →</button>
+    </div>
+  </div>`).join('');
+
+/* ===== RENDER SCHEDULE ===== */
+const cellColor={'Kuch':'bg-orange-500/20 text-orange-600 dark:text-orange-400','Kardio':'bg-rose-500/20 text-rose-600 dark:text-rose-400','Yoga':'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400','HIIT':'bg-pink-500/20 text-pink-600 dark:text-pink-400','Boks':'bg-amber-500/20 text-amber-600 dark:text-amber-400','Stretching':'bg-teal-500/20 text-teal-600 dark:text-teal-400','Zumba':'bg-violet-500/20 text-violet-600 dark:text-violet-400'};
+$('schedRows').innerHTML=SCHEDULE.map(r=>`
+  <div class="grid grid-cols-[80px_repeat(6,1fr)] border-b border-white/10 last:border-0 row-hover">
+    <div class="p-3 text-xs font-black opacity-70">${r.t}</div>
+    ${r.a.map(v=>`<div class="p-2 border-l border-white/10 first:border-l-0">
+      ${v?`<div class="rounded-xl ${cellColor[v]||'bg-white/10'} text-center text-[11px] font-black py-2.5 leading-tight">${v}</div>`:'<div class="text-center opacity-25 text-lg">·</div>'}
+    </div>`).join('')}
+  </div>`).join('');
+
+/* ===== PRICING (oylik/yillik almashish, AOS bilan) ===== */
+let yearly=false;
+const renderPrices=()=>{
+  $('priceGrid').innerHTML=PLANS.map((p,i)=>{
+    const val=yearly?p.y:p.m, unit=yearly?'yil':'oy';
+    const save=yearly?Math.round((1-p.y/(p.m*12))*100):0;
+    return `<div class="price-card glass rounded-[2rem] p-8 relative ${p.pop?'popular':''}" data-aos="fade-up" data-aos-delay="${i*120}">
+      ${p.pop?'<span class="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[11px] font-black bg-gradient-to-r from-orange-500 to-rose-600 text-white px-4 py-1.5 rounded-full whitespace-nowrap">ENG MASHHUR</span>':''}
+      <h3 class="font-black text-xl">${p.name}</h3>
+      <p class="text-sm opacity-70 mt-1 h-10">${p.desc}</p>
+      <div class="mt-6 flex items-end gap-2">
+        <span class="text-4xl font-black text-orange-500">${money(val)}</span>
+        <span class="text-sm font-bold opacity-70 mb-1.5">so'm / ${unit}</span>
+      </div>
+      ${yearly&&save?`<div class="text-xs font-bold text-emerald-500 mt-1">Yillik to'lovda ${save}% tejaysiz</div>`:'<div class="text-xs font-bold opacity-40 mt-1">Yillik rejimga o\'ting va tejang</div>'}
+      <ul class="mt-6 space-y-3 text-sm">
+        ${p.feats.map(f=>`<li class="flex gap-3 ${p.pop?'font-semibold':''}"><i data-lucide="check-circle-2" class="w-5 h-5 text-orange-500 shrink-0"></i><span>${f}</span></li>`).join('')}
+      </ul>
+      <button data-plan="${p.name}" class="mt-8 w-full py-3.5 rounded-2xl font-bold transition hover:scale-[1.02] ${p.pop?'bg-gradient-to-r from-orange-500 to-rose-600 text-white shadow-lg':'glass hover:bg-black/5 dark:hover:bg-white/10'}">${p.name}ni tanlash</button>
+    </div>`;
+  }).join('');
+  lucide.createIcons();AOS.refreshHard?.();AOS.refresh();
+};
+$('monthlyBtn').addEventListener('click',()=>{yearly=false;$('monthlyBtn').classList.add('bg-orange-500','text-white');$('yearlyBtn').classList.remove('bg-orange-500','text-white');renderPrices();});
+$('yearlyBtn').addEventListener('click',()=>{yearly=true;$('yearlyBtn').classList.add('bg-orange-500','text-white');$('monthlyBtn').classList.remove('bg-orange-500','text-white');renderPrices();});
+
+/* ===== COACHES ===== */
+$('coachSlides').innerHTML=COACHES.map(c=>`
+  <div class="swiper-slide h-auto">
+    <div class="glass rounded-3xl p-7 h-full text-center card-hover" style="transition:transform .4s" onmouseover="this.style.transform='translateY(-8px)'" onmouseout="this.style.transform=''">
+      <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-orange-500 to-rose-600 grid place-items-center text-white text-3xl font-black">${c.i}</div>
+      <h4 class="font-black text-lg mt-4">${c.n}</h4>
+      <div class="text-xs font-bold text-orange-500 mt-1">${c.r}</div>
+      <p class="text-sm opacity-70 mt-3">${c.s}</p>
+      <div class="flex justify-center gap-1 text-amber-400 text-xs mt-3">★★★★★</div>
+      <button data-coach="${c.n}" class="mt-5 w-full py-2.5 rounded-xl glass font-bold text-sm hover:bg-orange-500 hover:text-white transition">Dars tanlash</button>
+    </div>
+  </div>`).join('');
+
+/* ===== BMI ===== */
+function updateBMI(){
+  const h=+$('bmiH').value/100,w=+$('bmiW').value;
+  if(!h||!w)return;
+  const bmi=w/(h*h),val=bmi.toFixed(1);
+  $('bmiVal').textContent=val;
+  const pct=Math.min(Math.max((bmi-12)/(40-12)*100,0),100);
+  $('bmiMarker').style.left=pct+'%';
+  $('bmiRing').style.strokeDashoffset=264-264*(pct/100);
+  let txt,adv,col='#f97316';
+  if(bmi<18.5){txt='Kam vazn';adv='Mashqlar bilan birga sistematik ovqatlanish muhim. Murabbiylar yordam beradi.';}
+  else if(bmi<25){txt='Normal vazn';adv='Ajoyib! Bu ko\'rsatkich ideal diapazonda — shaklni saqlang.';col='#10b981';}
+  else if(bmi<30){txt='Ortiqcha vazn';adv='Kardio + to\'g\'ri ovqat rejasi 3 oyda natija beradi.';}
+  else{txt='Semizlik';adv='Shaxsiy trenerdan foydalanishni tavsiya qilamiz.';col='#f43f5e';}
+  $('bmiText').textContent=txt;$('bmiAdv').textContent=adv;
+  $('bmiRing').setAttribute('stroke',col);
+}
+['bmiH','bmiW'].forEach(id=>$(id).addEventListener('input',updateBMI));
+
+/* ===== COUNTERS ===== */
+const runCounters=()=>document.querySelectorAll('[data-count]').forEach(el=>{
+  const t=+el.dataset.count;let c=0;const step=Math.max(1,Math.ceil(t/50));
+  const i=setInterval(()=>{c+=step;if(c>=t){c=t;clearInterval(i);}el.textContent=c+(t===95?'+':'');},25);
+});
+window.addEventListener('load',runCounters);
+
+/* ===== TIMER ===== */
+let sec=14*60+59;
+setInterval(()=>{
+  sec=sec>0?sec-1:14*60+59;
+  $('tH').textContent=String(Math.floor(sec/3600)).padStart(2,'0');
+  $('tM').textContent=String(Math.floor(sec/60%60)).padStart(2,'0');
+  $('tS').textContent=String(sec%60).padStart(2,'0');
+},1000);
+
+/* ===== MODAL ===== */
+const openJoin=()=>{$('joinModal').classList.remove('hidden');requestAnimationFrame(()=>$('joinCard').classList.remove('scale-90','opacity-0'));document.body.style.overflow='hidden';};
+const closeJoin=()=>{$('joinCard').classList.add('scale-90','opacity-0');setTimeout(()=>{$('joinModal').classList.add('hidden');document.body.style.overflow='';},280);};
+$('joinBtn').addEventListener('click',openJoin);
+$('ctaBtn').addEventListener('click',()=>{$('ctaBtn').textContent='Tabriklaymiz! 🎉';setTimeout(()=>$('ctaBtn').textContent='Hoziroq boshlash',1500);openJoin();});
+$('videoBtn').addEventListener('click',()=>toast('Virtual tur videosi yaqin qo\'shiladi 🎬'));
+$('joinModal').addEventListener('click',e=>{if(e.target.closest('[data-close]')||e.target.hasAttribute('data-close'))closeJoin();});
+$('joinForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const b=e.target.querySelector('button'),old=b.textContent;b.disabled=true;
+  b.innerHTML='<span class="inline-block w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin align-middle"></span> Yuborilmoqda...';
+  await new Promise(r=>setTimeout(r,1500));
+  b.textContent='Band qilindi ✅';toast('Sizning sinov kuningiz band qilindi!');
+  e.target.reset();
+  await new Promise(r=>setTimeout(r,1600));
+  b.textContent=old;b.disabled=false;closeJoin();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('joinModal').classList.contains('hidden'))closeJoin();});
+
+/* ===== EVENTS ===== */
+document.addEventListener('click',e=>{
+  const p=e.target.closest('[data-plan]');
+  if(p){toast(`"${p.dataset.plan}" tarifi tanlandi — to'lovga o'tamiz`);return;}
+  const c=e.target.closest('[data-coach]');
+  if(c){toast(`${c.dataset.coach} bilan dars yozilishingiz mumkin`);return;}
+  const pr=e.target.closest('[data-prog]');
+  if(pr){toast(`"${pr.dataset.prog}" dasturiga yozildingiz ✅`);}
+});
+let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2500);}
+
+/* ===== MOBILE DRAWER (yon ochiluvchi menyu) ===== */
+const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
+const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
+document.getElementById('menuBtn')?.addEventListener('click',openMM);
+document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
+document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
+
+/* ===== INIT ===== */
+renderPrices();updateBMI();syncTheme();
+AOS.init({duration:900,once:true,easing:'ease-out-cubic'});
+new Swiper('.coachSwiper',{slidesPerView:1,spaceBetween:24,loop:true,grabCursor:true,pagination:{el:'.coachSwiper .swiper-pagination',clickable:true},autoplay:{delay:4500},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:4}}});
+lucide.createIcons();
+</script>
+</body>
+</html>

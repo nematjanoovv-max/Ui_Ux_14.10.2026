@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SayohatUz — Turizm agentligi</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{ink:'#04121f'}}}}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
+.glass{background:rgba(255,255,255,.6);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.5)}
+.dark .glass{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1)}
+.blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:.45;animation:float 12s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(34px,-46px)}}
+/* 3D EFFEKTLI KARTOCHKALAR */
+.scene{perspective:1200px}
+.tilt{transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s;transform-style:preserve-3d;will-change:transform}
+.tilt-inner{transform-style:preserve-3d}
+.tilt .layer{transform:translateZ(50px)}
+.tilt .layer-deep{transform:translateZ(90px)}
+.tilt .layer-back{transform:translateZ(30px)}
+.tilt:hover{box-shadow:0 40px 80px -20px rgba(2,132,199,.5)}
+.tilt .glare{position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.35),transparent 55%);opacity:0;transition:opacity .4s;pointer-events:none}
+.tilt:hover .glare{opacity:1}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#0ea5e9;border-radius:99px}
+.bar-fill{width:0;transition:width 1.3s cubic-bezier(.22,1,.36,1)}
+.pill{transition:all .3s}
+.chip.active{background:#0ea5e9;border-color:#0ea5e9;color:#fff}
+.star-pop{animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{0%{transform:scale(0) rotate(-60deg)}100%{transform:scale(1) rotate(0)}}
+</style>
+</head>
+<body class="bg-sky-50 text-slate-800 dark:bg-ink dark:text-slate-200 transition-colors duration-500 overflow-x-hidden">
+
+<div class="blob bg-sky-400 w-80 h-80 -top-24 -left-24"></div>
+<div class="blob bg-cyan-300 w-72 h-72 top-[40%] -right-24" style="animation-delay:3s"></div>
+<div class="blob bg-amber-300 w-64 h-64 bottom-10 left-1/4" style="animation-delay:6s"></div>
+
+<!-- NAV -->
+<header id="nav" class="sticky top-0 z-50 glass transition-shadow">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
+    <a href="#" class="flex items-center gap-2 font-black text-xl"><span class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-600 grid place-items-center text-white shadow-lg"><i data-lucide="palmtree"></i></span>Sayohat<span class="text-sky-500">Uz</span></a>
+    <nav class="hidden lg:flex items-center gap-6 text-sm font-medium flex-1">
+      <a class="hover:text-sky-500 transition" href="#destinations">Manzillar</a>
+      <a class="hover:text-sky-500 transition" href="#tours">Turlar</a>
+      <a class="hover:text-sky-500 transition" href="#booking">Band qilish</a>
+      <a class="hover:text-sky-500 transition" href="#reviews">Sharhlar</a>
+    </nav>
+    <button id="menuBtn" class="lg:hidden w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
+    <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
+    <button id="callBtn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-600 text-white text-sm font-bold hover:scale-105 transition shadow-lg">Qo'ng'iroq</button>
+  </div>
+  
+</header>
+
+<!-- HERO + SEARCH ENGINE -->
+<section class="relative pt-14 pb-8 px-5">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center max-w-3xl mx-auto mb-10">
+      <span class="inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full glass mb-5" data-aos="fade-down"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-sky-500"></i> 2026-yil kuzgi ta'tillari mavjud</span>
+      <h1 class="text-5xl lg:text-6xl font-black leading-[1.08]" data-aos="fade-up">Dunyoning <span class="text-sky-500">go'zal</span> burchaklarini kashf eting</h1>
+      <p class="mt-5 text-lg text-slate-600 dark:text-slate-400" data-aos="fade-up" data-aos-delay="100">Tayyor turlar, chiptalar, viza va sug'urta — bitta joyda. Biz bilan sayohat qilish oson va qulay.</p>
+    </div>
+
+    <!-- Search engine -->
+    <div class="glass rounded-3xl p-3 shadow-2xl max-w-4xl mx-auto" data-aos="zoom-in">
+      <div class="grid md:grid-cols-[1.2fr,1fr,1fr,auto] gap-2">
+        <label class="rounded-2xl bg-white/60 dark:bg-white/5 px-4 py-3.5 flex items-center gap-3 focus-within:ring-2 ring-sky-500 transition">
+          <i data-lucide="map-pin" class="w-5 h-5 text-sky-500 shrink-0"></i>
+          <span class="flex-1 min-w-0"><span class="block text-[11px] font-bold opacity-60">QAYERGA</span>
+          <input id="whereInput" class="bg-transparent outline-none text-sm font-bold w-full" placeholder="Shahar yoki mamlakat" list="destList"></span>
+          <datalist id="destList"><option value="Istanbul"></option><option value="Dubai"></option><option value="Antaliya"></option><option value="Male"></option><option value="Toshkent"></option><option value="Parij"></option></datalist>
+        </label>
+        <label class="rounded-2xl bg-white/60 dark:bg-white/5 px-4 py-3.5 flex items-center gap-3 focus-within:ring-2 ring-sky-500 transition cursor-pointer">
+          <i data-lucide="calendar" class="w-5 h-5 text-sky-500 shrink-0"></i>
+          <span class="flex-1 min-w-0"><span class="block text-[11px] font-bold opacity-60">QACHON</span>
+          <input type="date" id="dateInput" class="bg-transparent outline-none text-sm font-bold w-full"></span>
+        </label>
+        <label class="rounded-2xl bg-white/60 dark:bg-white/5 px-4 py-3.5 flex items-center gap-3 focus-within:ring-2 ring-sky-500 transition cursor-pointer">
+          <i data-lucide="users" class="w-5 h-5 text-sky-500 shrink-0"></i>
+          <span class="flex-1 min-w-0"><span class="block text-[11px] font-bold opacity-60">KIMLAR</span>
+          <select id="peopleSelect" class="bg-transparent outline-none text-sm font-bold w-full cursor-pointer">
+            <option>1 kishi</option><option selected>2 kishi</option><option>Oilaviy (4)</option><option>Guruh (6+)</option>
+          </select></span>
+        </label>
+        <button id="searchBtn" class="rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-600 text-white font-bold px-8 py-4 hover:scale-[1.02] transition flex items-center justify-center gap-2">
+          <i data-lucide="search" class="w-5 h-5"></i>Qidirish
+        </button>
+      </div>
+    </div>
+    <p id="searchEcho" class="text-center text-sm opacity-60 mt-3"></p>
+  </div>
+</section>
+
+<!-- POPULAR DESTINATIONS (3D kartaDashboardlar) -->
+<section id="destinations" class="py-14 px-5">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-9" data-aos="fade-up">
+      <div>
+        <h2 class="text-4xl font-black">Mashhur <span class="text-sky-500">manzillar</span></h2>
+        <p class="mt-2 text-slate-600 dark:text-slate-400">Kartani sichqoncha bilan boshqaring — 3D effektni his qiling</p>
+      </div>
+      <div id="filterChips" class="flex flex-wrap gap-2">
+        <button class="chip active px-4 py-2 rounded-full border text-sm font-semibold transition" data-f="all">Barchasi</button>
+        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-f="beach">Sohil</button>
+        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-f="city">Shahar</button>
+        <button class="chip px-4 py-2 rounded-full border text-sm font-semibold transition" data-f="nature">Tabiat</button>
+      </div>
+    </div>
+    <div id="destGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 scene"></div>
+  </div>
+</section>
+
+<!-- TOURS -->
+<section id="tours" class="py-12 px-5">
+  <div class="max-w-7xl mx-auto">
+    <h2 class="text-4xl font-black mb-3" data-aos="fade-up">Tayyor <span class="text-sky-500">turlar</span></h2>
+    <p class="text-slate-600 dark:text-slate-400 mb-8" data-aos="fade-up">Narxga chipta, mehmonxona va transfer allaqachon kiritilgan</p>
+    <div class="swiper tourSwiper pb-14">
+      <div class="swiper-wrapper" id="tourSlides"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING FORM -->
+<section id="booking" class="py-14 px-5">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
+    <div class="glass rounded-3xl p-8" data-aos="fade-right">
+      <h2 class="text-3xl font-black">Sayohatni <span class="text-sky-500">bronlang</span></h2>
+      <p class="opacity-70 mt-2 text-sm">Mutaxassisimiz 30 daqiqada eng yaxshi variantni taklif qiladi</p>
+      <form id="bookForm" class="mt-7 space-y-4">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <input required placeholder="Ism va familiya" class="px-4 py-3.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 outline-none focus:ring-2 ring-sky-500 transition text-sm font-medium">
+          <input required type="tel" placeholder="+998 __ ___ __ __" class="px-4 py-3.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 outline-none focus:ring-2 ring-sky-500 transition text-sm font-medium">
+        </div>
+        <select class="w-full px-4 py-3.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 outline-none focus:ring-2 ring-sky-500 transition text-sm font-medium">
+          <option>Istanbul — 3 kun, 2 kecha</option><option>Dubai — 5 kun, 4 kecha</option><option>Antaliya — 7 kun, oziq-ovqat bilan</option><option>Maldiv orollari — 6 kun</option>
+        </select>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <input type="date" class="px-4 py-3.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 outline-none focus:ring-2 ring-sky-500 transition text-sm font-medium">
+          <input type="number" min="1" value="2" placeholder="Kishilar soni" class="px-4 py-3.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 outline-none focus:ring-2 ring-sky-500 transition text-sm font-medium">
+        </div>
+        <textarea rows="3" placeholder="Qo'shimcha istaklar (ovqat, o'rin, uchish vaqti)..." class="w-full px-4 py-3.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 outline-none focus:ring-2 ring-sky-500 transition text-sm font-medium"></textarea>
+        <button class="w-full py-4 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-600 text-white font-bold hover:scale-[1.02] transition shadow-lg">Bron so'rovini yuborish</button>
+      </form>
+    </div>
+    <div class="space-y-5">
+      <div class="rounded-3xl overflow-hidden glass" data-aos="fade-left">
+        <div class="h-48 bg-gradient-to-br from-sky-500 to-indigo-600 grid place-items-center text-7xl">🕌</div>
+        <div class="p-6">
+          <h3 class="font-black text-xl">Istanbul — 2 kecha</h3>
+          <div class="flex items-center gap-4 mt-3 text-sm opacity-75"><span class="flex items-center gap-1"><i data-lucide="plane" class="w-4 h-4"></i>Aviabilet</span><span class="flex items-center gap-1"><i data-lucide="bed" class="w-4 h-4"></i>4* mehmonxona</span><span class="flex items-center gap-1"><i data-lucide="utensils" class="w-4 h-4"></i>Nonushta</span></div>
+          <div class="flex items-end justify-between mt-5">
+            <div><span class="text-3xl font-black text-sky-500">6 490 000</span><span class="text-sm opacity-60"> so'm</span><div class="text-xs opacity-60 line-through">7 900 000 so'm</div></div>
+            <button data-quick="Istanbul" class="px-4 py-2.5 rounded-xl bg-sky-500 text-white font-bold text-sm hover:scale-105 transition">Tanlash</button>
+          </div>
+        </div>
+      </div>
+      <div class="glass rounded-3xl p-6" data-aos="fade-left" data-aos-delay="100">
+        <h4 class="font-black flex items-center gap-2"><i data-lucide="shield-check" class="text-sky-500"></i> Nega biz bilan?</h4>
+        <ul class="mt-4 space-y-3 text-sm">
+          <li class="flex gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-sky-500 shrink-0"></i> To'liq sug'urta va viza qo'llab-quvvati</li>
+          <li class="flex gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-sky-500 shrink-0"></i> 24/7 yordam telefon raqami</li>
+          <li class="flex gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-sky-500 shrink-0"></i> Bo'lib to'lash — 0% foiz</li>
+          <li class="flex gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-sky-500 shrink-0"></i> 500+ muvaffaqiyatli sayohat har oy</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews" class="py-14 px-5">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-4xl font-black mb-10 text-center" data-aos="fade-up">Sayohatchilar <span class="text-sky-500">sharhlari</span></h2>
+    <div class="swiper revSwiper pb-14">
+      <div class="swiper-wrapper" id="revSlides"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="border-t border-black/5 dark:border-white/10 py-10 px-5">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
+    <div class="flex items-center gap-2 font-black"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-600 grid place-items-center text-white"><i data-lucide="palmtree" class="w-5 h-5"></i></span>SayohatUz</div>
+    <p class="text-sm opacity-60">© 2026 SayohatUz Travel Agency. Toshkent.</p>
+    <div class="flex gap-2">
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-sky-500 transition"><i data-lucide="instagram"></i></a>
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-sky-500 transition"><i data-lucide="telegram"></i></a>
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-sky-500 transition"><i data-lucide="phone"></i></a>
+    </div>
+  </div>
+</footer>
+
+<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
+<div id="mobileMenu" class="lg:hidden fixed inset-0 z-[60] hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
+  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
+      <span class="font-black text-lg">Menyu</span>
+      <button class="w-9 h-9 grid place-items-center rounded-xl bg-black/5 dark:bg-white/10" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#destinations"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Manzillar</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#tours"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Turlar</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#booking"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Band qilish</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#reviews"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Sharhlar</a>
+    </nav>
+    <div class="px-5 py-4 border-t border-black/10 dark:border-white/10 text-xs opacity-60">© 2026 — barcha huquqlar himoyalangan</div>
+  </aside>
+</div>
+
+<!-- TOAST (bildirishnoma) -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] hidden">
+  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold shadow-xl"><i data-lucide="check-circle-2" class="text-sky-500"></i><span id="toastMsg"></span></div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+/* ============ THEME ============ */
+const root=document.documentElement;
+if(localStorage.getItem('su-theme')==='dark'||(!localStorage.getItem('su-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
+const themeIcon=document.getElementById('themeIcon');
+const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'moon':'sun');lucide.createIcons();};
+document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('su-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
+
+/* ============ DATA ============ */
+const $=id=>document.getElementById(id);
+const DESTINATIONS=[
+  {id:1,city:'Istanbul',country:'Turkiya',type:'city',emoji:'🕌',g:'from-sky-500 via-indigo-500 to-purple-600',price:6490000,days:'3 kun / 2 kecha',rate:4.9,reviews:214,hot:true,tag:'Shahar ta\'tili'},
+  {id:2,city:'Dubai',country:'BAA',type:'city',emoji:'🏙️',g:'from-amber-400 via-orange-500 to-rose-500',price:9890000,days:'5 kun / 4 kecha',rate:4.8,reviews:186,hot:true,tag:'Shoir va sharq'},
+  {id:3,city:'Antaliya',country:'Turkiya',type:'beach',emoji:'🏖️',g:'from-cyan-400 via-sky-500 to-blue-600',price:7290000,days:'7 kun / oziq-ovqat bilan',rate:4.9,reviews:342,hot:true,tag:'All inclusive'},
+  {id:4,city:'Maldiv orollari',country:'Maldivlar',type:'beach',emoji:'🏝️',g:'from-teal-400 via-cyan-500 to-sky-600',price:15900000,days:'6 kun / bungalov',rate:5.0,reviews:98,hot:false,tag:'To\'y va romantika'},
+  {id:5,city:'Parij',country:'Fransiya',type:'city',emoji:'🗼',g:'from-rose-400 via-pink-500 to-fuchsia-600',price:13400000,days:'4 kun / 3 kecha',rate:4.7,reviews:145,hot:false,tag:'San\'at shahri'},
+  {id:6,city:'Chimyon',country:'O\'zbekiston',type:'nature',emoji:'⛰️',g:'from-emerald-400 via-teal-500 to-cyan-600',price:2490000,days:'3 kun / 2 kecha',rate:4.6,reviews:87,hot:false,tag:'Tabiat va buloq'},
+];
+const TOURS=[
+  {n:'Istanbul shoir safari',d:'3 kun · 2 kecha',p:6490000,e:'🕌',g:'from-indigo-500 to-purple-600',inc:'Aviabilet, mehmonxona 4*, nonushta, transfer, gid'},
+  {n:'Dubai jannati',d:'5 kun · 4 kecha',p:9890000,e:'🏙️',g:'from-amber-500 to-rose-500',inc:'Aviabilet, 5* mehmonxona, safari turi, transfer'},
+  {n:'Antaliya all inclusive',d:'7 kun · 7 kecha',p:7290000,e:'🏖️',g:'from-cyan-500 to-blue-600',inc:'Aviabilet, 5* oziq-ovqat bilan, sohil, animatsiya'},
+  {n:'Maldiv romantikasi',d:'6 kun · 5 kecha',p:15900000,e:'🏝️',g:'from-teal-500 to-sky-600',inc:'Aviabilet, suv ustidagi bungalov, akvarium turi'},
+  {n:'Yevropa klassikasi',d:'8 kun · 7 kecha',p:18700000,e:'🗼',g:'from-rose-500 to-fuchsia-600',inc:'Parij, Rim, Barselona — aviabilet va mehmonxonalar'},
+];
+const REVIEWS=[
+  {n:'Dilnoza K.',t:'Antaliya, 2026',s:5,x:'Ajoyib tashkil! Bolalarim ham juda xursand. Har bir detal oldindan tushuntirilgan.',i:'DK'},
+  {n:'Aziz R.',t:'Dubai, 2026',s:5,x:'Safari turi ayni g\'alaba! Hotel juda hashamatli. Rahmat SayohatUz jamoasiga.',i:'AR'},
+  {n:'Malika T.',t:'Istanbul, 2026',s:4,x:'Viza tez rasmiylashtirildi. Faqat aeroportdan kutib olish ozgina kechikdi, qolgani zo\'r.',i:'MT'},
+  {n:'Sardor U.',t:'Maldivlar, 2025',s:5,x:'To\'y safari mukammal edi. Bungalov va akvarium — esda qoladi.',i:'SU'},
+];
+const money=n=>n.toLocaleString('uz-UZ');
+
+/* ============ 3D TILT KARTALAR ============ */
+function destCard(d,i){
+  return `<article class="tilt relative rounded-[2rem] overflow-hidden h-[430px] bg-gradient-to-br ${d.g} text-white cursor-pointer card-hover" data-dest="${d.id}" data-aos="fade-up" data-aos-delay="${i*90}">
+    <div class="tilt-inner relative h-full p-7 flex flex-col">
+      <span class="glare"></span>
+      <div class="layer flex items-start justify-between">
+        <span class="text-[11px] font-black tracking-[2px] bg-black/25 backdrop-blur px-3 py-1.5 rounded-full">${d.tag.toUpperCase()}</span>
+        ${d.hot?'<span class="text-[11px] font-black bg-amber-400 text-slate-900 px-2.5 py-1.5 rounded-full flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3"></i>HOT</span>':''}
+      </div>
+      <div class="layer-deep flex-1 grid place-items-center pointer-events-none select-none"><span class="text-[9rem] drop-shadow-2xl">${d.emoji}</span></div>
+      <div class="layer relative">
+        <div class="flex items-center gap-2 text-sm font-bold opacity-90"><i data-lucide="map-pin" class="w-4 h-4"></i>${d.country}</div>
+        <h3 class="text-3xl font-black mt-1">${d.city}</h3>
+        <div class="flex items-center gap-3 mt-2 text-sm opacity-85">
+          <span class="flex items-center gap-1 font-bold"><i data-lucide="star" class="w-4 h-4 fill-amber-300 text-amber-300"></i>${d.rate}</span>
+          <span class="opacity-70">${d.reviews} sharh</span><span class="opacity-70">·</span><span>${d.days}</span>
+        </div>
+        <div class="flex items-end justify-between mt-5">
+          <div><div class="text-[11px] opacity-70">boshlanishi</div><div class="text-2xl font-black">${money(d.price)} <span class="text-sm font-semibold opacity-80">so'm</span></div></div>
+          <button data-book="${d.city}" class="px-5 py-2.5 rounded-2xl bg-white text-slate-900 font-bold text-sm hover:scale-110 transition shadow-xl">Tanlash</button>
+        </div>
+      </div>
+    </div>
+  </article>`;
+}
+const renderDests=(f='all')=>{
+  const list=f==='all'?DESTINATIONS:DESTINATIONS.filter(d=>d.type===f);
+  $('destGrid').innerHTML=list.map(destCard).join('');
+  lucide.createIcons();attachTilt();
+};
+
+/* 3D tilt logikasi — sichqoncha harakatiga qarama-qarshi burilish */
+function attachTilt(){
+  document.querySelectorAll('.tilt').forEach(card=>{
+    const onMove=e=>{
+      const r=card.getBoundingClientRect();
+      const x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+      const rx=(y-.5)*-14, ry=(x-.5)*16;
+      card.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg) scale(1.03)`;
+      card.style.setProperty('--mx',x*100+'%');
+      card.style.setProperty('--my',y*100+'%');
+    };
+    const onLeave=()=>{card.style.transform='';};
+    card.addEventListener('mousemove',onMove);
+    card.addEventListener('mouseleave',onLeave);
+    card.addEventListener('touchmove',ev=>{const t=ev.touches[0];onMove(t);},{passive:true});
+    card.addEventListener('touchend',onLeave);
+  });
+}
+
+/* ============ BOSHQA RENDERLAR ============ */
+$('tourSlides').innerHTML=TOURS.map(t=>`
+  <div class="swiper-slide h-auto">
+    <div class="glass rounded-3xl p-5 h-full flex flex-col">
+      <div class="h-36 rounded-2xl bg-gradient-to-br ${t.g} grid place-items-center text-6xl">${t.e}</div>
+      <h3 class="font-black text-lg mt-4">${t.n}</h3>
+      <div class="text-xs opacity-60 mt-1">${t.d}</div>
+      <p class="text-xs opacity-75 mt-3 leading-relaxed flex-1">${t.inc}</p>
+      <div class="flex items-end justify-between mt-4">
+        <div><div class="text-xl font-black text-sky-500">${money(t.p)}</div><div class="text-[11px] opacity-60">so'm / kishi</div></div>
+        <button data-book="${t.n}" class="px-4 py-2 rounded-xl bg-sky-500 text-white text-sm font-bold hover:scale-105 transition">Band</button>
+      </div>
+    </div>
+  </div>`).join('');
+$('revSlides').innerHTML=REVIEWS.map(r=>`
+  <div class="swiper-slide h-auto">
+    <div class="glass rounded-3xl p-7 h-full">
+      <div class="flex gap-1 text-amber-400 mb-4">${Array.from({length:r.s},()=>'<span class="star-pop inline-block">★</span>').join('')}</div>
+      <p class="opacity-85 leading-relaxed">"${r.x}"</p>
+      <div class="flex items-center gap-3 mt-6">
+        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-sky-400 to-cyan-600 grid place-items-center text-white font-bold">${r.i}</div>
+        <div><div class="font-bold text-sm">${r.n}</div><div class="text-xs opacity-60">${r.t}</div></div>
+      </div>
+    </div>
+  </div>`).join('');
+
+/* ============ EVENTS ============ */
+$('filterChips').addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;
+  document.querySelectorAll('#filterChips .chip').forEach(c=>c.classList.remove('active'));
+  b.classList.add('active');renderDests(b.dataset.f);
+});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-book]');
+  if(b){e.stopPropagation();document.getElementById('booking').scrollIntoView({behavior:'smooth'});toast(`"${b.dataset.book}" turi tanlandi — formani to'ldiring`);}
+});
+$('searchBtn').addEventListener('click',async()=>{
+  const where=$('whereInput').value.trim();
+  if(!where){toast('Qayerga borishingizni kiriting');return;}
+  const btn=$('searchBtn');btn.disabled=true;
+  btn.innerHTML='<span class="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>';
+  await new Promise(r=>setTimeout(r,1300)); // API simulyatsiyasi
+  btn.disabled=false;btn.innerHTML='<i data-lucide="search" class="w-5 h-5"></i>Qidirish';
+  const people=$('peopleSelect').value, date=$('dateInput').value;
+  $('searchEcho').textContent=where?`"${where}" uchun ${date||'istalgan sanada'} · ${people} · 8 variant topildi ✅`:'';
+  const found=DESTINATIONS.find(d=>d.city.toLowerCase().includes(where.toLowerCase()));
+  if(found){
+    document.querySelectorAll('.tilt').forEach(c=>c.style.outline='');
+    const el=document.querySelector(`[data-dest="${found.id}"]`);
+    el&&(el.style.outline='3px solid #0ea5e9');
+    el&&el.scrollIntoView({behavior:'smooth',block:'center'});
+    toast(`${found.city} topildi — kartaga qarang`);
+  }else toast('Bu manzil uchun tur topilmadi, lekin alohida dastur tuzamiz');
+  lucide.createIcons();
+});
+$('callBtn').addEventListener('click',()=>toast('Qo\'ng\'iroq: +998 71 300 30 30'));
+$('bookForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const btn=e.target.querySelector('button'),old=btn.textContent;
+  btn.disabled=true;btn.innerHTML='<span class="inline-block w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin align-middle"></span> Yuborilmoqda...';
+  await new Promise(r=>setTimeout(r,1600));
+  btn.textContent='So\'rov qabul qilindi ✅';
+  toast('Operatorimiz 30 daqiqada siz bilan bog\'lanadi!');
+  e.target.reset();
+  await new Promise(r=>setTimeout(r,1800));
+  btn.textContent=old;btn.disabled=false;
+});
+document.querySelectorAll('[data-quick]').forEach(b=>b.addEventListener('click',()=>{
+  document.getElementById('booking').scrollIntoView({behavior:'smooth'});
+  toast(`${b.dataset.quick} tanlandi`);
+}));
+let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2500);}
+
+/* ===== MOBILE DRAWER (yon ochiluvchi menyu) ===== */
+const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
+const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
+document.getElementById('menuBtn')?.addEventListener('click',openMM);
+document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
+document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
+
+/* ============ INIT ============ */
+renderDests();
+AOS.init({duration:900,once:true});
+new Swiper('.tourSwiper',{slidesPerView:1,spaceBetween:24,loop:true,grabCursor:true,pagination:{el:'.tourSwiper .swiper-pagination',clickable:true},autoplay:{delay:5000},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:3}}});
+new Swiper('.revSwiper',{slidesPerView:1,spaceBetween:24,loop:true,grabCursor:true,pagination:{el:'.revSwiper .swiper-pagination',clickable:true},breakpoints:{768:{slidesPerView:2},1200:{slidesPerView:3}}});
+syncTheme();
+</script>
+</body>
+</html>

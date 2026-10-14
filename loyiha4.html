@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlogNur — Blog platformasi</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif'],serif:['"Playfair Display"','Georgia','serif']},colors:{ink:'#12100e'}}}}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
+.glass{background:rgba(255,255,255,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.5)}
+.dark .glass{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.09)}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.45;animation:float 11s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(26px,-32px)}}
+.reader{font-family:'Playfair Display',serif;font-size:1.21rem;line-height:1.95}
+.reader p{margin-bottom:1.6rem}
+.reader h3{font-family:'Inter',sans-serif;font-size:1.6rem;font-weight:800;margin:2.4rem 0 1rem}
+.reader blockquote{border-left:4px solid #f59e0b;padding:.4rem 0 .4rem 1.4rem;font-style:italic;margin:2rem 0;opacity:.85}
+.progress-read{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#f59e0b,#ef4444);z-index:60;width:0}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#f59e0b;border-radius:99px}
+.card-img{transition:transform .6s cubic-bezier(.22,1,.36,1)}
+.group:hover .card-img{transform:scale(1.08)}
+::-moz-selection{background:#f59e0b;color:#fff}::selection{background:#f59e0b;color:#fff}
+</style>
+</head>
+<body class="bg-amber-50/60 text-stone-800 dark:bg-ink dark:text-stone-200 transition-colors duration-500 overflow-x-hidden">
+
+<div class="blob bg-amber-300 w-72 h-72 top-20 -left-20"></div>
+<div class="blob bg-rose-300 w-72 h-72 top-[50%] -right-24" style="animation-delay:2.5s"></div>
+<div id="readProgress" class="progress-read"></div>
+
+<!-- HEADER -->
+<header id="nav" class="fixed inset-x-0 top-0 z-50 glass transition-shadow">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center gap-4">
+    <a href="#" class="flex items-center gap-2 font-black text-xl"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 grid place-items-center text-white"><i data-lucide="feather"></i></span>Blog<span class="text-amber-500">Nur</span></a>
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium flex-1 ml-4">
+      <a class="hover:text-amber-500 transition" href="#latest">So'nggi</a>
+      <a class="hover:text-amber-500 transition" href="#categories">Kategoriyalar</a>
+      <a class="hover:text-amber-500 transition" href="#authors">Mualliflar</a>
+      <a class="hover:text-amber-500 transition" href="#newsletter">Obuna</a>
+    </nav>
+    <div class="hidden sm:flex items-center glass rounded-xl px-3 py-2 gap-2 w-52">
+      <i data-lucide="search" class="w-4 h-4 opacity-60"></i>
+      <input id="searchInput" class="bg-transparent outline-none text-sm w-full" placeholder="Maqola qidirish...">
+    </div>
+    <button id="menuBtn" class="md:hidden w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
+    <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
+    <button id="subscribeBtn" class="hidden sm:block px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-bold hover:scale-105 transition">Obuna</button>
+  </div>
+  
+</header>
+
+<!-- HERO -->
+<section class="pt-32 pb-16 px-5">
+  <div class="max-w-7xl mx-auto">
+    <div class="swiper heroSwiper rounded-[2rem] overflow-hidden">
+      <div class="swiper-wrapper" id="heroSlides"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section id="categories" class="px-5 pb-10">
+  <div class="max-w-7xl mx-auto">
+    <h2 class="text-3xl font-black mb-7" data-aos="fade-up">Kategoriyalar</h2>
+    <div id="catRow" class="flex flex-wrap gap-3"></div>
+  </div>
+</section>
+
+<!-- POSTS -->
+<section id="latest" class="px-5 py-10">
+  <div class="max-w-7xl mx-auto grid lg:grid-cols-[1fr,340px] gap-10">
+    <div>
+      <div class="flex items-end justify-between mb-8" data-aos="fade-up">
+        <h2 class="text-3xl font-black">So'nggi <span class="text-amber-500">maqolalar</span></h2>
+        <span id="postCount" class="text-sm opacity-60"></span>
+      </div>
+      <div id="postGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7"></div>
+    </div>
+    <!-- SIDEBAR -->
+    <aside class="space-y-6">
+      <div class="glass rounded-3xl p-6" data-aos="fade-left">
+        <h3 class="font-black text-lg flex items-center gap-2"><i data-lucide="flame" class="text-orange-500"></i> Eng ko'p o'qilgan</h3>
+        <ol id="trendingList" class="mt-5 space-y-5"></ol>
+      </div>
+      <div class="glass rounded-3xl p-6" data-aos="fade-left" data-aos-delay="100">
+        <h3 class="font-black text-lg flex items-center gap-2"><i data-lucide="tag" class="text-amber-500"></i> Mashhur teglar</h3>
+        <div id="tagCloud" class="flex flex-wrap gap-2 mt-4"></div>
+      </div>
+      <div class="rounded-3xl p-6 bg-gradient-to-br from-amber-500 to-orange-600 text-white" data-aos="fade-left" data-aos-delay="200">
+        <i data-lucide="mail" class="w-8 h-8"></i>
+        <h3 class="font-black text-lg mt-3">Haftalik yangiliklar</h3>
+        <p class="text-sm text-white/85 mt-1">Eng yaxshi maqolalar bir marta, har dushanba.</p>
+        <button data-sub class="mt-4 w-full py-2.5 rounded-xl bg-white text-amber-600 font-bold text-sm hover:scale-105 transition">Obuna bo'lish</button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- AUTHORS -->
+<section id="authors" class="px-5 py-14">
+  <div class="max-w-7xl mx-auto">
+    <h2 class="text-3xl font-black mb-10" data-aos="fade-up">Mualliflar</h2>
+    <div class="swiper authorSwiper pb-14">
+      <div class="swiper-wrapper" id="authorSlides"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section id="newsletter" class="px-5 py-14">
+  <div class="max-w-4xl mx-auto glass rounded-[2rem] p-10 md:p-14 text-center relative overflow-hidden" data-aos="zoom-in">
+    <span class="text-xs font-bold tracking-[3px] text-amber-500">YANGILIKLAR</span>
+    <h2 class="text-4xl font-black mt-3">Hech narsani o'tkazib yubormang</h2>
+    <p class="opacity-70 mt-3">12 000+ o'quvchi qatoriga qo'shiling</p>
+    <form id="subForm" class="mt-8 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+      <input type="email" required placeholder="E-pochta manzilingiz" class="flex-1 px-5 py-3.5 rounded-xl bg-white/70 dark:bg-white/10 border border-white/50 dark:border-white/10 outline-none focus:ring-2 ring-amber-500 transition">
+      <button class="px-7 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold hover:scale-105 transition whitespace-nowrap">Obuna</button>
+    </form>
+    <span class="absolute -left-6 -bottom-10 text-[9rem] opacity-10">✍️</span>
+  </div>
+</section>
+
+<footer class="border-t border-black/5 dark:border-white/10 py-10 px-5">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
+    <div class="flex items-center gap-2 font-black"><span class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 grid place-items-center text-white"><i data-lucide="feather" class="w-5 h-5"></i></span>BlogNur</div>
+    <p class="text-sm opacity-60">© 2026 BlogNur. G'oyalar bilan qoling.</p>
+    <div class="flex gap-2">
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-amber-500 transition"><i data-lucide="rss"></i></a>
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-amber-500 transition"><i data-lucide="twitter"></i></a>
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-amber-500 transition"><i data-lucide="instagram"></i></a>
+    </div>
+  </div>
+</footer>
+
+<!-- ======= ARTICLE READING PAGE MODAL ======= -->
+<div id="articleModal" class="fixed inset-0 z-[70] hidden">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-close></div>
+  <div id="articleScroll" class="absolute inset-0 overflow-y-auto bg-amber-50 dark:bg-ink">
+    <article id="articleBody" class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 scale-95 opacity-0 transition-all duration-300"></article>
+  </div>
+</div>
+
+<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
+<div id="mobileMenu" class="md:hidden fixed inset-0 z-[60] hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
+  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
+      <span class="font-black text-lg">Menyu</span>
+      <button class="w-9 h-9 grid place-items-center rounded-xl bg-black/5 dark:bg-white/10" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#latest"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>So'nggi</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#categories"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Kategoriyalar</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#authors"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Mualliflar</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#newsletter"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Obuna</a>
+    </nav>
+    <div class="px-5 py-4 border-t border-black/10 dark:border-white/10 text-xs opacity-60">© 2026 — barcha huquqlar himoyalangan</div>
+  </aside>
+</div>
+
+<!-- TOAST (bildirishnoma) -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[80] hidden">
+  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 shadow-xl font-semibold"><i data-lucide="check-circle-2" class="text-green-500"></i><span id="toastMsg"></span></div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+/* ============ THEME ============ */
+const root=document.documentElement;
+if(localStorage.getItem('bn-theme')==='dark'||(!localStorage.getItem('bn-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
+const themeIcon=document.getElementById('themeIcon');
+const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'sun':'moon');lucide.createIcons();};
+document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('bn-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
+
+/* ============ DATA (fake API) ============ */
+const API=(()=>{
+  const posts=[
+    {id:1,title:"Sun'iy intellekt sahifalarini qanday o'zgartiryapti?",cat:'Texnologiya',emoji:'🤖',grad:'from-indigo-500 to-blue-600',read:8,date:'12 Oktyabr 2026',author:'Bobur Rashidov',views:'24.5k',tags:['AI','Kelajak','Texnologiya'],
+     lead:"AI allaqachon oddiy ikonkalardan tortib to'liq dizayn tizimlarigacha — hammasini o'zgartiryapti.",
+     body:"<p>Sun'iy intellekt so'nggi yillarda shunchaki vosita emas, balki to'liq ish jarayoniga aylandi. Dizaynerlar, dasturchilar va kontent mualliflari endi AI yordamchilari bilan birgalikda ishlashga o'rganishmoqda.</p><p>Bundan keyin nima bo'ladi? Ekspertlarning fikricha, kelgusi besh yil ichida veb-sahifalarning 60% gacha qismi AI tomonidan generatsiya qilinadi. Bu juda tez ishlab chiqish imkonini beradi-yu, ammo kontsepthuquq va xavfsizlik savollari ham ortib bormoqda.</p><blockquote>Texnologiya haqidagi eng muhim savol — \"buni qilish mumkinmi?\" emas, \"buni qilish kerakmi?\"</blockquote><h3>Nima o'rganish kerak?</h3><p>Zamonaviy mutaxassis uchun eng qimmatli ko'nikmalar: prompt muhandisligi, ma'lumotlar tahlili va axloqiy normalarni tushunish. Kod yozishdan ko'ra, to'g'ri savol berish ko'proq qiymatga ega bo'lmoqda.</p><p>Xulosa qilib aytganda: AI raqobatni yumshatmaydi — uni qobiliyatli bo'lganlar uchun juda kuchaytiradi.</p>"},
+    {id:2,title:'Minimalizm aslida nima degani? Dizaynda fazo ijtimoiyati',cat:'Dizayn',emoji:'🎨',grad:'from-rose-500 to-pink-600',read:6,date:'10 Oktyabr 2026',author:'Nilufar Saidova',views:'18.2k',tags:['Dizayn','Minimalizm','UI/UX'],
+     lead:"Yaxshi dizayn — ko'proq narsa qo'shish emas, keraksiz narsalarni olib tashlash san'ati.",
+     body:"<p>Minimalizmni ko'pchilik kamroq element degani deb o'ylaydi. Aslida esa u har bir elementni o'z o'rniga ega bo'lishi kerak degani.</p><p>Nega ba'zi sahifalar shunchalik tinch ko'rinadi? Chunki u yerda fazolar muvozanatli, tipografiya aniq va ranglar cheklangan. Minimalizm — bu intizom.</p><h3>Amaliy qoidalar</h3><p>1. Har element savolga javob berishi kerak: nima uchun bu shu yerda? 2. Bir sahifada ko'pi bilan ikkita aksent rang. 3. Logo tipografiyasini hech qachon kichraytirmang.</p><p>Cheklov — ijodkorning eng yaxshi do'sti.</p>"},
+    {id:3,title:"O'zbekistonda startap ekotizimasi: 2026 holat bo'yicha",cat:'Biznes',emoji:'📈',grad:'from-emerald-500 to-teal-600',read:11,date:'8 Oktyabr 2026',author:'Jahongir Karimov',views:'31.1k',tags:['Startap','Investitsiya'],
+     lead:"Yil boshidan beri mahalliy startaplar jahon bozorlariga chiqa boshladi.",
+     body:"<p>2026-yil O'zbekiston startap ekotizimida o'ziga xos burilish yili bo'ldi. Akseleratorlar soni ortib, fondlar ham faol ishlayapti.</p><blockquote>Eng muhim resurs — pul emas, to'g'ri jamoa.</blockquote><h3>Asosiy tendensiyalar</h3><p>EdTech va HealthTech sohalari keskin o'smoqda. Internetga ulanish tezligi ortgani sayin Qishloq xo'jaligi texnologiyalari ham rivojlanmoqda.</p><p>Yangi avlod tadbirkorlari bilan bog'liq eng katta farq — ular global bozorni boshidan hisobga oladi.</p>"},
+    {id:4,title:'Uxlash sifati: sekunda yetsa bo\'ladigan 6 ta odat',cat:'Salomatlik',emoji:'🌙',grad:'from-violet-500 to-purple-600',read:7,date:'6 Oktyabr 2026',author:'Kamola Yusupova',views:'42.7k',tags:['Salomatlik','Odatlar'],
+     lead:"Yaxshi uyqu — eng arzon va eng samarali \'shifokor\'.",
+     body:"<p>Kunduzgi energiya darajangiz asosan uyqu sifatingizga bog'liq. Yevropa tibbiyot jamiyatining ma'lumotiga ko'ra, kattalar uchun optimal uyqu 7-9 soat.</p><h3>Oddiy amaliyot</h3><p>Yotishdan bir soat oldin ekranni yoping. Xona haroratini 20°C atrofida ushlang. Kofeni soat 14:00 dan keyin ichmang.</p><p>Bir haftada farqini sezasiz.</p>"},
+    {id:5,title:'Nega mikroservislar hamma narsani hal qilmaydi?',cat:'Texnologiya',emoji:'⚙️',grad:'from-slate-600 to-gray-800',read:9,date:'4 Oktyabr 2026',author:'Sardor Ergashev',views:'15.3k',tags:['Arxitektura','DevOps'],
+     lead:"Mikroservislar kuchli, ammo... noqulayliklari ham bor.",
+     body:"<p>Har bir loyihaga mikroservis kerak emas. 5 kishilik jamoaga 40 xizmat — bu shunchaki qo'shimcha yuk.</p><p>Qoida oddiy: jamoa tarkibi va murakkablik bir-biriga mos bo'lishi kerak. Aks holda \"devops halqasi\" aylanib qoladi.</p><blockquote>Avval monolitni to'g'ri quring, keyin bo'ling.</blockquote>"},
+    {id:6,title:'Yevropada sayohat: hamyonbop 10 shahar',cat:'Sayohat',emoji:'✈️',grad:'from-sky-500 to-cyan-600',read:10,date:'2 Oktyabr 2026',author:'Nilufar Saidova',views:'27.8k',tags:['Sayohat','Yevropa'],
+     lead:"Chiroyli sharhlar, arzon kafe va boy tarix.",
+     body:"<p>Yevropa qimr degan fikr ko'pchilikda. Ammo Portuqaliyaning Porto shahridan tortib Polshaning Krakovigacha juda hamyonbop shaharlar ko'p.</p><p>Yagona maslahat: mavsumdan tashqari sayohat qiling — o'y kayfiyati ham yaxshiroq.</p>"},
+  ];
+  return {
+    getPosts:()=>new Promise(r=>setTimeout(()=>r(posts),600)),
+    getPost:id=>new Promise(r=>setTimeout(()=>r(posts.find(p=>p.id===id)),400)),
+  };
+})();
+const $=id=>document.getElementById(id);
+
+/* ============ STATE / RENDER ============ */
+let posts=[],activeCat='Barchasi';
+const money=n=>n;
+
+async function boot(){
+  $('postGrid').innerHTML='<div class="col-span-2 grid place-items-center py-24"><span class="w-12 h-12 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></span></div>';
+  posts=await API.getPosts(); // async/await bilan yuklab olish
+  renderCats();renderPosts();renderHero();renderSidebar();renderAuthors();
+}
+const catColors={'Texnologiya':'from-indigo-500 to-blue-500','Dizayn':'from-rose-500 to-pink-500','Biznes':'from-emerald-500 to-teal-500','Salomatlik':'from-violet-500 to-purple-500','Sayohat':'from-sky-500 to-cyan-500'};
+
+function renderCats(){
+  const cats=['Barchasi',...new Set(posts.map(p=>p.cat))];
+  $('catRow').innerHTML=cats.map(c=>`
+    <button class="catBtn px-4 py-2.5 rounded-2xl font-semibold text-sm transition glass ${c===activeCat?'bg-amber-500 text-white border-amber-500':'hover:scale-105'}" data-cat="${c}">
+      ${c} ${c!=='Barchasi'?`<span class="opacity-60 text-xs">${posts.filter(p=>p.cat===c).length}</span>`:''}
+    </button>`).join('');
+}
+function renderPosts(){
+  const list=activeCat==='Barchasi'?posts:posts.filter(p=>p.cat===activeCat);
+  $('postCount').textContent=`${list.length} ta maqola`;
+  $('postGrid').innerHTML=list.map((p,i)=>`
+    <article class="group glass rounded-3xl overflow-hidden card-hover cursor-pointer" data-post="${p.id}" data-aos="fade-up" data-aos-delay="${i*70}" style="transition:transform .35s">
+      <div class="h-48 overflow-hidden relative">
+        <div class="card-img absolute inset-0 bg-gradient-to-br ${p.grad} grid place-items-center text-6xl">${p.emoji}</div>
+        <span class="absolute top-3 left-3 text-[11px] font-bold bg-white/90 text-stone-800 px-2.5 py-1 rounded-lg">${p.cat}</span>
+        <span class="absolute top-3 right-3 text-[11px] font-bold bg-black/40 text-white px-2.5 py-1 rounded-lg flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i>${p.read} daq</span>
+      </div>
+      <div class="p-6">
+        <h3 class="text-xl font-black leading-snug group-hover:text-amber-500 transition">${p.title}</h3>
+        <p class="text-sm opacity-70 mt-2 line-clamp-2">${p.lead}</p>
+        <div class="flex items-center justify-between mt-5 pt-4 border-t border-black/5 dark:border-white/10">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 grid place-items-center text-white text-xs font-bold">${p.author.split(' ').map(w=>w[0]).join('')}</div>
+            <div><div class="text-xs font-bold">${p.author}</div><div class="text-[11px] opacity-60">${p.date}</div></div>
+          </div>
+          <span class="inline-flex items-center gap-1 text-xs font-bold text-amber-500">O'qish <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition"></i></span>
+        </div>
+      </div>
+    </article>`).join('');
+  lucide.createIcons();AOS.refresh();
+}
+function renderHero(){
+  const top=posts.slice(0,3);
+  $('heroSlides').innerHTML=top.map(p=>`
+    <div class="swiper-slide">
+      <div class="relative h-[420px] bg-gradient-to-br ${p.grad} text-white grid place-items-center text-center px-6 cursor-pointer" data-post="${p.id}">
+        <div class="max-w-xl">
+          <span class="text-xs font-bold bg-white/25 px-3 py-1 rounded-full">${p.cat} · TANLOV</span>
+          <h2 class="text-4xl md:text-5xl font-black mt-5 leading-tight">${p.title}</h2>
+          <p class="mt-4 text-white/85">${p.lead}</p>
+          <span class="inline-flex items-center gap-2 mt-6 bg-white text-stone-900 font-bold px-6 py-3 rounded-xl hover:scale-105 transition">O'qishni boshlash <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
+        </div>
+        <span class="absolute right-8 bottom-2 text-[9rem] opacity-25 select-none">${p.emoji}</span>
+      </div>
+    </div>`).join('');
+}
+function renderSidebar(){
+  const trend=[...posts].sort((a,b)=>parseFloat(b.views)-parseFloat(a.views)).slice(0,4);
+  $('trendingList').innerHTML=trend.map((p,i)=>`
+    <li class="flex gap-3 cursor-pointer group" data-post="${p.id}">
+      <span class="text-2xl font-black text-amber-500/40 group-hover:text-amber-500 transition">${i+1}</span>
+      <div>
+        <h4 class="text-sm font-bold leading-snug group-hover:text-amber-500 transition">${p.title}</h4>
+        <div class="flex items-center gap-3 text-[11px] opacity-60 mt-1"><span>${p.date}</span><span class="flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i>${p.views}</span></div>
+      </div>
+    </li>`).join('');
+  const tags=[...new Set(posts.flatMap(p=>p.tags))];
+  $('tagCloud').innerHTML=tags.map(t=>`<button data-tag="${t}" class="text-xs font-semibold px-3 py-1.5 rounded-xl glass hover:bg-amber-500 hover:text-white transition">#${t}</button>`).join('');
+}
+const authors=[
+  {name:'Bobur Rashidov',role:'Texnologiya muharriri',ini:'BR',posts:'84',text:'AI va dasturlash haqida yozadi'},
+  {name:'Nilufar Saidova',role:'Dizayn muharriri',ini:'NS',posts:'56',text:'Minimalizm va UI/UX bo\'yicha'},
+  {name:'Jahongir Karimov',role:'Biznes kolumnisti',ini:'JK',posts:'41',text:'Startaplar va investitsiyalar'},
+  {name:'Sardor Ergashev',role:'DevOps kolumnisti',ini:'SE',posts:'33',text:'Arxitektura va bulutlar'},
+];
+function renderAuthors(){
+  $('authorSlides').innerHTML=authors.map(a=>`
+    <div class="swiper-slide h-auto">
+      <div class="glass rounded-3xl p-7 h-full text-center">
+        <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-amber-400 to-orange-500 grid place-items-center text-white text-2xl font-black">${a.ini}</div>
+        <h4 class="font-black text-lg mt-4">${a.name}</h4>
+        <div class="text-xs font-semibold text-amber-500 mt-1">${a.role}</div>
+        <p class="text-sm opacity-70 mt-3">${a.text}</p>
+        <div class="mt-4 text-xs opacity-60">${a.posts} maqola</div>
+        <button class="mt-4 w-full py-2.5 rounded-xl glass font-bold text-sm hover:bg-amber-500 hover:text-white transition">Obuna bo'lish</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ============ ARTICLE READING PAGE ============ */
+let readingPost=null;
+async function openArticle(id){
+  readingPost=posts.find(p=>p.id===id);
+  if(!readingPost)return;
+  const related=posts.filter(p=>p.cat===readingPost.cat&&p.id!==readingPost.id).slice(0,2);
+  $('articleBody').innerHTML=`
+    <button class="fixed top-5 left-5 z-10 w-11 h-11 rounded-2xl glass grid place-items-center hover:scale-110 transition" data-close><i data-lucide="arrow-left"></i></button>
+    <div class="pt-14">
+      <span class="text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500 text-white">${readingPost.cat}</span>
+      <h1 class="text-4xl md:text-5xl font-black mt-6 leading-tight">${readingPost.title}</h1>
+      <div class="flex flex-wrap items-center gap-5 mt-7 pb-8 border-b border-black/10 dark:border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 grid place-items-center text-white font-bold">${readingPost.author.split(' ').map(w=>w[0]).join('')}</div>
+          <div><div class="font-bold text-sm">${readingPost.author}</div><div class="text-xs opacity-60">${readingPost.date} · ${readingPost.read} daqiqa o'qish</div></div>
+        </div>
+        <div class="flex gap-2 ml-auto">
+          <button class="fsBtn w-10 h-10 rounded-xl glass grid place-items-center hover:scale-110 transition" title="Kattalashtirish"><i data-lucide="zoom-in"></i></button>
+          <button class="fsBtn w-10 h-10 rounded-xl glass grid place-items-center hover:scale-110 transition" title="Kichiklashtirish"><i data-lucide="zoom-out"></i></button>
+          <button id="saveBtn" class="w-10 h-10 rounded-xl glass grid place-items-center hover:scale-110 transition" title="Saqlash"><i data-lucide="bookmark"></i></button>
+          <button class="w-10 h-10 rounded-xl glass grid place-items-center hover:scale-110 transition" title="Ulashish" data-share><i data-lucide="share-2"></i></button>
+        </div>
+      </div>
+      <div class="h-64 md:h-80 rounded-3xl bg-gradient-to-br ${readingPost.grad} grid place-items-center text-[8rem] my-9">${readingPost.emoji}</div>
+      <div id="readerBox" class="reader">${readingPost.body}</div>
+      <div class="flex flex-wrap gap-2 mt-10">${readingPost.tags.map(t=>`<span class="text-sm font-semibold px-3 py-1.5 rounded-xl glass">#${t}</span>`).join('')}</div>
+      ${related.length?`<div class="mt-14">
+        <h3 class="text-2xl font-black mb-6">O'xshash maqolalar</h3>
+        <div class="grid sm:grid-cols-2 gap-5">${related.map(r=>`
+          <div class="glass rounded-3xl overflow-hidden cursor-pointer group" data-post="${r.id}">
+            <div class="h-36 bg-gradient-to-br ${r.grad} grid place-items-center text-5xl">${r.emoji}</div>
+            <div class="p-5"><h4 class="font-bold leading-snug">${r.title}</h4><div class="text-xs opacity-60 mt-2">${r.read} daqiqa · ${r.date}</div></div>
+          </div>`).join('')}</div></div>`:''}
+    </div>`;
+  $('articleModal').classList.remove('hidden');
+  $('articleScroll').scrollTop=0;document.body.style.overflow='hidden';
+  requestAnimationFrame(()=>{$('articleBody').classList.remove('scale-95','opacity-0');});
+  lucide.createIcons();
+}
+function closeArticle(){
+  $('articleBody').classList.add('scale-95','opacity-0');
+  setTimeout(()=>{$('articleModal').classList.add('hidden');$('articleBody').innerHTML='';document.body.style.overflow='';$('readProgress').style.width='0';},280);
+}
+$('articleModal').addEventListener('click',e=>{
+  if(e.target.closest('[data-close]')||e.target.hasAttribute('data-close'))closeArticle();
+  const p=e.target.closest('[data-post]');
+  if(p){closeArticle();setTimeout(()=>openArticle(p.dataset.post),300);}
+  const fs=e.target.closest('.fsBtn');
+  if(fs){const box=$('readerBox');const cur=parseFloat(getComputedStyle(box).fontSize);box.style.fontSize=fs.title==='Kattalashtirish'?Math.min(cur+2,26)+'px':Math.max(cur-2,16)+'px';}
+  if(e.target.closest('#saveBtn'))toast('Maqola saqlanganlar ro\'yxatiga qo\'shildi');
+  if(e.target.closest('[data-share]'))toast('Havola nusxalandi 📋');
+});
+$('articleScroll').addEventListener('scroll',()=>{
+  const el=$('articleScroll'),p=el.scrollTop/(el.scrollHeight-el.clientHeight)*100;
+  $('readProgress').style.width=Math.min(p,100)+'%';
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('articleModal').classList.contains('hidden'))closeArticle();});
+
+/* ============ EVENTS ============ */
+document.addEventListener('click',async e=>{
+  const cat=e.target.closest('.catBtn');
+  if(cat){activeCat=cat.dataset.cat;renderCats();renderPosts();}
+  const post=e.target.closest('[data-post]');
+  if(post&&$('articleModal').classList.contains('hidden'))await openArticle(post.dataset.post);
+  const tag=e.target.closest('[data-tag]');
+  if(tag)toast(`#${tag.dataset.tag} bo'yicha qidiruv...`);
+  const sub=e.target.closest('[data-sub]');
+  if(sub){toast('Obuna bo\'ldingiz! 🎉');document.getElementById('newsletter').scrollIntoView({behavior:'smooth'});}
+});
+$('searchInput').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase();
+  const list=posts.filter(p=>p.title.toLowerCase().includes(q)||p.tags.some(t=>t.toLowerCase().includes(q)));
+  const source=list;
+  $('postCount').textContent=`${source.length} ta natija`;
+  $('postGrid').innerHTML=source.length?source.map((p,i)=>`
+    <article class="group glass rounded-3xl overflow-hidden cursor-pointer" data-post="${p.id}" data-aos="fade-up">
+      <div class="h-40 bg-gradient-to-br ${p.grad} grid place-items-center text-5xl">${p.emoji}</div>
+      <div class="p-5"><span class="text-[11px] font-bold text-amber-500">${p.cat}</span>
+      <h3 class="font-black leading-snug mt-1 group-hover:text-amber-500 transition">${p.title}</h3>
+      <div class="text-xs opacity-60 mt-2">${p.date} · ${p.read} daq</div></div>
+    </article>`).join(''):'<div class="col-span-2 text-center py-16 glass rounded-3xl"><span class="text-5xl">📭</span><p class="font-bold mt-3">Maqola topilmadi</p></div>';
+  lucide.createIcons();
+});
+$('subForm').addEventListener('submit',e=>{e.preventDefault();e.target.reset();toast('Tabriklaymiz, obuna bo\'ldingiz! 🎉');});
+$('subscribeBtn').addEventListener('click',()=>document.getElementById('newsletter').scrollIntoView({behavior:'smooth'}));
+window.addEventListener('scroll',()=>{
+  const p=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+  $('readProgress').style.width=Math.min(p,100)+'%';
+});
+
+/* ============ TOAST ============ */
+let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2400);}
+
+/* ===== MOBILE DRAWER (yon ochiluvchi menyu) ===== */
+const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
+const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
+document.getElementById('menuBtn')?.addEventListener('click',openMM);
+document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
+document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
+
+/* ============ INIT ============ */
+boot();
+AOS.init({duration:850,once:true});
+new Swiper('.heroSwiper',{loop:true,effect:'fade',autoplay:{delay:6500},pagination:{el:'.heroSwiper .swiper-pagination',clickable:true}});
+new Swiper('.authorSwiper',{slidesPerView:1,spaceBetween:20,loop:true,grabCursor:true,pagination:{el:'.authorSwiper .swiper-pagination',clickable:true},breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:4}}});
+lucide.createIcons();
+</script>
+</body>
+</html>

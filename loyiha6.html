@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KinoUz — Kino portali</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif']},colors:{ink:'#07070d'}}}}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+html{scroll-behavior:smooth}body{font-family:'Inter',sans-serif}
+.glass{background:rgba(255,255,255,.05);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1)}
+.l-glass{background:rgba(255,255,255,.7);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.6)}
+.dark .l-glass{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
+.blob{position:absolute;border-radius:50%;filter:blur(110px);opacity:.5;animation:float 12s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(34px,-44px)}}
+/* Poster hover animatsiyalari */
+.poster{transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s;transform-style:preserve-3d}
+.poster:hover{transform:translateY(-14px) scale(1.04) rotateX(4deg);box-shadow:0 32px 60px -12px rgba(229,9,20,.55);z-index:5}
+.poster .overlay{opacity:0;transition:opacity .4s}
+.poster:hover .overlay{opacity:1}
+.poster .play{transform:scale(.4) translateY(20px);transition:all .45s cubic-bezier(.34,1.56,.64,1) .1s}
+.poster:hover .play{transform:scale(1) translateY(0)}
+.poster .shine{position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.28) 48%,transparent 62%);transform:translateX(-120%);transition:transform .8s}
+.poster:hover .shine{transform:translateX(120%)}
+.hero-scan{background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.18) 4px)}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:#e50914;border-radius:99px}
+.chip.active{background:#e50914;border-color:#e50914;color:#fff}
+.rating-num{font-variant-numeric:tabular-nums}
+.ticket{transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.ticket:hover{transform:translateY(-6px) rotate(-1deg)}
+</style>
+</head>
+<body class="bg-slate-100 text-slate-900 dark:bg-ink dark:text-slate-100 transition-colors duration-500 overflow-x-hidden">
+
+<div class="blob bg-red-600 w-96 h-96 -top-32 -left-24"></div>
+<div class="blob bg-purple-700 w-80 h-80 top-[45%] -right-32" style="animation-delay:3s"></div>
+
+<!-- NAV -->
+<header id="nav" class="fixed inset-x-0 top-0 z-50 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mt-3 rounded-2xl l-glass px-5 py-3 flex items-center gap-5">
+      <a href="#" class="flex items-center gap-2 font-black text-2xl text-[#e50914] shrink-0"><i data-lucide="clapperboard" class="w-7 h-7"></i>KinoUz</a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-semibold flex-1">
+        <a class="hover:text-[#e50914] transition" href="#now">Kinoteatlarda</a>
+        <a class="hover:text-[#e50914] transition" href="#trending">Trendda</a>
+        <a class="hover:text-[#e50914] transition" href="#soon">Tez kunda</a>
+        <a class="hover:text-[#e50914] transition" href="#ratings">Reyting</a>
+      </nav>
+      <div class="flex items-center gap-2 ml-auto">
+        <div class="hidden sm:flex items-center gap-2 rounded-xl glass px-3 py-2 w-48">
+          <i data-lucide="search" class="w-4 h-4 opacity-60"></i>
+          <input id="searchInput" class="bg-transparent outline-none text-sm w-full" placeholder="Film qidirish...">
+        </div>
+        <button id="menuBtn" class="md:hidden w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition" aria-label="Menyu"><i data-lucide="menu" class="w-5 h-5"></i></button>
+        <button id="themeBtn" class="w-9 h-9 grid place-items-center rounded-xl glass hover:rotate-45 transition"><i data-lucide="sun" id="themeIcon" class="w-5 h-5"></i></button>
+        <button id="loginBtn" class="px-4 py-2 rounded-xl bg-[#e50914] text-white text-sm font-bold hover:scale-105 transition">Kirish</button>
+      </div>
+    </div>
+    
+  </div>
+</header>
+
+<!-- HERO SLIDER -->
+<section class="relative pt-28">
+  <div class="swiper heroSwiper h-[600px]">
+    <div class="swiper-wrapper" id="heroSlides"></div>
+    <div class="swiper-pagination"></div>
+  </div>
+</section>
+
+<!-- MOVIE ROWS -->
+<main class="relative -mt-10 z-10 pb-10">
+  <!-- NOW SHOWING -->
+  <section id="now" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-14">
+    <div class="flex items-end justify-between mb-6" data-aos="fade-up">
+      <h2 class="text-2xl md:text-3xl font-black">Kinoteatlarda <span class="text-[#e50914]">ko'rsatilmoqda</span></h2>
+      <div id="genreChips" class="hidden md:flex flex-wrap gap-2"></div>
+    </div>
+    <div id="nowGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
+  </section>
+
+  <!-- TRENDING CAROUSEL -->
+  <section id="trending" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-14">
+    <h2 class="text-2xl md:text-3xl font-black mb-6" data-aos="fade-up">🔥 Hafta <span class="text-[#e50914]">trendlari</span></h2>
+    <div class="swiper trendSwiper pb-4">
+      <div class="swiper-wrapper" id="trendSlides"></div>
+    </div>
+  </section>
+
+  <!-- COMING SOON + TABS -->
+  <section id="soon" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-14">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-6" data-aos="fade-up">
+      <h2 class="text-2xl md:text-3xl font-black">Tez kuna <span class="text-[#e50914]">ekranga</span></h2>
+      <div id="soonTabs" class="flex glass rounded-2xl p-1 text-sm font-bold">
+        <button class="tabBtn active px-5 py-2 rounded-xl transition" data-t="january">Yanvar</button>
+        <button class="tabBtn px-5 py-2 rounded-xl transition" data-t="february">Fevral</button>
+        <button class="tabBtn px-5 py-2 rounded-xl transition" data-t="march">Mart</button>
+      </div>
+    </div>
+    <div id="soonGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
+  </section>
+
+  <!-- TOP RATINGS TABLE -->
+  <section id="ratings" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+    <h2 class="text-2xl md:text-3xl font-black mb-6" data-aos="fade-up">IMDb <span class="text-[#e50914]">reyting</span> bo'yicha</h2>
+    <div class="glass rounded-3xl divide-y divide-white/10 overflow-hidden" id="ratingTable"></div>
+  </section>
+
+  <!-- TICKETS -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+    <div class="rounded-[2rem] p-8 md:p-12 bg-gradient-to-br from-[#e50914] to-[#7f1d1d] text-white relative overflow-hidden" data-aos="zoom-in">
+      <div class="relative z-10 max-w-lg">
+        <span class="text-xs font-bold bg-white/20 px-3 py-1 rounded-full">MAXSUS TAKLIF</span>
+        <h2 class="text-3xl md:text-4xl font-black mt-4">Sizning shaxsiy chiptangiz</h2>
+        <p class="text-white/85 mt-3">Chipta nanomini to'ldiring, qulay o'rinni tanlang va hoziroq band qiling.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button id="buyBtn" class="bg-white text-[#e50914] font-bold px-6 py-3 rounded-xl hover:scale-105 transition">Chipta olish</button>
+          <span class="inline-flex items-center gap-2 bg-white/15 px-4 py-3 rounded-xl font-bold text-sm"><i data-lucide="users"></i> Bugun 1 240 ta chipta sotildi</span>
+        </div>
+      </div>
+      <span class="absolute right-6 -bottom-8 text-[11rem] opacity-20 select-none">🎟️</span>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-black/10 dark:border-white/10 py-10 px-5">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
+    <div class="font-black text-2xl text-[#e50914] flex items-center gap-2"><i data-lucide="clapperboard" class="w-6 h-6"></i>KinoUz</div>
+    <p class="text-sm opacity-60">© 2026 KinoUz. Ko'rish zavqini biz bilan ulashing.</p>
+    <div class="flex gap-2">
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-[#e50914] transition"><i data-lucide="youtube"></i></a>
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-[#e50914] transition"><i data-lucide="instagram"></i></a>
+      <a href="#" class="w-9 h-9 grid place-items-center rounded-xl glass hover:text-[#e50914] transition"><i data-lucide="telegram"></i></a>
+    </div>
+  </div>
+</footer>
+
+<!-- MOVIE MODAL (treyler + info + chipta) -->
+<div id="movieModal" class="fixed inset-0 z-[70] hidden">
+  <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" data-close></div>
+  <div id="movieCard" class="absolute inset-0 grid place-items-center p-4 overflow-y-auto pointer-events-none">
+    <div id="movieInner" class="pointer-events-auto w-full max-w-4xl bg-slate-900 text-slate-100 rounded-[2rem] overflow-hidden shadow-2xl scale-90 opacity-0 transition-all duration-300 my-8"></div>
+  </div>
+</div>
+
+<!-- SEAT TICKET MODAL -->
+<div id="ticketModal" class="fixed inset-0 z-[75] hidden">
+  <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" data-close></div>
+  <div class="absolute inset-0 grid place-items-center p-4">
+    <div id="ticketCard" class="w-full max-w-md bg-slate-900 rounded-3xl p-7 scale-90 opacity-0 transition-all duration-300 relative overflow-hidden">
+      <div class="absolute -left-3 top-1/2 w-6 h-6 rounded-full bg-black/80"></div>
+      <div class="absolute -right-3 top-1/2 w-6 h-6 rounded-full bg-black/80"></div>
+      <div class="relative">
+        <div class="flex justify-between items-start">
+          <div><div class="text-xs font-bold tracking-[3px] text-[#e50914]">KINO CHIPTASI</div><h3 class="text-2xl font-black mt-1" id="ticketMovie">Kinoteatr</h3></div>
+          <button class="w-9 h-9 grid place-items-center rounded-xl bg-white/10" data-close><i data-lucide="x"></i></button>
+        </div>
+        <div class="mt-6">
+          <div class="text-xs opacity-60 mb-2 text-center">Ekran</div>
+          <div class="h-2 rounded-full bg-gradient-to-r from-transparent via-[#e50914] to-transparent mb-6"></div>
+          <div id="seatMap" class="grid grid-cols-8 gap-2 justify-items-center"></div>
+        </div>
+        <div class="flex justify-between items-center mt-6 pt-5 border-t border-dashed border-white/20">
+          <div><div class="text-xs opacity-60">Tanlangan</div><div class="font-black" id="seatInfo">—</div></div>
+          <div class="text-right"><div class="text-xs opacity-60">Narxi</div><div class="font-black text-[#e50914]" id="seatPrice">0 so'm</div></div>
+        </div>
+        <button id="payBtn" class="w-full mt-5 py-3.5 rounded-2xl bg-[#e50914] font-bold hover:scale-[1.02] transition disabled:opacity-40">Xarid qilish</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE DRAWER: telefonlar uchun yon ochiluvchi menyu -->
+<div id="mobileMenu" class="md:hidden fixed inset-0 z-[60] hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" data-close></div>
+  <aside id="mobilePanel" class="absolute right-0 top-0 h-full w-[82%] max-w-xs flex flex-col translate-x-full transition-transform duration-300 shadow-2xl glass border-l border-black/10 dark:border-white/10">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-black/10 dark:border-white/10">
+      <span class="font-black text-lg">Menyu</span>
+      <button class="w-9 h-9 grid place-items-center rounded-xl bg-black/5 dark:bg-white/10" data-close aria-label="Yopish"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-[15px] font-semibold">
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#now"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Kinoteatlarda</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#trending"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Trendda</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#soon"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Tez kunda</a>
+      <a class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-black/5 dark:hover:bg-white/10 transition" href="#ratings"><span class="w-2 h-2 rounded-full bg-current opacity-40"></span>Reyting</a>
+    </nav>
+    <div class="px-5 py-4 border-t border-black/10 dark:border-white/10 text-xs opacity-60">© 2026 — barcha huquqlar himoyalangan</div>
+  </aside>
+</div>
+
+<!-- TOAST (bildirishnoma) -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] hidden">
+  <div class="glass rounded-2xl px-5 py-3 flex items-center gap-3 font-bold"><i data-lucide="check-circle-2" class="text-green-400"></i><span id="toastMsg"></span></div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+/* ============ THEME ============ */
+const root=document.documentElement;
+if(localStorage.getItem('ku-theme')==='dark'||(!localStorage.getItem('ku-theme')&&matchMedia('(prefers-color-scheme:dark)').matches))root.classList.add('dark');
+const themeIcon=document.getElementById('themeIcon');
+const syncTheme=()=>{themeIcon.setAttribute('data-lucide',root.classList.contains('dark')?'sun':'moon');lucide.createIcons();};
+document.getElementById('themeBtn').addEventListener('click',()=>{root.classList.toggle('dark');localStorage.setItem('ku-theme',root.classList.contains('dark')?'dark':'light');syncTheme();});
+
+/* ============ DATA ============ */
+const MOVIES=[
+  {id:1,title:'Baxt Quyoshi',year:2026,genre:'Drama',imdb:8.7,emoji:'🌅',g:'from-amber-500 to-orange-700',dur:124,age:'12+',desc:'Kichik shaharlik yosh rassomning orzusiga erishish yo\'lidagi kurashi haqida ramziy drama.',cast:['Shoxrux Hamdamov','Dilbar Sobirova'],dir:'Javohir Tursunov',lang:'O\'zbek',sub:'O\'zbek/rus',now:true,month:'january'},
+  {id:2,title:'Shamol Qal\'asi',year:2026,genre:'Fantastika',imdb:9.1,emoji:'🏯',g:'from-indigo-600 to-purple-800',dur:148,age:'16+',desc:'Qadimiy afsonalar va zamonaviy dunyo kesishgan nuqtada yosh josuslar jamoasi qutqaruv yo\'lini topadi.',cast:['Laziz Umarov','Kamola Ergasheva'],dir:'Shuhrat Qodirov',lang:'O\'zbek',sub:'O\'zbek/ingliz',now:true,month:'january'},
+  {id:3,title:'Poyga 2',year:2026,genre:'Triller',imdb:7.9,emoji:'🏎️',g:'from-red-600 to-rose-900',dur:132,age:'16+',desc:'Noqonuniy poygalar olamiga qaytgan sobiq chempion oxirgi kurashini qabul qiladi.',cast:['Botir Xolmatov','Aziza Karimova'],dir:'Rustam Saidov',lang:'Ingliz',sub:'O\'zbek',now:true,month:'january',views:'1.2M'},
+  {id:4,title:'Ipak Yo\'li',year:2025,genre:'Tarixiy',imdb:8.4,emoji:'🐪',g:'from-yellow-600 to-amber-800',dur:155,age:'12+',desc:'Buyuk Ipak yo\'li bo\'ylab bosib o\'tgan savdogarlar va ularning sevgisi haqida epik film.',cast:['Jamshid Umarov','Nigora Rasulova'],dir:'Anvar Alimov',lang:'O\'zbek',sub:'O\'zbek/rus',now:true,month:'january'},
+  {id:5,title:'Koinot Chegarasi',year:2026,genre:'Fantastika',imdb:8.8,emoji:'🚀',g:'from-sky-600 to-blue-900',dur:141,age:'12+',desc:'Yer yuzidan uzoqdagi kosmik stansiyada sodir bo\'lgan texnik falokat haqida tuganmas stress.',cast:['Doston Nurmatov','Malika Tosheva'],dir:'Ilhom Karimov',lang:'Ingliz',sub:'O\'zbek',now:true,month:'january'},
+  {id:6,title:'Yurak Siri',year:2026,genre:'Melodrama',imdb:7.6,emoji:'💔',g:'from-pink-600 to-rose-800',dur:118,age:'16+',desc:'Ikki qalbning noto\'g\'ri vaqtda uchrashuvi — ayriliq hech qachon oson bo\'lmaydi.',cast:['Feruza G\'aniyeva','Umid O\'ralov'],dir:'Dilfuza Abduvaliyeva',lang:'O\'zbek',sub:'O\'zbek',now:false,month:'february'},
+  {id:7,title:'Qora Shox',year:2026,genre:'Jangari',imdb:8.2,emoji:'⚔️',g:'from-stone-600 to-neutral-800',dur:139,age:'18+',desc:'Urushdan keyingi yillarda o\'tgan voqealarga asoslangan qahramonlik tarixi.',cast:['Sherzod Aliyev','Gulchehra Yoldosheva'],dir:'Bahodir Umarov',lang:'O\'zbek',sub:'O\'zbek/rus',now:false,month:'february'},
+  {id:8,title:'Sirli O\'rmon',year:2026,genre:'Qo\'rqinchli',imdb:7.4,emoji:'🌲',g:'from-emerald-700 to-green-900',dur:112,age:'18+',desc:'Yosh sayyohlar guruhi o\'rmon ichiga ketib qaytmaydigan do\'stlarini qidiradi.',cast:['Asliddin Hoshimov','Zarina Abdullayeva'],dir:'Sardor To\'xtayev',lang:'O\'zbek',sub:'O\'zbek',now:false,month:'february'},
+  {id:9,title:'Bog\'bon',year:2026,genre:'Komediya',imdb:8.0,emoji:'🌷',g:'from-lime-600 to-green-800',dur:105,age:'6+',desc:'Shaharlik oila qishloqqa ko\'chib, bog\'dorchilikning barcha qiyinchiliklaridan kulib o\'tadi.',cast:['Ravshan Umarov','Saodat Karimova'],dir:'Nodir Yusupov',lang:'O\'zbek',sub:'O\'zbek',now:false,month:'march'},
+  {id:10,title:'Oltin Davr',year:2026,genre:'Tarixiy',imdb:8.6,emoji:'👑',g:'from-yellow-500 to-amber-700',dur:162,age:'12+',desc:'Temuriylar davrining yorqin sahifalarini qayta ko\'rsatuvchi ulkan epopeiya.',cast:['Javohir Zokirov','Mohira Eshmirzayeva'],dir:'Kamoliddin Rasulov',lang:'O\'zbek',sub:'O\'zbek/ingliz',now:false,month:'march'},
+  {id:11,title:'Tungi Qo\'ng\'iroq',year:2026,genre:'Detektiv',imdb:8.9,emoji:'☎️',g:'from-slate-700 to-gray-900',dur:127,age:'16+',desc:'Tungi radio efirida qo\'ng\'iroq qilgan g\'alayonli tinglovchi sirli qotillik haqida hikoya qiladi.',cast:['Bekzod Tursunov','Lola Nazarova'],dir:'Otabek Soliyev',lang:'O\'zbek',sub:'O\'zbek',now:false,month:'march',views:'980k'},
+  {id:12,title:'Kuchli Yurak',year:2026,genre:'Sport',imdb:8.1,emoji:'🥊',g:'from-orange-600 to-red-800',dur:130,age:'12+',desc:'Yosh bokschi o\'zining ilk jahon chempionatiga yo\'l olish haqida haqiqiy hikoya.',cast:['Sanjar Qodirov','Dilrabo Komilova'],dir:'Farruh Abdullayev',lang:'O\'zbek',sub:'O\'zbek',now:false,month:'march'},
+];
+const HERO=[1,2,5];
+const $=id=>document.getElementById(id);
+const money=n=>n.toLocaleString('uz-UZ')+" so'm";
+
+/* ============ POSTER CARD ============ */
+function posterHTML(m,i=0){
+  return `<article class="poster relative rounded-3xl overflow-hidden cursor-pointer group bg-gradient-to-br ${m.g} aspect-[2/3]" data-movie="${m.id}" data-aos="fade-up" data-aos-delay="${i*70}">
+    <span class="shine"></span>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent"></div>
+    <div class="absolute top-3 left-3 flex flex-col gap-2">
+      <span class="text-[11px] font-black bg-black/50 backdrop-blur px-2.5 py-1 rounded-lg rating-num flex items-center gap-1"><i data-lucide="star" class="w-3 h-3 text-amber-400 fill-amber-400"></i>${m.imdb}</span>
+      ${m.now?'':'<span class="text-[11px] font-black bg-white/90 text-slate-900 px-2.5 py-1 rounded-lg w-fit">TEZ KUNA</span>'}
+    </div>
+    <div class="absolute top-3 right-3 text-[11px] font-bold border border-white/60 px-2 py-0.5 rounded-lg">${m.age}</div>
+    <div class="absolute inset-x-0 top-1/3 text-center text-6xl opacity-90 pointer-events-none select-none">${m.emoji}</div>
+    <div class="overlay absolute inset-0 bg-black/55 backdrop-blur-[2px] flex flex-col items-center justify-center gap-3">
+      <span class="play w-16 h-16 rounded-full bg-[#e50914] grid place-items-center shadow-2xl"><i data-lucide="play" class="w-8 h-8 fill-white"></i></span>
+      <span class="text-sm font-bold">Treyler ko'rish</span>
+    </div>
+    <div class="absolute inset-x-0 bottom-0 p-4">
+      <span class="text-[10px] font-bold tracking-[2px] text-white/70">${m.genre.toUpperCase()} · ${m.year}</span>
+      <h3 class="font-black text-lg leading-tight mt-1">${m.title}</h3>
+      <div class="flex items-center gap-3 text-xs text-white/70 mt-1.5"><span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i>${m.dur} daq</span><span>${m.lang}</span></div>
+    </div>
+  </article>`;
+}
+const renderNow=()=>$('nowGrid').innerHTML=MOVIES.filter(m=>m.now).map(posterHTML).join('');
+const renderTrend=()=>$('trendSlides').innerHTML=MOVIES.filter(m=>m.views).concat(MOVIES.slice(0,4)).slice(0,6).map(m=>`
+  <div class="swiper-slide h-auto"><div class="flex gap-5 glass rounded-3xl p-4 h-full">
+    <div class="w-28 shrink-0 rounded-2xl bg-gradient-to-br ${m.g} grid place-items-center text-5xl relative overflow-hidden group cursor-pointer" data-movie="${m.id}">
+      ${m.emoji}<span class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition grid place-items-center"><i data-lucide="play" class="w-8 h-8"></i></span>
+    </div>
+    <div class="min-w-0">
+      <div class="flex items-center gap-2 text-[11px] font-bold text-amber-400"><i data-lucide="star" class="w-3 h-3 fill-amber-400"></i>${m.imdb} <span class="text-white/50">· ${m.genre}</span></div>
+      <h3 class="font-black text-lg mt-1 cursor-pointer hover:text-[#e50914] transition" data-movie="${m.id}">${m.title}</h3>
+      <p class="text-sm opacity-70 mt-2 line-clamp-2">${m.desc}</p>
+      <div class="flex items-center gap-2 mt-3 text-xs opacity-60"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>${m.year}</div>
+    </div>
+  </div></div>`).join('');
+const renderSoon=month=>{
+  const list=MOVIES.filter(m=>m.month===month);
+  $('soonGrid').innerHTML=list.length?list.map(posterHTML).join(''):'<div class="col-span-4 text-center py-14 glass rounded-3xl">Tez orada...</div>';
+  lucide.createIcons();
+};
+const renderRatings=()=>$('ratingTable').innerHTML=[...MOVIES].sort((a,b)=>b.imdb-a.imdb).slice(0,8).map((m,i)=>`
+  <div class="flex items-center gap-4 px-5 py-4 hover:bg-white/5 transition cursor-pointer" data-movie="${m.id}">
+    <span class="text-2xl font-black w-8 ${i<3?'text-[#e50914]':'opacity-40'}">${i+1}</span>
+    <div class="w-12 h-16 rounded-xl bg-gradient-to-br ${m.g} grid place-items-center text-2xl shrink-0">${m.emoji}</div>
+    <div class="flex-1 min-w-0"><h4 class="font-bold truncate">${m.title}</h4><div class="text-xs opacity-60">${m.genre} · ${m.year} · ${m.dur} daq</div></div>
+    <span class="font-black rating-num text-lg">${m.imdb}</span>
+  </div>`).join('');
+$('heroSlides').innerHTML=HERO.map(id=>{const m=MOVIES.find(x=>x.id===id);return `
+  <div class="swiper-slide relative">
+    <div class="absolute inset-0 bg-gradient-to-br ${m.g}"></div>
+    <div class="absolute inset-0 hero-scan"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30"></div>
+    <div class="relative h-[600px] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
+      <div class="max-w-2xl pt-16">
+        <div class="flex items-center gap-3 text-sm">
+          <span class="font-black text-amber-400 rating-num flex items-center gap-1.5"><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>${m.imdb} IMDb</span>
+          <span class="opacity-70">·</span><span class="opacity-80">${m.genre}</span><span class="opacity-70">·</span><span class="opacity-80">${m.dur} daq</span>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-black mt-4 leading-[1.05]">${m.title}</h1>
+        <p class="mt-5 text-lg text-white/85 max-w-xl">${m.desc}</p>
+        <div class="flex flex-wrap items-center gap-3 mt-8">
+          <button class="flex items-center gap-2.5 bg-[#e50914] text-white font-bold px-7 py-3.5 rounded-xl hover:scale-105 transition" data-movie="${m.id}"><i data-lucide="play" class="w-5 h-5 fill-white"></i> Treylerni ko'rish</button>
+          <button class="flex items-center gap-2.5 glass font-bold px-6 py-3.5 rounded-xl hover:scale-105 transition" data-buy="${m.id}"><i data-lucide="ticket" class="w-5 h-5"></i> Chipta olish</button>
+          <button class="w-12 h-12 grid place-items-center rounded-xl glass hover:scale-110 transition" title="Ro'yxatga qo'shish" data-fav="${m.id}"><i data-lucide="plus" class="w-5 h-5"></i></button>
+        </div>
+      </div>
+      <div class="hidden lg:block absolute right-10 bottom-10 text-[10rem] opacity-25 select-none">${m.emoji}</div>
+    </div>
+  </div>`;}).join('');
+
+/* ============ GENRE FILTER ============ */
+const genres=['Barchasi',...new Set(MOVIES.map(m=>m.genre))];
+$('genreChips').innerHTML=genres.map((g,i)=>`<button class="chip ${i===0?'active':''} text-xs font-bold px-4 py-2 rounded-full border border-white/20 transition" data-genre="${g}">${g}</button>`).join('');
+$('genreChips').addEventListener('click',e=>{
+  const c=e.target.closest('.chip');if(!c)return;
+  document.querySelectorAll('#genreChips .chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active');
+  const g=c.dataset.genre;
+  $('nowGrid').innerHTML=(g==='Barchasi'?MOVIES.filter(m=>m.now):MOVIES.filter(m=>m.now&&m.genre===g)).map(posterHTML).join('');
+  lucide.createIcons();
+});
+
+/* ============ TABS ============ */
+$('soonTabs').addEventListener('click',e=>{
+  const b=e.target.closest('.tabBtn');if(!b)return;
+  document.querySelectorAll('.tabBtn').forEach(x=>x.classList.remove('active','bg-[#e50914]'));
+  b.classList.add('active','bg-[#e50914]');
+  renderSoon(b.dataset.t);
+});
+
+/* ============ MOVIE MODAL (treyler) ============ */
+let trailerTimer=null;
+function openMovie(id){
+  const m=MOVIES.find(x=>x.id===Number(id));if(!m)return;
+  $('movieInner').innerHTML=`
+    <div class="relative h-64 md:h-80 bg-gradient-to-br ${m.g} grid place-items-center overflow-hidden">
+      <div class="absolute inset-0 bg-black/25"></div>
+      <span class="text-[8rem] relative">${m.emoji}</span>
+      <button class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-black/50 grid place-items-center hover:scale-110 transition" data-close><i data-lucide="x"></i></button>
+      <div class="absolute bottom-4 left-5">
+        <span class="text-[11px] font-bold bg-[#e50914] px-2.5 py-1 rounded-lg">TREYLER</span>
+        <h3 class="text-3xl font-black mt-2">${m.title}</h3>
+      </div>
+    </div>
+    <div class="p-7">
+      <div class="flex flex-wrap gap-2 mb-5">
+        <span class="text-xs font-bold glass px-3 py-1.5 rounded-lg">${m.genre}</span>
+        <span class="text-xs font-bold glass px-3 py-1.5 rounded-lg">${m.year}</span>
+        <span class="text-xs font-bold glass px-3 py-1.5 rounded-lg">${m.dur} daqiqa</span>
+        <span class="text-xs font-bold glass px-3 py-1.5 rounded-lg">${m.age}</span>
+        <span class="text-xs font-bold glass px-3 py-1.5 rounded-lg flex items-center gap-1"><i data-lucide="star" class="w-3 h-3 text-amber-400 fill-amber-400"></i>${m.imdb}</span>
+      </div>
+      <p class="opacity-80 leading-relaxed">${m.desc}</p>
+      <div class="grid sm:grid-cols-3 gap-4 mt-6 text-sm">
+        <div><div class="text-xs opacity-50 font-bold">REJISSOR</div><div class="font-semibold mt-1">${m.dir}</div></div>
+        <div><div class="text-xs opacity-50 font-bold">AKTYORLAR</div><div class="font-semibold mt-1">${m.cast.join(', ')}</div></div>
+        <div><div class="text-xs opacity-50 font-bold">TIL</div><div class="font-semibold mt-1">${m.lang} · ${m.sub}</div></div>
+      </div>
+      <!-- treyler player (fake) -->
+      <div class="mt-6 rounded-2xl bg-black aspect-video relative overflow-hidden grid place-items-center" id="playerBox">
+        <div class="text-center">
+          <div class="text-5xl">${m.emoji}</div>
+          <div class="mt-3 font-bold" id="playerMsg">Treyler 3 soniyadan keyin boshlanadi...</div>
+        </div>
+        <div class="absolute bottom-0 inset-x-0 h-1.5 bg-white/20"><div id="playerBar" class="h-full bg-[#e50914] w-0 transition-all duration-1000"></div></div>
+        <div class="absolute top-3 left-3 text-xs font-bold bg-black/60 px-2 py-1 rounded-lg" id="playerTime">00:03</div>
+      </div>
+      <div class="flex flex-wrap gap-3 mt-6">
+        <button class="flex-1 min-w-[180px] py-3.5 rounded-2xl bg-[#e50914] font-bold hover:scale-[1.02] transition" data-buy="${m.id}"><i data-lucide="ticket" class="inline w-5 h-5 align-middle"></i> Chipta olish — ${money(m.age==='18+'?60000:45000)}</button>
+        <button class="py-3.5 px-5 rounded-2xl glass font-bold hover:bg-white/10 transition" data-fav="${m.id}"><i data-lucide="plus" class="inline w-5 h-5 align-middle"></i> Ro'yxatga</button>
+      </div>
+    </div>`;
+  $('movieModal').classList.remove('hidden');
+  requestAnimationFrame(()=>$('movieInner').classList.remove('scale-90','opacity-0'));
+  document.body.style.overflow='hidden';lucide.createIcons();
+  // fake treyler progress
+  let t=0;
+  clearInterval(trailerTimer);
+  trailerTimer=setInterval(()=>{
+    t+=1;
+    const bar=$('playerBar'),time=$('playerTime');
+    if(!bar){clearInterval(trailerTimer);return;}
+    bar.style.width=Math.min(t*2,100)+'%';
+    time.textContent='00:'+String(3+t).padStart(2,'0');
+    if(t>=45){clearInterval(trailerTimer);$('playerMsg')&&($('playerMsg').textContent='Treyler tugadi. Rahmat!');}
+  },1000);
+}
+function closeMovie(){$('movieInner').classList.add('scale-90','opacity-0');clearInterval(trailerTimer);setTimeout(()=>{$('movieModal').classList.add('hidden');document.body.style.overflow='';},280);}
+$('movieModal').addEventListener('click',e=>{
+  if(e.target.closest('[data-close]')||e.target.hasAttribute('data-close'))closeMovie();
+  const fav=e.target.closest('[data-fav]');
+  if(fav)toast('Kino ro\'yxatga qo\'shildi ✅');
+  const buy=e.target.closest('[data-buy]');
+  if(buy)openTicket(buy.dataset.buy);
+});
+
+/* ============ TICKET SEAT PICKER ============ */
+let selectedSeat=null;
+function openTicket(movieId){
+  const m=MOVIES.find(x=>x.id===Number(movieId));
+  $('ticketMovie').textContent=m?m.title:'Kinoteatr';
+  const taken=new Set(Array.from({length:rnd(6,12)},()=>'R'+rnd(1,6)+'S'+rnd(1,8)));
+  $('seatMap').innerHTML=Array.from({length:48},(_,i)=>{
+    const row='ABCDEFGH'[Math.floor(i/8)],seat=row+(i%8+1),isTaken=taken.has(seat);
+    return `<button data-seat="${seat}" class="seatBtn w-8 h-8 rounded-lg text-xs font-bold transition ${isTaken?'bg-white/10 text-white/25 cursor-not-allowed':'bg-white/25 hover:bg-[#e50914] hover:scale-110'}" ${isTaken?'disabled':''}>${i%8+1}</button>`;
+  }).join('');
+  selectedSeat=null;
+  $('seatInfo').textContent='O\'rin tanlanmagan';
+  $('seatPrice').textContent=money(0);
+  $('payBtn').disabled=true;
+  closeMovie();
+  setTimeout(()=>{
+    $('ticketModal').classList.remove('hidden');
+    requestAnimationFrame(()=>$('ticketCard').classList.remove('scale-90','opacity-0'));
+    document.body.style.overflow='hidden';
+  },240);
+  $('ticketModal').dataset.movie=movieId;
+}
+$('seatMap').addEventListener('click',e=>{
+  const b=e.target.closest('.seatBtn');if(!b||b.disabled)return;
+  document.querySelectorAll('.seatBtn').forEach(s=>s.classList.remove('bg-[#e50914]','ring-2','ring-white'));
+  b.classList.add('bg-[#e50914]','ring-2','ring-white');
+  selectedSeat=b.dataset.seat;
+  const price=[50000,60000,70000][Math.floor(Math.random()*3)];
+  $('seatInfo').textContent=selectedSeat+' — zal 3';
+  $('seatPrice').textContent=money(price);
+  $('payBtn').disabled=false;
+  $('ticketCard').dataset.price=price;
+});
+$('buyBtn').addEventListener('click',()=>openTicket(MOVIES[0].id));
+$('ticketModal').addEventListener('click',e=>{
+  if(e.target.closest('[data-close]')||e.target.hasAttribute('data-close'))closeTicket();
+});
+function closeTicket(){$('ticketCard').classList.add('scale-90','opacity-0');setTimeout(()=>{$('ticketModal').classList.add('hidden');document.body.style.overflow='';},280);}
+$('payBtn').addEventListener('click',async e=>{
+  const btn=e.currentTarget;btn.disabled=true;const old=btn.textContent;
+  btn.innerHTML='<span class="inline-block w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin align-middle"></span> To\'lov amalga oshirilmoqda...';
+  await new Promise(r=>setTimeout(r,1800));
+  btn.textContent='Chipta band qilindi ✅';
+  await new Promise(r=>setTimeout(r,1500));
+  btn.textContent=old;closeTicket();toast(`${selectedSeat} o'rni uchun chipta xarid qilindi!`);
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMovie();closeTicket();}});
+
+/* ============ SEARCH ============ */
+$('searchInput').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase();
+  const list=MOVIES.filter(m=>m.title.toLowerCase().includes(q)||m.genre.toLowerCase().includes(q));
+  $('nowGrid').innerHTML=list.length?list.map(posterHTML).join(''):'<div class="col-span-full text-center py-14 glass rounded-3xl"><span class="text-5xl">🍿</span><p class="font-bold mt-3">Film topilmadi</p></div>';
+  lucide.createIcons();
+});
+
+/* ============ TOAST ============ */
+let tTimer;function toast(msg){$('toast').classList.remove('hidden');$('toastMsg').textContent=msg;clearTimeout(tTimer);tTimer=setTimeout(()=>$('toast').classList.add('hidden'),2400);}
+
+/* ===== MOBILE DRAWER (yon ochiluvchi menyu) ===== */
+const openMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;m.classList.remove('hidden');requestAnimationFrame(()=>p.classList.remove('translate-x-full'));document.body.style.overflow='hidden';};
+const closeMM=()=>{const m=document.getElementById('mobileMenu'),p=document.getElementById('mobilePanel');if(!m)return;p.classList.add('translate-x-full');setTimeout(()=>{m.classList.add('hidden');document.body.style.overflow='';},300);};
+document.getElementById('menuBtn')?.addEventListener('click',openMM);
+document.getElementById('mobileMenu')?.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeMM();});
+document.querySelectorAll('#mobileMenu nav a').forEach(a=>a.addEventListener('click',closeMM));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMM();});
+
+/* ============ INIT ============ */
+$('loginBtn').addEventListener('click',()=>toast('Kirish sahifasi yaqin qo\'shiladi!'));
+window.addEventListener('scroll',()=>$('nav').firstElementChild.firstElementChild.classList.toggle('shadow-2xl',window.scrollY>40));
+
+renderNow();renderTrend();renderSoon('january');renderRatings();syncTheme();
+AOS.init({duration:850,once:true});
+new Swiper('.heroSwiper',{loop:true,effect:'fade',autoplay:{delay:7000},pagination:{el:'.heroSwiper .swiper-pagination',clickable:true}});
+new Swiper('.trendSwiper',{slidesPerView:1,spaceBetween:20,grabCursor:true,breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:3},1280:{slidesPerView:4}}});
+lucide.createIcons();
+</script>
+</body>
+</html>
